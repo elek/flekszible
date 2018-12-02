@@ -1,0 +1,10 @@
+- type: Add
+  trigger:
+    metadata:
+      name: datanode
+  path:
+  - metadata
+  - annotations
+  value:
+    KEY1: VALUE1
+    KEY2: VALUE2

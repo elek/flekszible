@@ -1,0 +1,13 @@
+- type: Add
+  path:
+  - spec
+  - template
+  - spec
+  - containers
+  - "datanode"
+  - env
+  value:
+  - name: KEY1
+    value: VALUE1
+  - name: KEY2
+    value: VALUE2

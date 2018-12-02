@@ -1,0 +1,68 @@
+package processor
+
+import "github.com/elek/flekszible/pkg/data"
+
+type DaemonToStatefulSet struct {
+	DefaultProcessor
+	Trigger Trigger
+}
+
+func (processor *DaemonToStatefulSet) Before(ctx *data.RenderContext) {
+
+	newResources := make([]data.Resource, 0)
+	for _, resource := range ctx.Resources {
+		if resource.Kind() == "DaemonSet" && processor.Trigger.active(&resource) {
+
+			serviceNode := createService(&resource)
+
+			newResources = append(newResources, data.Resource{
+				Content: serviceNode,
+			})
+
+		}
+	}
+	ctx.Resources = append(ctx.Resources, newResources...)
+}
+func createService(resource *data.Resource) *data.MapNode {
+	root := data.NewMapNode(data.NewPath())
+	root.PutValue("apiVersion", "v1")
+	root.PutValue("kind", "Service")
+	metadata := root.CreateMap("metadata")
+	metadata.PutValue("name", resource.Name())
+
+	spec := root.CreateMap("spec")
+	spec.PutValue("clusterIP", "None")
+
+	selector := data.Get{Path: data.NewPath("spec", "selector", "matchLabels")}
+	resource.Content.Accept(&selector)
+	if selector.Found {
+		newSelector := spec.CreateMap("selector")
+		selectorMap := selector.ReturnValue.(*data.MapNode)
+		for _, key := range selectorMap.Keys() {
+			value := selectorMap.Get(key).(*data.KeyNode).Value.(string)
+			newSelector.PutValue(key, value)
+		}
+	}
+	root.Accept(&data.FixPath{CurrentPath: data.NewPath()})
+
+	return &root
+}
+
+func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) {
+
+	if resource.Kind() == "DaemonSet" && processor.Trigger.active(resource) {
+		resource.Content.Get("kind").(*data.KeyNode).Value = "StatefulSet"
+
+		name := resource.Name()
+
+		spec := resource.Content.Get("spec").(*data.MapNode)
+		spec.Put("serviceName", &data.KeyNode{Path: data.NewPath("spec", "serviceName"), Value: name})
+		spec.Put("replicas", &data.KeyNode{Path: data.NewPath("spec", "replicas"), Value: 3})
+	}
+}
+
+
+func init() {
+	prototype := DaemonToStatefulSet{}
+	ProcessorTypeRegistry.Add(&prototype)
+}

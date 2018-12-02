@@ -1,0 +1,26 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: namenode
+  annotations: {}
+  labels: {}
+spec:
+  serviceName: namenode
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: namenode
+      annotations: {}
+    spec:
+      containers:
+        - name: namenode
+          image: elek/ozone
+          args:
+            - hdfs
+            - namenode
+          volumeMounts: []
+          env: []
+          envFrom: []
+      volumes: []

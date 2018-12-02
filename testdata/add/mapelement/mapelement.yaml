@@ -1,0 +1,18 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: datanode
+  annotations: {}
+spec:
+  serviceName: datanode
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: datanode
+    spec:
+      containers:
+      - name: datanode
+        image: elek/ozone
+        args: ["ozone","datanode"]

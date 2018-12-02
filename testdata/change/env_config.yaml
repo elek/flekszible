@@ -1,0 +1,13 @@
+- type: Change
+  path:
+  - spec
+  - template
+  - spec
+  - containers
+  - "*"
+  - env
+  - KEY
+  - value
+  value:
+    pattern: (.*)
+    replacement: prefix-$1

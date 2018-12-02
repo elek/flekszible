@@ -1,0 +1,32 @@
+package data
+
+import (
+	"github.com/elek/flekszible/pkg/yaml"
+	"io/ioutil"
+	"os"
+)
+
+type Configuration struct {
+	Import []string
+}
+
+func ReadConfiguration(path string) (Configuration, error) {
+
+	conf := Configuration{}
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return conf, nil
+	}
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return conf, err
+	}
+
+	err = yaml.Unmarshal(bytes, &conf);
+	if err != nil {
+		return conf, err
+	}
+
+	return conf, nil
+
+}

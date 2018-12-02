@@ -1,0 +1,7 @@
+- type: Add
+  path:
+  - metadata
+  - annotations
+  value:
+    KEY1: VALUE1
+    KEY2: VALUE2

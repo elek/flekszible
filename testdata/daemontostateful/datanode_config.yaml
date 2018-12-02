@@ -1,0 +1,4 @@
+- type: DaemonToStatefulSet
+  value:
+    keeporiginal: false
+  name: datanode

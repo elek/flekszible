@@ -1,0 +1,6 @@
+- type: Add
+  path: 
+    - metadata
+    - labels
+  value: 
+    felkszible: generated

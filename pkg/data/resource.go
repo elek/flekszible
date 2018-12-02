@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -62,7 +63,7 @@ func LoadFrom(dir string, file string) ([]Resource, error) {
 				r.Filename = file
 				results = append(results, r)
 			} else {
-				return results, fmt.Errorf("Can't pase the resource file %s: %s", fullPath, err)
+				return results, fmt.Errorf("Can't parse the resource file %s: %s", fullPath, err)
 			}
 		}
 	}
@@ -79,7 +80,7 @@ func ReadResourcesFromDir(dir string) []Resource {
 		panic(err)
 	}
 	for _, file := range (files) {
-		if !file.IsDir() && file.Name() != "flekszible.yaml" {
+		if !file.IsDir() && file.Name() != "flekszible.yaml" && filepath.Ext(file.Name()) == ".yaml" {
 			resource, err := LoadFromFileInfo(dir, file)
 			if err != nil {
 				panic(err)

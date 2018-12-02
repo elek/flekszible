@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 )
 
@@ -105,7 +106,7 @@ func (repository *ProcessorRepository) ParseProcessors(inputDir string) {
 			panic(err)
 		}
 		for _, file := range files {
-			if !file.IsDir() {
+			if !file.IsDir() && filepath.Ext(file.Name()) == ".yaml" {
 				fullPath := path.Join(mixinDir, file.Name())
 				logrus.Info("Loading processor configuration from " + fullPath)
 				processors, err := ReadProcessorDefinitionFile(fullPath)

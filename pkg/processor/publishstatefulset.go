@@ -7,7 +7,7 @@ import (
 
 type PublishStatefulSet struct {
 	DefaultProcessor
-	Trigger
+	Trigger Trigger
 }
 
 func (processor *PublishStatefulSet) Before(ctx *data.RenderContext) {

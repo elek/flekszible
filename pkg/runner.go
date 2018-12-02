@@ -8,6 +8,7 @@ import (
 func Run(context *data.RenderContext) {
 	context.ReadConfigs()
 
+	context.loadDefinitions()
 	processors := initProcessors(context)
 	processors = filter(&processors, context.Mode)
 	processor.Generate(processors, context)

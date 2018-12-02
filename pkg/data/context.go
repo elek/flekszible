@@ -1,6 +1,8 @@
 package data
 
-import "path"
+import (
+	"path"
+)
 
 type RenderContext struct {
 	OutputDir     string
@@ -33,4 +35,5 @@ func (ctx *RenderContext) ReadConfigs() {
 		ctx.ParseDir(dir)
 	}
 }
+
 

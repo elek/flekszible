@@ -22,6 +22,7 @@ func TestFromDir(t *testing.T, dir string) data.RenderContext {
 		InputDir:  []string{inputDir},
 	}
 	context.ReadConfigs()
+	LoadDefinitions(&context)
 
 	repository := CreateProcessorRepository()
 	repository.Append(&Initializer{})

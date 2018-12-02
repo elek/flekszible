@@ -12,18 +12,30 @@ import (
 
 var ProcessorTypeRegistry ProcessorTypes
 
+type ProcessorFactory = func() Processor
+
 type ProcessorTypes struct {
-	TypeMap map[string]reflect.Type
+	TypeMap map[string]ProcessorFactory
 }
 
 func (pt *ProcessorTypes) Add(processor Processor) {
 	if pt.TypeMap == nil {
-		pt.TypeMap = make(map[string]reflect.Type)
+		pt.TypeMap = make(map[string]ProcessorFactory)
 	}
 	name := reflect.TypeOf(processor).Elem().Name()
-	pt.TypeMap[name] = reflect.TypeOf(processor).Elem()
+	factory := func() Processor {
+		processorType := reflect.TypeOf(processor).Elem()
+		value := reflect.New(processorType)
+		processor := value.Interface()
+		return processor.(Processor)
+	}
+	pt.TypeMap[name] = factory
 }
 
+func (pt *ProcessorTypes) AddComposit(name string, factory ProcessorFactory) {
+	logrus.Infof("Registring composit definition %s", name)
+	pt.TypeMap[name] = factory
+}
 
 type ProcessorRepository struct {
 	Processors []Processor
@@ -39,14 +51,19 @@ func (repository *ProcessorRepository) AppendAll(processors []Processor) {
 	repository.Processors = append(repository.Processors, processors...)
 }
 
+//read processor definition file from a file
 func ReadProcessorDefinitionFile(filename string) ([]Processor, error) {
-	processors := make([]Processor, 0)
-	processorsConfigs := make([]yaml.MapSlice, 0)
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	err = yaml.Unmarshal(data, &processorsConfigs)
+	return ReadProcessorDefinition(data)
+}
+
+func ReadProcessorDefinition(data []byte) ([]Processor, error) {
+	processors := make([]Processor, 0)
+	processorsConfigs := make([]yaml.MapSlice, 0)
+	err := yaml.Unmarshal(data, &processorsConfigs)
 	if err != nil {
 		return nil, err
 	}
@@ -76,9 +93,8 @@ func ReadProcessorConfig(processor *Processor, configYamlContent string) {
 }
 
 func CreateProcessor(processorTypeName string) interface{} {
-	if processorType, ok := ProcessorTypeRegistry.TypeMap[processorTypeName]; ok {
-		value := reflect.New(processorType)
-		processor := value.Interface()
+	if factory, ok := ProcessorTypeRegistry.TypeMap[processorTypeName]; ok {
+		processor := factory()
 		return processor
 	} else {
 		logrus.Error("Unknown processor type: " + processorTypeName)

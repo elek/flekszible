@@ -154,7 +154,14 @@ You can use multiple values in the trigger. All the key nodes will be collected 
 
 ## Directory structure
 
-In the output directory all the yaml files (except the `flekszible.yaml` configuration file) are considered to be a k8s resource. One file could contain multiple resources.
+TLDR;
+
+ * `*.yaml`: used as k8s resources
+ * `transformations/*.yaml`: will be applied to all the resources according to the specified rules
+ * `definitions/*.yaml`: composit definitions which could be used in `transformations.yaml`. Won't be applied by default.
+ * `flekszible.yaml`: configuration file. Could include other directories (all the resources + transformations + definitions will be added from that directory.)
+ 
+In the output directory all the `yaml` files (except the `flekszible.yaml` configuration file) are considered to be a k8s resource. One file could contain multiple resources.
 
 All the yaml files from the `transformations` subdirectory are parsed as transformation definitions. Each file should contain an array of objects. The object should have a `type` definition (see the available transformations below) 
 
@@ -169,6 +176,7 @@ Example: `./transformations/label.yaml`
     felkszible: generated
 ```
 
+All the yaml files from the `definitions` directory will be parsed as composit transformation type. You can define multiple transoformation and name it. It may be used form other transformation files.
 
 ## Available transformation types
 
@@ -224,4 +232,43 @@ Converts daemonset to statefulset.
 
 Useful for minikube based environments where you may not have enough node to run a daemonset based cluster.
 
+#### Composit
 
+You can create additional transformations with grouping existing transformations. For example the following definition register a new transformation type:
+
+
+```yaml
+type: flokkr.github.io/prometheus
+transformations:
+  - type: Add
+    path:
+      - spec
+      - template
+      - metadata
+      - annotations
+    value:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "28942"
+  - type: Add
+    path:
+      - spec
+      - template
+      - spec
+      - containers
+      - "*"
+      - env
+    value:
+      - name: "PROMETHEUSJMX_ENABLED"
+        value: "true"
+      - name:  "PROMETHEUSJMX_AGENTOPTS"
+        value: "port=28942"
+
+```
+
+Put the previous file to the `definitions/prometheus.yaml`. By default it won't be applied to any k8s resources but from now you can use the `flokkr.github.io/prometheus` type in your transformations:
+
+For example in `transformations/monitor.yaml` you can write:
+
+```yaml
+- type: flokkr.github.io/prometheus
+```

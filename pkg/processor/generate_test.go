@@ -8,7 +8,7 @@ import (
 
 func TestReadResources(t *testing.T) {
 	ctx := data.RenderContext{
-		InputDir: []string{"../testdata/context/base3"},
+		InputDir: []string{"../../testdata/context/base3"},
 	}
 
 	ctx.ReadConfigs()

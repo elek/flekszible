@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -37,6 +38,7 @@ func TestFromDir(t *testing.T, dir string) data.RenderContext {
 func compareDir(t *testing.T, expected string, result string) {
 	exp := readDir(t, expected)
 	res := readDir(t, result)
+
 	assert.Equal(t, keysFromMap(exp), keysFromMap(res))
 	for key, _ := range res {
 		assert.Equal(t, exp[key], res[key], "File "+key+" is different")
@@ -48,6 +50,7 @@ func keysFromMap(nodes map[string]*data.MapNode) []string {
 	for key, _ := range nodes {
 		keys = append(keys, key)
 	}
+	sort.Strings(keys)
 	return keys
 }
 

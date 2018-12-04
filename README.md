@@ -8,9 +8,9 @@ Features:
  2. Can generate final k8s resources
  3. Or can generate helm charts.
 
-### Recipes
+## Recipes
 
-## Getting started
+### Getting started
 
 Put one kubernetes resource to the directory:
 
@@ -87,6 +87,42 @@ spec:
 ```
 
 As you can see the original k8s source is modified base on the transformation rules.
+
+
+## Source other dirs
+
+Let's imagine that you would like to run the same nginx as in the previous section but you need 10 replicas for production and 2 for dev.
+
+You can do it with creating 3 directories:
+
+You need the following files:
+
+ * common
+   * nginx.yaml (same as before but with replicas = 10) 
+ * dev
+   * flekszible.yaml (include common)
+   * transformations
+     * replicas.yaml (override replicas with 2)
+ * prod
+   * flekszible.yaml (include common)
+
+You can include all the resource files and transformations from common with using the following `flekszible.yaml` in both the `dev` and `prod` folder:
+
+```yaml
+import:
+  - ../../common
+```
+
+And you need a the transformation for `dev/transformations/replicas.yaml`
+
+```yaml
+- type: Change
+  path:
+    - spec
+    - replicas
+  pattern: .*
+  replacement: 2
+```
 
 
 ## Definitions

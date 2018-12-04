@@ -16,6 +16,19 @@ import (
 func TestFromDir(t *testing.T, dir string) data.RenderContext {
 	outputDir := path.Join("../../build", dir)
 	inputDir := path.Join("../../testdata", dir)
+	expectedDir := path.Join(inputDir, "expected")
+	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
+}
+
+func TestExample(t *testing.T, name string) data.RenderContext {
+	outputDir := path.Join("../../build/examples", name)
+	inputDir := path.Join("../../examples", name)
+	expectedDir := path.Join("../../testdata/examplesresults", name)
+	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
+}
+
+func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expectedDir string) data.RenderContext {
+
 	context := data.RenderContext{
 		OutputDir: outputDir,
 		Mode:      "k8s",
@@ -32,7 +45,7 @@ func TestFromDir(t *testing.T, dir string) data.RenderContext {
 	}
 	repository.Append(&K8sWriter{})
 	Generate(repository, &context)
-	compareDir(t, path.Join(inputDir, "expected"), outputDir)
+	compareDir(t, expectedDir, outputDir)
 	return context
 }
 

@@ -1,0 +1,6 @@
+- type: Change
+  path:
+    - spec
+    - replicas
+  pattern: .*
+  replacement: 2

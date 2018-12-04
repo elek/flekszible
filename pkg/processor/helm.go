@@ -6,11 +6,14 @@ import (
 	"github.com/elek/flekszible/pkg/yaml"
 	"io/ioutil"
 	"path"
+	"strings"
 )
 
 type HelmDecorator struct {
 	DefaultProcessor
-	Values helm.Values
+	Values    helm.Values
+	ChartName string
+	HostNames []string
 }
 
 func (processor *HelmDecorator) After(ctx *data.RenderContext) {
@@ -24,13 +27,63 @@ func (processor *HelmDecorator) After(ctx *data.RenderContext) {
 	}
 }
 
+func (p *HelmDecorator) Before(ctx *data.RenderContext) {
+	p.HostNames = make([]string, 0)
+	for _, resource := range ctx.Resources {
+		kind := resource.Kind()
+		if kind == "StatefulSet" {
+			name := resource.Name()
+
+			serviceNameGet := data.Get{Path: data.NewPath("spec", "serviceName")}
+			resource.Content.Accept(&serviceNameGet)
+			if serviceNameGet.Found {
+				hostname := name + "-0." + serviceNameGet.ValueAsString()
+				p.HostNames = append(p.HostNames, hostname)
+			}
+		}
+	}
+}
+
 func (p *HelmDecorator) BeforeResource(resource *data.Resource) {
 
 	content := resource.Content
+	prefix := "{{ template \"ozone.fullname\" . }}-"
+	changeImage := func(original interface{}) interface{} {
+		imageString := original.(string)
+		if !strings.Contains(imageString, ":") {
+			imageString = imageString + ":latest"
+		}
+		imageAndTag := strings.Split(imageString, ":")
+		if p.Values.Image.Repository == "" {
+			p.Values.Image.Repository = imageAndTag[0]
+			p.Values.Image.Tag = imageAndTag[1]
+			p.Values.Image.PullPolicy = "Always"
+		}
+		return "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+	}
 
-	content.Accept(&data.Apply{Path: data.NewPath("metadata", "name"), Function: chageName})
+	prefixName := func(original interface{}) interface{} {
+		return prefix + original.(string)
+	}
+
+	prefixHostName := func(original interface{}) interface{} {
+		result := original.(string)
+		for _, hostName := range p.HostNames {
+			splitted := strings.Split(hostName, ".")
+			result = strings.Replace(result, hostName, prefix+splitted[0]+"."+prefix+splitted[1], -1)
+		}
+		return result
+	}
+
+	content.Accept(&data.Apply{Path: data.NewPath("metadata", "name"), Function: prefixName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "serviceName"), Function: prefixName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "containers", "*", "env", "*", "value"), Function: prefixHostName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "env", "*", "value"), Function: prefixHostName})
+	content.Accept(&data.Apply{Path: data.NewPath("data", "*"), Function: prefixHostName})
 	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "containers", "*", "image"), Function: changeImage})
 	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "image"), Function: changeImage})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "envFrom", "*", "configMapRef", "name", ), Function: prefixName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "containers", "*", "envFrom", "*", "configMapRef", "name", ), Function: prefixName})
 
 	labelsGetter := data.Get{Path: data.NewPath("metadata", "labels")}
 	content.Accept(&labelsGetter)
@@ -40,64 +93,6 @@ func (p *HelmDecorator) BeforeResource(resource *data.Resource) {
 	labelsGetter.ReturnValue.(*data.MapNode).PutValue("app.kubernetes.io/managed-by", "{{ .Release.Service }}")
 }
 
-func chageName(name interface{}) interface{} {
-	return "{{ template \"fullname\" . }}-" + name.(string)
-}
-
-func changeImage(name interface{}) interface{} {
-	return "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-}
-//
-//func (processor *HelmDecorator) ProcessKey(path data.Path, value interface{}) interface{} {
-//
-//	if path.MatchSegments("spec", "template", "spec", "containers", "*", "envFrom", "*", "configMapRef", "name") {
-//		return "\"{{ template \"fullname\" . }}-" + value.(string) + "\""
-//	}
-//	if path.MatchSegments("spec", "template", "spec", "containers", "*", "image") ||
-//		path.MatchSegments("spec", "template", "spec", "initContainers", "*", "image") {
-//		image := value.(string)
-//		parts := strings.Split(image, ":")
-//		processor.Values.Image.Repository = parts[0]
-//		processor.Values.Image.PullPolicy = "IfNotPresent"
-//		if len(parts) > 1 {
-//			processor.Values.Image.Tag = parts[1]
-//		} else {
-//			processor.Values.Image.Tag = "latest"
-//		}
-//		return "\"{{ .Values.image.repository }}:{{ .Values.image.tag }}\""
-//
-//	}
-//	return value
-//}
-//
-//func (*HelmDecorator) BeforeMap(path data.Path, object yaml.MapSlice) yaml.MapSlice {
-//	if path.MatchSegments("metadata", "labels") {
-//		object = object.Put("app", "{{ template \"fullname\" . }}")
-//	}
-//	if path.MatchSegments("spec", "template", "spec", "containers", "*") ||
-//		path.MatchSegments("spec", "template", "spec", "initContainers", "*") {
-//		if _, ok := object.Get("imagePullPolicy"); !ok {
-//			object = object.Put("imagePullPolicy", "{{ .Values.image.pullPolicy}}")
-//		}
-//	}
-//	if path.MatchSegments("spec", "template", "spec", "volumes", "*") {
-//		if config, ok := object.Get("configMap"); ok {
-//			switch configMap := config.(type) {
-//			case yaml.MapSlice:
-//				if name, ok := configMap.Get("name"); ok {
-//					configMap = configMap.Put("name", "\"{{ template \"fullname\" . }}-"+name.(string)+"\"")
-//					object = object.Put("configMap", configMap)
-//				}
-//
-//			default:
-//				panic("Configmap is not a map")
-//			}
-//
-//		}
-//	}
-//
-//	return object
-//}
 
 func init() {
 	prototype := HelmDecorator{}

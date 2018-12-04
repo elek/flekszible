@@ -133,8 +133,8 @@ func printKey(output io.Writer, path data.Path, rawValue interface{}) {
 		write(output, "\n")
 	} else if path.Length() > 2 && path.Segment(-2) == "annotations" || path.Segment(-3) == "env" || path.Segment(-2) == "data" {
 		write(output, " ")
-		escaped := strings.Replace(value, "\"", "\\\"", -1)
-		write(output, "\""+escaped+"\"")
+		//escaped := strings.Replace(value, "\"", "\\\"", -1)
+		write(output, "\""+value+"\"")
 		write(output, "\n")
 	} else {
 		write(output, " ")

@@ -15,7 +15,10 @@ func (trigger *Trigger) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	if err != nil {
 		return err
 	}
-	node := data.ConvertToNode(rawContent, data.NewPath())
+	node, err := data.ConvertToNode(rawContent, data.NewPath())
+	if err != nil {
+		return err
+	}
 	trigger.Definition = node
 	return nil
 }

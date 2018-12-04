@@ -29,7 +29,11 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 		}
 		switch typedTarget := target.ReturnValue.(type) {
 		case *data.MapNode:
-			mapNode := data.ConvertToNode(typedValue, processor.Path).(*data.MapNode)
+			node, err := data.ConvertToNode(typedValue, processor.Path)
+			if err != nil {
+				panic(err)
+			}
+			mapNode := node.(*data.MapNode)
 			for _, key := range mapNode.Keys() {
 				typedTarget.Put(key, mapNode.Get(key))
 			}
@@ -47,7 +51,11 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 		}
 		switch typedTarget := target.ReturnValue.(type) {
 		case *data.ListNode:
-			nodeList := data.ConvertToNode(typedValue, processor.Path).(*data.ListNode)
+			node, err := data.ConvertToNode(typedValue, processor.Path)
+			if err != nil {
+				panic(err)
+			}
+			nodeList := node.(*data.ListNode)
 			for _, childNode := range nodeList.Children {
 				typedTarget.Append(childNode)
 			}

@@ -14,7 +14,10 @@ func ReadString(content []byte) (*MapNode, error) {
 		return nil, err
 	}
 
-	node := ConvertToNode(yamlDoc, NewPath())
+	node, err := ConvertToNode(yamlDoc, NewPath())
+	if err != nil {
+		return nil, err
+	}
 	result := node.(*MapNode)
 	return result, nil
 }
@@ -28,18 +31,24 @@ func ReadFile(file string) (*MapNode, error) {
 	return ReadString(data)
 }
 
-func ConvertToNode(object interface{}, path Path) Node {
+func ConvertToNode(object interface{}, path Path) (Node, error) {
 	switch object := object.(type) {
 	case yaml.MapSlice:
 		result := NewMapNode(path)
 		for _, pair := range object {
 			key := pair.Key
 			value := pair.Value
-			result.Put(key.(string), ConvertToNode(value, path.Extend(key.(string))))
+			if key == nil {
+				return nil, fmt.Errorf("Key is nil at %s", path.ToString())
+			}
+			node, err := ConvertToNode(value, path.Extend(key.(string)))
+			if err != nil {
+				return nil, err
+			}
+			result.Put(key.(string), node)
 		}
 
-
-		return &result
+		return &result, nil
 
 	case []interface{}:
 		result := NewListNode(path)
@@ -50,19 +59,23 @@ func ConvertToNode(object interface{}, path Path) Node {
 					pathSegment = name.(string)
 				}
 			}
-			result.Append(ConvertToNode(value, path.Extend(pathSegment)))
+			node, err := ConvertToNode(value, path.Extend(pathSegment))
+			if err != nil {
+				return nil, err
+			}
+			result.Append(node)
 		}
-		return &result
+		return &result, nil
 	case string:
 		res := NewKeyNode(path, object)
-		return &res
+		return &res, nil
 	case bool:
 		res := NewKeyNode(path, object)
-		return &res
+		return &res, nil
 	case int:
 		res := NewKeyNode(path, object)
-		return &res
+		return &res, nil
 	default:
-		panic(fmt.Errorf("I don't know about type %T! %s\n", object, path.ToString()))
+		return nil, fmt.Errorf("I don't know about type %T! %s\n", object, path.ToString())
 	}
 }

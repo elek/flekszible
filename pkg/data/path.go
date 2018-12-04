@@ -1,7 +1,9 @@
 package data
 
 import (
+	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -39,7 +41,11 @@ func (this Path) Match(that Path) bool {
 		return false;
 	}
 	for i := 0; i < len(this.segments); i++ {
-		if this.segments[i] != "*" && that.segments[i] != "*" && this.segments[i] != that.segments[i] {
+		r, err := regexp.Compile(this.segments[i])
+		if err != nil {
+			panic(fmt.Errorf("Path segment is not a regexp %s in %s", this.segments[i], this.segments))
+		}
+		if !r.Match([]byte(that.segments[i])) {
 			return false
 		}
 	}

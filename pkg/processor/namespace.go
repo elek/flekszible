@@ -9,7 +9,7 @@ type Namespace struct {
 
 func (processor *Namespace) BeforeResource(resource *data.Resource) {
 	resource.Content.Accept(&data.Set{Path: data.NewPath("metadata", "namespace"), NewValue: processor.Namespace})
-	resource.Content.Accept(&data.Set{Path: data.NewPath("subjects", "*", "namespace"), NewValue: processor.Namespace})
+	resource.Content.Accept(&data.Set{Path: data.NewPath("subjects", ".*", "namespace"), NewValue: processor.Namespace})
 }
 
 func init() {

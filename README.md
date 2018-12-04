@@ -165,6 +165,17 @@ spec:
 
 Here tha path of the environment variable is `[spec, template, spec, containers, nginx, env, KEY ]` and not `[ spec, template, spec, containers, 0, env, 0]`
 
+For matching, path segments are used as regular expressions. Therefore the following path matches for both the init and main containers:
+
+```yaml
+path:
+  - spec
+  - template
+  - spec
+  - (initC|c)ontainers
+  - .*
+```
+
 ### Trigger
 
 Most of the processors also use a `trigger` parameter. With trigger you can specify any k8s fragments and only the matched resources will be transformed.

@@ -8,8 +8,7 @@ type ImageSet struct {
 }
 
 func (imageSet *ImageSet) BeforeResource(resource *data.Resource) {
-	resource.Content.Accept(&data.Set{Path: data.NewPath("spec", "template", "spec", "containers", "*", "image"), NewValue: imageSet.Image})
-	resource.Content.Accept(&data.Set{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "image"), NewValue: imageSet.Image})
+	resource.Content.Accept(&data.Set{Path: data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*", "image"), NewValue: imageSet.Image})
 }
 func init() {
 	prototype := ImageSet{}

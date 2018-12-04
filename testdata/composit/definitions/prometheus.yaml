@@ -15,7 +15,7 @@ transformations:
       - template
       - spec
       - containers
-      - "*"
+      - ".*"
       - env
     value:
       - name: "PROMETHEUSJMX_ENABLED"

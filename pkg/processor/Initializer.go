@@ -9,12 +9,10 @@ type Initializer struct {
 }
 
 func (processor *Initializer) BeforeResource(resource *data.Resource) {
-	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "containers", "*"), "volumeMounts")
-	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "containers", "*"), "env")
-	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "containers", "*"), "envFrom")
-	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "initContainers", "*"), "volumeMounts")
-	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "initContainers", "*"), "env")
-	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "initContainers", "*"), "envFrom")
+	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*"), "volumeMounts")
+	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*"), "env")
+	processor.ensureList(resource, data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*"), "envFrom")
+
 	processor.ensureList(resource, data.NewPath("spec", "template", "spec"), "volumes")
 	processor.ensureMap(resource, data.NewPath("metadata"), "labels")
 	processor.ensureMap(resource, data.NewPath("metadata"), "annotations")

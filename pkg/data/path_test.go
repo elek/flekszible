@@ -19,7 +19,7 @@ func TestPath_Match(t *testing.T) {
 		t.Errorf("Path match is failed")
 	}
 
-	if !NewPath("a", "b").Match(NewPath("a", "*")) {
+	if !NewPath("a", ".*").Match(NewPath("a", "b")) {
 		t.Errorf("Path match is failed")
 	}
 }

@@ -1,0 +1,15 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rolebinding
+  labels: {}
+  annotations: {}
+  namespace: myns
+subjects:
+  - kind: ServiceAccount
+    name: sa
+    namespace: myns
+roleRef:
+  kind: ClusterRole
+  name: superpower
+  apiGroup: rbac.authorization.k8s.io

@@ -33,6 +33,11 @@ func initProcessors(context *data.RenderContext) processor.ProcessorRepository {
 			Image: context.ImageOverride,
 		})
 	}
+	if len(context.Namespace) > 0 {
+		repository.Append(&processor.Namespace{
+			Namespace: context.Namespace,
+		})
+	}
 	for _, directory := range context.InputDir {
 		repository.ParseProcessors(directory)
 	}

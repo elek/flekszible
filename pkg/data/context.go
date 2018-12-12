@@ -10,6 +10,7 @@ type RenderContext struct {
 	Conf          Configuration
 	Mode          string
 	ImageOverride string
+	Namespace     string
 	Resources     []Resource
 }
 

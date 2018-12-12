@@ -11,6 +11,7 @@ import (
 
 func init() {
 	var imageOverride string
+	var namespaceOverride string
 
 	var k8sCmd = &cobra.Command{
 		Use:   "k8s [sourceDir] [destDir]",
@@ -27,12 +28,14 @@ func init() {
 				OutputDir:     file,
 				Mode:          "k8s",
 				ImageOverride: imageOverride,
+				Namespace:     namespaceOverride,
 				InputDir:      []string{args[0],},
 			}
 			pkg.Run(&context)
 		},
 	}
 	k8sCmd.Flags().StringVarP(&imageOverride, "image", "i", "", "docker image name override")
+	k8sCmd.Flags().StringVarP(&namespaceOverride, "namespace", "n", "", "kubernetes namespace override")
 
 	rootCmd.AddCommand(k8sCmd)
 }

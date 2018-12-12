@@ -123,7 +123,7 @@ func printKey(output io.Writer, path data.Path, rawValue interface{}) {
 		value = strconv.Itoa(converted)
 	}
 	if strings.Contains(value, "\n") {
-		write(output, "|-\n")
+		write(output, " |-\n")
 		for _, line := range strings.Split(value, "\n") {
 			identedPrint(output, path.Length()+1, line+"\n")
 		}

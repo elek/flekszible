@@ -21,46 +21,41 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 	}
 	switch typedValue := processor.Value.(type) {
 	case yaml.MapSlice:
-		target := data.Get{Path: processor.Path}
+		target := data.GetAll{Path: processor.Path}
 		resource.Content.Accept(&target)
-		if !target.Found {
-			//panic("The base path for add operation has not been found: " + processor.Path.ToString())
-			return
-		}
-		switch typedTarget := target.ReturnValue.(type) {
-		case *data.MapNode:
-			node, err := data.ConvertToNode(typedValue, processor.Path)
-			if err != nil {
-				panic(err)
+		for _, match := range target.Result {
+			switch typedTarget := match.Value.(type) {
+			case *data.MapNode:
+				node, err := data.ConvertToNode(typedValue, match.Path)
+				if err != nil {
+					panic(err)
+				}
+				mapNode := node.(*data.MapNode)
+				for _, key := range mapNode.Keys() {
+					typedTarget.Put(key, mapNode.Get(key))
+				}
+			default:
+				panic(fmt.Errorf("Unsupported value adding %T to %T", match.Value, processor.Value))
 			}
-			mapNode := node.(*data.MapNode)
-			for _, key := range mapNode.Keys() {
-				typedTarget.Put(key, mapNode.Get(key))
-			}
-		default:
-			panic(fmt.Errorf("Unsupported value adding %T to %T", target.ReturnValue, processor.Value))
 		}
 
 	case []interface{}:
-		target := data.Get{Path: processor.Path}
+		target := data.GetAll{Path: processor.Path}
 		resource.Content.Accept(&target)
-		if !target.Found {
-			//error := fmt.Errorf("The base path for add operation has not been found: %s (in %s)", processor.Path.ToString(), resource.Filename)
-			//panic(error)
-			return
-		}
-		switch typedTarget := target.ReturnValue.(type) {
-		case *data.ListNode:
-			node, err := data.ConvertToNode(typedValue, processor.Path)
-			if err != nil {
-				panic(err)
+		for _, match := range target.Result {
+			switch typedTarget := match.Value.(type) {
+			case *data.ListNode:
+				node, err := data.ConvertToNode(typedValue, match.Path)
+				if err != nil {
+					panic(err)
+				}
+				nodeList := node.(*data.ListNode)
+				for _, childNode := range nodeList.Children {
+					typedTarget.Append(childNode)
+				}
+			default:
+				panic(fmt.Errorf("Unsupported value adding %T to %T %s", match.Value, processor.Value, resource.Filename))
 			}
-			nodeList := node.(*data.ListNode)
-			for _, childNode := range nodeList.Children {
-				typedTarget.Append(childNode)
-			}
-		default:
-			panic(fmt.Errorf("Unsupported value adding %T to %T %s", target.ReturnValue, processor.Value, resource.Filename))
 		}
 	default:
 		panic(fmt.Errorf("Unsupported value adding %T", processor.Value))

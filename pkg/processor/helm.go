@@ -77,13 +77,12 @@ func (p *HelmDecorator) BeforeResource(resource *data.Resource) {
 
 	content.Accept(&data.Apply{Path: data.NewPath("metadata", "name"), Function: prefixName})
 	content.Accept(&data.Apply{Path: data.NewPath("spec", "serviceName"), Function: prefixName})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "containers", "*", "env", "*", "value"), Function: prefixHostName})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "env", "*", "value"), Function: prefixHostName})
-	content.Accept(&data.Apply{Path: data.NewPath("data", "*"), Function: prefixHostName})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "containers", "*", "image"), Function: changeImage})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "image"), Function: changeImage})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "initContainers", "*", "envFrom", "*", "configMapRef", "name", ), Function: prefixName})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", "containers", "*", "envFrom", "*", "configMapRef", "name", ), Function: prefixName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "env", ".*", "value"), Function: prefixHostName})
+
+	content.Accept(&data.Apply{Path: data.NewPath("data", ".*"), Function: prefixHostName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "image"), Function: changeImage})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom", ".*", "configMapRef", "name", ), Function: prefixName})
+
 
 	labelsGetter := data.Get{Path: data.NewPath("metadata", "labels")}
 	content.Accept(&labelsGetter)

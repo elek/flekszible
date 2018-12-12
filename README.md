@@ -89,7 +89,7 @@ spec:
 As you can see the original k8s source is modified base on the transformation rules.
 
 
-## Source other dirs
+### Source other dirs
 
 Let's imagine that you would like to run the same nginx as in the previous section but you need 10 replicas for production and 2 for dev.
 
@@ -124,6 +124,42 @@ And you need a the transformation for `dev/transformations/replicas.yaml`
   replacement: 2
 ```
 
+
+### Set image or namespace
+
+Setting the namespace or an image are very typical task. Therefore they could be activated without creating separated transformations. You can use `--namespace` or `--image` cli arguments which are equivalent with the following transformation files:
+
+`transformations/image.yaml`:
+
+```yaml
+- type: ImageSet
+  image: elek/flokkr:devbuild
+```
+
+`transformations/ns.yaml`:
+
+```yaml
+- type: Namespace
+  namespace: ozone
+
+```
+
+### Deplloy dev build (the skaffold use case)
+
+Skaffold is a tool which could be used to deploy a specific dev build to the kubernetes cluster. While skaffold has many functionality (automatic redeploy, coud build) the basic functionality (local build, simple deploy) could be replaced with the following 4 lines:
+
+```bash
+export IMAGE=elek/ozone:$(git describe --tag)
+docker build -t $IMAGE .
+docker push $IMAGE
+flekszible k8s --image=$IMAGE --namespace=mynamespace k8s/resources/ - | kubectl apply -f 
+```
+
+Notes:
+
+ * `flekszible.yaml` configuration file is optional
+ * You can generate the k8s resources files to the standard output instead of directory (all the additional log lines are suppressed)
+ * image and namespace could be changed without any config file
 
 ## Definitions
 

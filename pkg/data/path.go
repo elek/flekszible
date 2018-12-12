@@ -41,7 +41,7 @@ func (this Path) Match(that Path) bool {
 		return false;
 	}
 	for i := 0; i < len(this.segments); i++ {
-		r, err := regexp.Compile(this.segments[i])
+		r, err := regexp.Compile("^" + this.segments[i] + "$")
 		if err != nil {
 			panic(fmt.Errorf("Path segment is not a regexp %s in %s", this.segments[i], this.segments))
 		}

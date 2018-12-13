@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
-  labels: {}
-  annotations: {}
 spec:
   selector:
     matchLabels:
@@ -13,14 +11,9 @@ spec:
     metadata:
       labels:
         app: nginx
-      annotations: {}
     spec:
       containers:
         - name: nginx
           image: nginx:1.7.9
           ports:
             - containerPort: 80
-          volumeMounts: []
-          env: []
-          envFrom: []
-      volumes: []

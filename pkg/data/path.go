@@ -52,6 +52,22 @@ func (this Path) Match(that Path) bool {
 	return true
 }
 
+//match if that is a shorter path, but all the elements are matched
+func (this Path) MatchLimited(that Path) (bool, string) {
+	if len(this.segments) <= len(that.segments) {
+		return false, "";
+	}
+	for i := 0; i < len(that.segments); i++ {
+		r, err := regexp.Compile("^" + this.segments[i] + "$")
+		if err != nil {
+			panic(fmt.Errorf("Path segment is not a regexp %s in %s", this.segments[i], this.segments))
+		}
+		if !r.Match([]byte(that.segments[i])) {
+			return false, "";
+		}
+	}
+	return true, this.Segment(that.Length())
+}
 func (this Path) MatchSegments(segments ...string) bool {
 	return this.Match(NewPath(segments...))
 }

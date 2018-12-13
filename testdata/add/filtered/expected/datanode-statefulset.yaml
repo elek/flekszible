@@ -5,7 +5,6 @@ metadata:
   annotations:
     KEY1: "VALUE1"
     KEY2: "VALUE2"
-  labels: {}
 spec:
   serviceName: datanode
   replicas: 3
@@ -14,7 +13,6 @@ spec:
       labels:
         app: ozone
         component: datanode
-      annotations: {}
     spec:
       containers:
         - name: datanode
@@ -22,7 +20,3 @@ spec:
           args:
             - hdfs
             - datanode
-          volumeMounts: []
-          env: []
-          envFrom: []
-      volumes: []

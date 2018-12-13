@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: datanode
-  labels: {}
-  annotations: {}
 spec:
   selector:
     matchLabels:
@@ -24,11 +22,9 @@ spec:
           args:
             - ozone
             - datanode
-          volumeMounts: []
           env:
             - name: "PROMETHEUSJMX_ENABLED"
               value: "true"
             - name: "PROMETHEUSJMX_AGENTOPTS"
               value: "port=28942"
-          envFrom: []
-      volumes: []
+

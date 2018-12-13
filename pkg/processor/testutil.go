@@ -38,7 +38,6 @@ func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expected
 	LoadDefinitions(&context)
 
 	repository := CreateProcessorRepository()
-	repository.Append(&Initializer{})
 
 	for _, directory := range context.InputDir {
 		repository.ParseProcessors(directory)

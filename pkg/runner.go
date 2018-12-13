@@ -26,7 +26,6 @@ func filter(repository *processor.ProcessorRepository, mode string) processor.Pr
 
 func initProcessors(context *data.RenderContext) processor.ProcessorRepository {
 	repository := processor.CreateProcessorRepository()
-	repository.Append(&processor.Initializer{})
 
 	if len(context.ImageOverride) > 0 {
 		repository.Append(&processor.ImageSet{

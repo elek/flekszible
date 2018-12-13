@@ -21,7 +21,7 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 	}
 	switch typedValue := processor.Value.(type) {
 	case yaml.MapSlice:
-		target := data.GetAll{Path: processor.Path}
+		target := data.SmartGetAll{Path: processor.Path}
 		resource.Content.Accept(&target)
 		for _, match := range target.Result {
 			switch typedTarget := match.Value.(type) {
@@ -40,7 +40,7 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 		}
 
 	case []interface{}:
-		target := data.GetAll{Path: processor.Path}
+		target := data.SmartGetAll{Path: processor.Path}
 		resource.Content.Accept(&target)
 		for _, match := range target.Result {
 			switch typedTarget := match.Value.(type) {

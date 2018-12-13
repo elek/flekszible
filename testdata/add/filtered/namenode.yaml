@@ -2,7 +2,6 @@ apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   name: namenode
-  annotations: {}
 spec:
   serviceName: namenode
   replicas: 3

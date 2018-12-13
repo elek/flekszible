@@ -2,8 +2,6 @@ apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   name: datanode
-  annotations: {}
-  labels: {}
 spec:
   serviceName: datanode
   replicas: 3
@@ -12,7 +10,6 @@ spec:
       labels:
         app: ozone
         component: datanode
-      annotations: {}
     spec:
       containers:
         - name: datanode
@@ -25,6 +22,4 @@ spec:
               value: "VALUE1"
             - name: "KEY2"
               value: "VALUE2"
-          volumeMounts: []
-          envFrom: []
-      volumes: []
+

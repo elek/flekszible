@@ -19,6 +19,19 @@ func TestGet(t *testing.T) {
 
 }
 
+func TestSmartGet(t *testing.T) {
+	get := SmartGetAll{Path: NewPath("metadata", "annotations")}
+	root := NewMapNode(NewPath())
+	root.PutValue("test", "value")
+
+	root.Accept(&get)
+
+	assert.Equal(t, 1, len(get.Result))
+	expected := NewMapNode(NewPath("metadata", "annotations"))
+	assert.Equal(t, &expected, get.Result[0].Value)
+
+}
+
 func ExecuteAndCompare(t *testing.T, name string, visitor Visitor) {
 	node, err := ReadFile("../../testdata/mapstruct/" + name + ".yaml")
 	assert.Nil(t, err)

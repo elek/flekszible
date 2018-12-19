@@ -14,14 +14,14 @@ import (
 )
 
 func TestFromDir(t *testing.T, dir string) data.RenderContext {
-	outputDir := path.Join("../../build", dir)
+	outputDir := path.Join("../../target", dir)
 	inputDir := path.Join("../../testdata", dir)
 	expectedDir := path.Join(inputDir, "expected")
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
 }
 
 func TestExample(t *testing.T, name string) data.RenderContext {
-	outputDir := path.Join("../../build/examples", name)
+	outputDir := path.Join("../../target/examples", name)
 	inputDir := path.Join("../../examples", name)
 	expectedDir := path.Join("../../testdata/examplesresults", name)
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)

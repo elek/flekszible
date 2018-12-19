@@ -7,9 +7,15 @@ import (
 )
 
 type Configuration struct {
-	Import []string
+	Import []ImportConfiguration
 }
 
+type ImportConfiguration struct {
+	Path            string
+	Transformations []yaml.MapSlice
+}
+
+//read configuration from flekszible.yaml
 func ReadConfiguration(path string) (Configuration, error) {
 
 	conf := Configuration{}

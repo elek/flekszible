@@ -21,7 +21,7 @@ func (ctx *RenderContext) ParseDir(dir string) {
 		panic(err)
 	}
 	for _, importDir := range conf.Import {
-		absDir := path.Join(dir, importDir)
+		absDir := path.Join(dir, importDir.Path)
 		ctx.InputDir = append([]string{absDir}, ctx.InputDir...)
 		ctx.ParseDir(absDir)
 	}
@@ -29,7 +29,7 @@ func (ctx *RenderContext) ParseDir(dir string) {
 
 func (ctx *RenderContext) ReadConfigs() {
 	ctx.Conf = Configuration{
-		Import: make([]string, 0),
+		Import: make([]ImportConfiguration, 0),
 	}
 
 	for _, dir := range ctx.InputDir {

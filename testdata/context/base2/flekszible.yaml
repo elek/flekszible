@@ -1,2 +1,2 @@
 import:
-  - ../base1
+    - path: ../base1

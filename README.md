@@ -110,7 +110,7 @@ You can include all the resource files and transformations from common with usin
 
 ```yaml
 import:
-  - ../../common
+  - path: ../../common
 ```
 
 And you need a the transformation for `dev/transformations/replicas.yaml`

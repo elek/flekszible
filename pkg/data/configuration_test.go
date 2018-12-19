@@ -10,5 +10,7 @@ func TestReadConfiguration(t *testing.T) {
 
 	assert.Nil(t, e)
 
-	assert.EqualValues(t, []string{"../dir1", "../dir2"}, configuration.Import)
+	assert.Equal(t, 2, len(configuration.Import))
+	assert.EqualValues(t, ImportConfiguration{Path: "../dir1"}, configuration.Import[0])
+	assert.EqualValues(t, ImportConfiguration{Path: "../dir2"}, configuration.Import[1])
 }

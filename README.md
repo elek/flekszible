@@ -132,7 +132,7 @@ Setting the namespace or an image are very typical task. Therefore they could be
 `transformations/image.yaml`:
 
 ```yaml
-- type: ImageSet
+- type: Image
   image: elek/flokkr:devbuild
 ```
 
@@ -293,7 +293,7 @@ Extends existing k8s resources with additional elements.
 | Array                                             | Array               | Yes
 
 
-#### ImageSet
+#### Image
 
 Replaces the docker image definition eveywhere
 

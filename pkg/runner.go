@@ -28,7 +28,7 @@ func initProcessors(context *data.RenderContext) processor.ProcessorRepository {
 	repository := processor.CreateProcessorRepository()
 
 	if len(context.ImageOverride) > 0 {
-		repository.Append(&processor.ImageSet{
+		repository.Append(&processor.Image{
 			Image: context.ImageOverride,
 		})
 	}

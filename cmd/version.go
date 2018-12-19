@@ -2,9 +2,12 @@ package cmd
 
 import (
         "fmt"
-        "github.com/elek/flekszible/version"
         "github.com/spf13/cobra"
 )
+
+var version string
+var commit string
+var date string
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
@@ -12,10 +15,9 @@ var versionCmd = &cobra.Command{
         Short: "Print the version number of flekszible",
         Long:  `All software has versions. This is flekszible`,
         Run: func(cmd *cobra.Command, args []string) {
-                fmt.Println("Build Date:", version.BuildDate)
-                fmt.Println("Git Commit:", version.GitCommit)
-                fmt.Println("Go Version:", version.GoVersion)
-                fmt.Println("OS / Arch:", version.OsArch)
+                fmt.Println("Version:", version)
+                fmt.Println("Build Date:", date)
+                fmt.Println("Git Commit:", commit)
         },
 }
 

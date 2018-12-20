@@ -2,6 +2,7 @@ package data
 
 import (
 	"path"
+	"path/filepath"
 )
 
 type RenderContext struct {
@@ -14,6 +15,7 @@ type RenderContext struct {
 	Resources     []Resource
 }
 
+//read config file and follow the import path
 func (ctx *RenderContext) ParseDir(dir string) {
 	configFile := path.Join(dir, "flekszible.yaml")
 	conf, err := ReadConfiguration(configFile)
@@ -21,9 +23,14 @@ func (ctx *RenderContext) ParseDir(dir string) {
 		panic(err)
 	}
 	for _, importDir := range conf.Import {
-		absDir := path.Join(dir, importDir.Path)
-		ctx.InputDir = append([]string{absDir}, ctx.InputDir...)
-		ctx.ParseDir(absDir)
+		var importedDir string
+		if !filepath.IsAbs(importDir.Path) {
+			importedDir = path.Join(dir, importDir.Path)
+		} else {
+			importedDir = importDir.Path
+		}
+		ctx.InputDir = append([]string{importedDir}, ctx.InputDir...)
+		ctx.ParseDir(importedDir)
 	}
 }
 

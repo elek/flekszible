@@ -295,7 +295,7 @@ Extends existing k8s resources with additional elements.
 
 #### Image
 
-Replaces the docker image definition eveywhere
+Replaces the docker image definition everywhere
 
 | Name    | Type     | Value 
 |---------|----------|-------
@@ -303,6 +303,41 @@ Replaces the docker image definition eveywhere
 
 
 Note: This transformations could also added with the `--image` CLI argument.
+
+#### Namespace
+
+Similar to the image namespace also can be changed with simple transformation:
+
+
+| Name    | Type     | Value 
+|---------|----------|-------
+| namespace   | string   | Name of the used kubernetes namespace.
+
+Note: This transformations could also added with the `--namespace` CLI argument.
+
+Example (`transformations/set.yaml`):
+
+```yaml
+- type: Namespace
+  namespace: myns
+```
+
+#### Prefix
+
+Add a specific prefix for all of the names.
+
+
+| Name     | Type     | Value 
+|----------|----------|-------
+| prefix   | string   | Prefix which will be added to all the names.
+
+Example (`transformations/set.yaml`):
+
+```yaml
+- type: Namespace
+  namespace: myns
+```
+
 
 #### PublishStatefulSet
 

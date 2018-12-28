@@ -1,11 +1,10 @@
 package processor
 
 import (
-	"github.com/elek/flekszible/pkg/data"
 	"github.com/sirupsen/logrus"
 )
 
-func Generate(processorRepository ProcessorRepository, ctx *data.RenderContext) {
+func Generate(processorRepository ProcessorRepository, ctx *RenderContext) {
 	logrus.Info("Active processors:")
 	for _, proc := range processorRepository.Processors {
 		logrus.Infof("%T %s", proc, proc)

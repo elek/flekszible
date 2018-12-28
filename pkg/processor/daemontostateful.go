@@ -7,7 +7,7 @@ type DaemonToStatefulSet struct {
 	Trigger Trigger
 }
 
-func (processor *DaemonToStatefulSet) Before(ctx *data.RenderContext) {
+func (processor *DaemonToStatefulSet) Before(ctx *RenderContext) {
 
 	newResources := make([]data.Resource, 0)
 	for _, resource := range ctx.Resources {

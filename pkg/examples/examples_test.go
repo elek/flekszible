@@ -12,3 +12,7 @@ func TestGettingStarted(t *testing.T) {
 func TestGettingEnvs(t *testing.T) {
 	processor.TestExample(t, "envs/dev")
 }
+//
+//func TestInstantiate(t *testing.T) {
+//	processor.TestExample(t, "instantiate")
+//}

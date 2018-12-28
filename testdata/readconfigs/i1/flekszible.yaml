@@ -1,0 +1,5 @@
+import:
+  - path: ../x1
+    transformations:
+      - type: Prefix
+        prefix: www

@@ -16,7 +16,7 @@ type HelmDecorator struct {
 	HostNames []string
 }
 
-func (processor *HelmDecorator) After(ctx *data.RenderContext) {
+func (processor *HelmDecorator) After(ctx *RenderContext) {
 	data, err := yaml.Marshal(processor.Values)
 	if err != nil {
 		panic(err)
@@ -27,7 +27,7 @@ func (processor *HelmDecorator) After(ctx *data.RenderContext) {
 	}
 }
 
-func (p *HelmDecorator) Before(ctx *data.RenderContext) {
+func (p *HelmDecorator) Before(ctx *RenderContext) {
 	p.HostNames = make([]string, 0)
 	for _, resource := range ctx.Resources {
 		kind := resource.Kind()

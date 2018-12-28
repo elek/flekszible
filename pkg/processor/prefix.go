@@ -11,7 +11,7 @@ type Prefix struct {
 	HostNames []string
 }
 
-func (p *Prefix) Before(ctx *data.RenderContext) {
+func (p *Prefix) Before(ctx *RenderContext) {
 	p.HostNames = make([]string, 0)
 	for _, resource := range ctx.Resources {
 		kind := resource.Kind()

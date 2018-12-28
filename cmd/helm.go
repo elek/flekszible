@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/elek/flekszible/pkg"
-	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/processor"
 	"github.com/spf13/cobra"
 )
 
@@ -19,14 +19,10 @@ func init() {
 			if len(args) > 1 {
 				file = args[1]
 			}
-			context := data.RenderContext{
-				OutputDir:     file,
-				Mode:          "helm",
-				ImageOverride: imageOverride,
-				InputDir:      []string{args[0],},
-			}
+			context := processor.CreateRenderContext("helm", args[0], file)
+			context.ImageOverride = imageOverride
 
-			pkg.Run(&context)
+			pkg.Run(context)
 		},
 	}
 	helmCmd.Flags().StringVarP(&imageOverride, "image", "i", "", "docker image name override")

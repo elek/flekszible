@@ -10,7 +10,7 @@ type PublishStatefulSet struct {
 	Trigger Trigger
 }
 
-func (processor *PublishStatefulSet) Before(ctx *data.RenderContext) {
+func (processor *PublishStatefulSet) Before(ctx *RenderContext) {
 	newResources := make([]data.Resource, 0)
 	for _, resource := range ctx.Resources {
 		if processor.Trigger.active(&resource) && resource.Kind() == "Service" && hasNoneClusterIp(resource.Content) {

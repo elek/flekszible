@@ -13,32 +13,33 @@ import (
 	"testing"
 )
 
-func TestFromDir(t *testing.T, dir string) data.RenderContext {
+func TestFromDir(t *testing.T, dir string) RenderContext {
 	outputDir := path.Join("../../target", dir)
 	inputDir := path.Join("../../testdata", dir)
 	expectedDir := path.Join(inputDir, "expected")
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
 }
 
-func TestExample(t *testing.T, name string) data.RenderContext {
+func TestExample(t *testing.T, name string) RenderContext {
 	outputDir := path.Join("../../target/examples", name)
 	inputDir := path.Join("../../examples", name)
 	expectedDir := path.Join("../../testdata/examplesresults", name)
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
 }
 
-func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expectedDir string) data.RenderContext {
+func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expectedDir string) RenderContext {
 
-	context := data.RenderContext{
+	context := RenderContext{
 		OutputDir: outputDir,
 		Mode:      "k8s",
 		InputDir:  []string{inputDir},
 	}
-	context.ReadConfigs()
-	LoadDefinitions(&context)
+	_, err := context.ReadConfigs()
+	assert.Nil(t, err)
+	context.LoadDefinitions()
 
 	repository := CreateProcessorRepository()
-
+	//InitLocalTransformations(&context)
 	for _, directory := range context.InputDir {
 		repository.ParseProcessors(directory)
 	}
@@ -85,7 +86,7 @@ func readDir(t *testing.T, dirName string) map[string]*data.MapNode {
 	return dirContent
 }
 
-func ExecuteProcessorAndCompare(t *testing.T, dir string, prefix string) data.RenderContext {
+func ExecuteProcessorAndCompare(t *testing.T, dir string, prefix string) RenderContext {
 	testdir := path.Join("../../testdata", dir)
 	//given\
 	processors, err := ReadProcessorDefinitionFile(path.Join(testdir, prefix+"_config.yaml"))
@@ -95,7 +96,7 @@ func ExecuteProcessorAndCompare(t *testing.T, dir string, prefix string) data.Re
 	resources, err := data.LoadFrom(testdir, prefix+".yaml")
 	assert.Nil(t, err)
 
-	ctx := data.RenderContext{
+	ctx := RenderContext{
 		Resources: resources,
 	}
 	//when

@@ -60,6 +60,7 @@ func ReadProcessorDefinitionFile(filename string) ([]Processor, error) {
 	return ReadProcessorDefinition(data)
 }
 
+//read processor definitions from raw yaml file
 func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 	processors := make([]Processor, 0)
 	processorsConfigs := make([]yaml.MapSlice, 0)
@@ -87,10 +88,20 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 	}
 	return processors, nil
 }
-
-func ReadProcessorConfig(processor *Processor, configYamlContent string) {
-
-}
+//
+////
+//func InitLocalTransformations(context *RenderContext) error {
+//	for file, trafoDef := range context.LocalTransformations {
+//		processors, err := ReadProcessorDefinition(trafoDef)
+//		if err != nil {
+//			return err
+//		}
+//		for i := 0; i < len(processors); i++ {
+//			processors[i].OnlyForFiles(file)
+//		}
+//	}
+//	return nil
+//}
 
 func CreateProcessor(processorTypeName string) interface{} {
 	if factory, ok := ProcessorTypeRegistry.TypeMap[processorTypeName]; ok {

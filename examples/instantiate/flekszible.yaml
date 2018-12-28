@@ -1,0 +1,9 @@
+import:
+  - path: ./zookeeper
+    transformations:
+      - type: Prefix
+        prefix: zk1-
+  - path: ./zookeeper
+    transformations:
+      - type: Prefix
+        prefix: zk2-

@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"github.com/elek/flekszible/pkg/data"
 	"path"
 )
 
@@ -10,7 +9,7 @@ type HelmWriter struct {
 	OutputDir string
 }
 
-func (writer *HelmWriter) Before(ctx *data.RenderContext) {
+func (writer *HelmWriter) Before(ctx *RenderContext) {
 	writer.resourceOutputDir = path.Join(ctx.OutputDir, "templates")
 }
 

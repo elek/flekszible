@@ -92,11 +92,3 @@ func ReadResourcesFromDir(dir string) []Resource {
 	return resources
 }
 
-func (ctx *RenderContext)ReadResources() {
-	resources := make([]Resource, 0)
-	for _, inputDir := range ctx.InputDir {
-		resources = append(resources, ReadResourcesFromDir(inputDir)...)
-	}
-	ctx.Resources = resources
-
-}

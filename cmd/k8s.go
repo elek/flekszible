@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/elek/flekszible/pkg"
-	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/processor"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -24,14 +24,10 @@ func init() {
 			} else {
 				logrus.SetLevel(logrus.ErrorLevel)
 			}
-			context := data.RenderContext{
-				OutputDir:     file,
-				Mode:          "k8s",
-				ImageOverride: imageOverride,
-				Namespace:     namespaceOverride,
-				InputDir:      []string{args[0],},
-			}
-			pkg.Run(&context)
+			context := processor.CreateRenderContext("k8s", file, args[0])
+			context.ImageOverride = imageOverride
+			context.Namespace = namespaceOverride
+			pkg.Run(context)
 		},
 	}
 	k8sCmd.Flags().StringVarP(&imageOverride, "image", "i", "", "docker image name override")

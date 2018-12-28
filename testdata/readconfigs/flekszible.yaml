@@ -1,0 +1,6 @@
+import:
+  - path: ./i1
+    transformations:
+      - type: Prefix
+        prefix: xxx
+  - path: ./i2

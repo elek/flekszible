@@ -1,53 +1,44 @@
 package pkg
 
 import (
-	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/processor"
 )
 
-func Run(context *data.RenderContext) {
-	context.ReadConfigs()
-
-	processor.LoadDefinitions(context)
-	processors := initProcessors(context)
-	processors = filter(&processors, context.Mode)
+func Run(context *processor.RenderContext) {
+	transformations, err := context.ReadConfigs()
+	if err != nil {
+		panic(err)
+	}
+	context.LoadDefinitions()
+	processors := AddInternalTransformations(context, transformations)
 	processor.Generate(processors, context)
 }
 
-func filter(repository *processor.ProcessorRepository, mode string) processor.ProcessorRepository {
-	filtered := processor.ProcessorRepository{}
-	for _, p := range repository.Processors {
-			filtered.Append(p)
-
-	}
-
-	return filtered
-}
-
-func initProcessors(context *data.RenderContext) processor.ProcessorRepository {
-	repository := processor.CreateProcessorRepository()
-
+func AddInternalTransformations(context *processor.RenderContext,
+	preImportTransformations map[string][]byte) processor.ProcessorRepository {
 	if len(context.ImageOverride) > 0 {
-		repository.Append(&processor.Image{
+		context.ProcessorRepository.Append(&processor.Image{
 			Image: context.ImageOverride,
 		})
 	}
 	if len(context.Namespace) > 0 {
-		repository.Append(&processor.Namespace{
+		context.ProcessorRepository.Append(&processor.Namespace{
 			Namespace: context.Namespace,
 		})
 	}
+
+	//initialize all the transformations from the input dir structure
 	for _, directory := range context.InputDir {
-		repository.ParseProcessors(directory)
+		context.ProcessorRepository.ParseProcessors(directory)
 	}
 	if context.Mode == "helm" {
-		repository.Append(&processor.HelmDecorator{})
-		repository.Append(&processor.HelmWriter{
+		context.ProcessorRepository.Append(&processor.HelmDecorator{})
+		context.ProcessorRepository.Append(&processor.HelmWriter{
 			OutputDir: context.OutputDir,
 		})
 	}
 	if context.Mode == "k8s" {
-		repository.Append(&processor.K8sWriter{})
+		context.ProcessorRepository.Append(&processor.K8sWriter{})
 	}
-	return repository
+	return context.ProcessorRepository
 }

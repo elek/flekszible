@@ -124,7 +124,6 @@ And you need a the transformation for `dev/transformations/replicas.yaml`
   replacement: 2
 ```
 
-
 ### Set image or namespace
 
 Setting the namespace or an image are very typical task. Therefore they could be activated without creating separated transformations. You can use `--namespace` or `--image` cli arguments which are equivalent with the following transformation files:

@@ -26,7 +26,6 @@ type ResourceNode struct {
 	Children                 []*ResourceNode
 	PreImportTransformations []byte
 	ProcessorRepository      *ProcessorRepository
-
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
@@ -174,7 +173,6 @@ func (node *ResourceNode) LoadResourceConfig() error {
 	}
 	return nil
 }
-
 
 //load transformation definitions from ./definitions dir (all dir)
 func (ctx *RenderContext) LoadDefinitions() {

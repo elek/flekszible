@@ -20,7 +20,7 @@ type Resource struct {
 func (r *Resource) Name() string {
 	cleanUpPattern := regexp.MustCompile(`{.*}-?`)
 	rawName := r.Get(NewPath("metadata", "name"))
-	return cleanUpPattern.ReplaceAllString(rawName,"")
+	return cleanUpPattern.ReplaceAllString(rawName, "")
 }
 
 func (r *Resource) Kind() string {
@@ -49,10 +49,9 @@ func LoadFrom(dir string, file string) ([]Resource, error) {
 		return results, err
 	}
 
-
 	fragments := regexp.MustCompile("---\n").Split(string(content), -1)
 
-	for _, fragment := range (fragments) {
+	for _, fragment := range fragments {
 		fragmentContent := strings.TrimSpace(fragment)
 		if len(fragmentContent) > 0 {
 
@@ -70,8 +69,6 @@ func LoadFrom(dir string, file string) ([]Resource, error) {
 	return results, nil
 }
 
-
-
 func ReadResourcesFromDir(dir string) []Resource {
 	logrus.Infof("Reading resources from %s", dir)
 	resources := make([]Resource, 0)
@@ -79,7 +76,7 @@ func ReadResourcesFromDir(dir string) []Resource {
 	if err != nil {
 		panic(err)
 	}
-	for _, file := range (files) {
+	for _, file := range files {
 		if !file.IsDir() && file.Name() != "flekszible.yaml" && filepath.Ext(file.Name()) == ".yaml" {
 			resource, err := LoadFromFileInfo(dir, file)
 			if err != nil {
@@ -91,4 +88,3 @@ func ReadResourcesFromDir(dir string) []Resource {
 
 	return resources
 }
-

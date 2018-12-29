@@ -41,11 +41,9 @@ type ProcessorRepository struct {
 	Processors []Processor
 }
 
-
 func (repository *ProcessorRepository) Append(processor Processor) {
 	repository.Processors = append(repository.Processors, processor)
 }
-
 
 func (repository *ProcessorRepository) AppendAll(processors []Processor) {
 	repository.Processors = append(repository.Processors, processors...)
@@ -96,7 +94,7 @@ func CreateProcessor(processorTypeName string) interface{} {
 	} else {
 		logrus.Error("Unknown processor type: " + processorTypeName)
 		logrus.Info("Available processor types:")
-		for k, _ := range ProcessorTypeRegistry.TypeMap {
+		for k := range ProcessorTypeRegistry.TypeMap {
 			logrus.Info(k)
 		}
 

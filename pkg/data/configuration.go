@@ -28,7 +28,7 @@ func ReadConfiguration(path string) (Configuration, error) {
 		return conf, err
 	}
 
-	err = yaml.Unmarshal(bytes, &conf);
+	err = yaml.Unmarshal(bytes, &conf)
 	if err != nil {
 		return conf, err
 	}

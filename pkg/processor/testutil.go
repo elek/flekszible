@@ -45,14 +45,14 @@ func compareDir(t *testing.T, expected string, result string) {
 	res := readDir(t, result)
 
 	assert.Equal(t, keysFromMap(exp), keysFromMap(res))
-	for key, _ := range res {
+	for key := range res {
 		assert.Equal(t, exp[key], res[key], "File "+key+" is different")
 	}
 }
 
 func keysFromMap(nodes map[string]*data.MapNode) []string {
 	keys := make([]string, 0)
-	for key, _ := range nodes {
+	for key := range nodes {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)

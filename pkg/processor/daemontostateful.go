@@ -61,7 +61,6 @@ func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) {
 	}
 }
 
-
 func init() {
 	prototype := DaemonToStatefulSet{}
 	ProcessorTypeRegistry.Add(&prototype)

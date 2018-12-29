@@ -211,8 +211,6 @@ func (visitor *Apply) OnKey(node *KeyNode) {
 	}
 }
 
-
-
 type Get struct {
 	DefaultVisitor
 	Path        Path
@@ -346,8 +344,6 @@ func (visitor *SmartGetAll) BeforeMap(node *MapNode) {
 	}
 
 }
-
-
 
 type Set struct {
 	DefaultVisitor

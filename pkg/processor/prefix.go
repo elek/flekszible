@@ -51,7 +51,7 @@ func (p *Prefix) BeforeResource(resource *data.Resource) {
 
 	content.Accept(&data.Apply{Path: data.NewPath("data", ".*"), Function: prefixHostName})
 
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom", ".*", "configMapRef", "name", ), Function: prefixName})
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom", ".*", "configMapRef", "name"), Function: prefixName})
 
 	labelsGetter := data.Get{Path: data.NewPath("metadata", "labels")}
 	content.Accept(&labelsGetter)

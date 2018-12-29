@@ -52,7 +52,7 @@ func ConvertToNode(object interface{}, path Path) (Node, error) {
 
 	case []interface{}:
 		result := NewListNode(path)
-		for ix, value := range (object) {
+		for ix, value := range object {
 			pathSegment := strconv.Itoa(ix)
 			if valueMap, ok := value.(yaml.MapSlice); ok {
 				if name, ok := valueMap.Get("name"); ok {

@@ -6,14 +6,12 @@ import (
 	"github.com/elek/flekszible/pkg/yaml"
 )
 
-
 type Add struct {
 	DefaultProcessor
 	Path    data.Path
 	Trigger Trigger
 	Value   interface{}
 }
-
 
 func (processor *Add) BeforeResource(resource *data.Resource) {
 	if !processor.Trigger.active(resource) {
@@ -61,7 +59,6 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 		panic(fmt.Errorf("Unsupported value adding %T", processor.Value))
 	}
 }
-
 
 func init() {
 	prototype := Add{}

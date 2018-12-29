@@ -81,8 +81,7 @@ func (p *HelmDecorator) BeforeResource(resource *data.Resource) {
 
 	content.Accept(&data.Apply{Path: data.NewPath("data", ".*"), Function: prefixHostName})
 	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "image"), Function: changeImage})
-	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom", ".*", "configMapRef", "name", ), Function: prefixName})
-
+	content.Accept(&data.Apply{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom", ".*", "configMapRef", "name"), Function: prefixName})
 
 	labelsGetter := data.Get{Path: data.NewPath("metadata", "labels")}
 	content.Accept(&labelsGetter)
@@ -91,7 +90,6 @@ func (p *HelmDecorator) BeforeResource(resource *data.Resource) {
 	labelsGetter.ReturnValue.(*data.MapNode).PutValue("app.kubernetes.io/instance", "{{ .Release.Name }}")
 	labelsGetter.ReturnValue.(*data.MapNode).PutValue("app.kubernetes.io/managed-by", "{{ .Release.Service }}")
 }
-
 
 func init() {
 	prototype := HelmDecorator{}

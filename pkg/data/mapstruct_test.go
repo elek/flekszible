@@ -9,7 +9,6 @@ func TestApply(t *testing.T) {
 	ExecuteAndCompare(t, "apply", &Apply{Path: NewPath("metadata", "name"), Function: prefixer})
 }
 
-
 func TestGet(t *testing.T) {
 	get := Get{Path: NewPath("metadata", "name")}
 	node, err := ReadFile("../../testdata/mapstruct/get.yaml")

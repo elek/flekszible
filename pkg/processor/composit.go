@@ -47,7 +47,6 @@ func (c *Composit) AfterResource(resource *data.Resource) {
 	}
 }
 
-
 //pase definition yaml file and register definitions to the global registry.
 func parseDefintion(path string) error {
 	content, err := ioutil.ReadFile(path)
@@ -82,4 +81,3 @@ func parseDefintion(path string) error {
 		return errors.New(fmt.Sprintf("'type' key is missing from definition file %s. Please define a unique identifier with type.", path))
 	}
 }
-

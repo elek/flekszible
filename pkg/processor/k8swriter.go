@@ -106,7 +106,6 @@ func identedPrint(output io.Writer, ident int, s string) {
 	write(output, s)
 }
 
-
 func init() {
 	prototype := K8sWriter{}
 	ProcessorTypeRegistry.Add(&prototype)
@@ -141,7 +140,6 @@ func printKey(output io.Writer, path data.Path, rawValue interface{}) {
 		write(output, value)
 		write(output, "\n")
 	}
-
 
 }
 

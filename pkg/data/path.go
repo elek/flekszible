@@ -12,7 +12,7 @@ type Path struct {
 }
 
 func (path Path) ToString() string {
-	return strings.Join(path.segments,"/")
+	return strings.Join(path.segments, "/")
 }
 
 func (path *Path) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -27,7 +27,7 @@ func NewPath(segs ...string) Path {
 
 func (path Path) Extend(segment string) Path {
 	newSegments := make([]string, len(path.segments)+1)
-	if path.segments!=nil {
+	if path.segments != nil {
 		copy(newSegments, path.segments)
 	}
 	newSegments[len(newSegments)-1] = segment
@@ -38,7 +38,7 @@ func (path Path) Extend(segment string) Path {
 
 func (this Path) Match(that Path) bool {
 	if len(this.segments) != len(that.segments) {
-		return false;
+		return false
 	}
 	for i := 0; i < len(this.segments); i++ {
 		r, err := regexp.Compile("^" + this.segments[i] + "$")
@@ -55,7 +55,7 @@ func (this Path) Match(that Path) bool {
 //match if that is a shorter path, but all the elements are matched
 func (this Path) MatchLimited(that Path) (bool, string) {
 	if len(this.segments) <= len(that.segments) {
-		return false, "";
+		return false, ""
 	}
 	for i := 0; i < len(that.segments); i++ {
 		r, err := regexp.Compile("^" + this.segments[i] + "$")
@@ -63,7 +63,7 @@ func (this Path) MatchLimited(that Path) (bool, string) {
 			panic(fmt.Errorf("Path segment is not a regexp %s in %s", this.segments[i], this.segments))
 		}
 		if !r.Match([]byte(that.segments[i])) {
-			return false, "";
+			return false, ""
 		}
 	}
 	return true, this.Segment(that.Length())

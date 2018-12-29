@@ -9,6 +9,7 @@ import (
 )
 
 type Composit struct {
+	DefaultProcessor
 	Processors []Processor
 	File       string
 }
@@ -31,8 +32,8 @@ func (c *Composit) AfterList(node *data.ListNode)                               
 func (c *Composit) BeforeListItem(node *data.ListNode, item data.Node, index int) {}
 func (c *Composit) AfterListItem(node *data.ListNode, item data.Node, index int)  {}
 
-func (c *Composit) Before(ctx *RenderContext) {}
-func (c *Composit) After(ctx *RenderContext)  {}
+func (c *Composit) Before(ctx *RenderContext, resources []data.Resource) {}
+func (c *Composit) After(ctx *RenderContext, resources []data.Resource)  {}
 
 func (c *Composit) BeforeResource(resource *data.Resource) {
 	for _, p := range c.Processors {
@@ -47,7 +48,7 @@ func (c *Composit) AfterResource(resource *data.Resource) {
 }
 
 
-//pase definition yaml file
+//pase definition yaml file and register definitions to the global registry.
 func parseDefintion(path string) error {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -82,6 +83,3 @@ func parseDefintion(path string) error {
 	}
 }
 
-func (p *Composit) OnlyForFiles(file string) {
-	p.File = file
-}

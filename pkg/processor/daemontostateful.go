@@ -7,10 +7,10 @@ type DaemonToStatefulSet struct {
 	Trigger Trigger
 }
 
-func (processor *DaemonToStatefulSet) Before(ctx *RenderContext) {
+func (processor *DaemonToStatefulSet) Before(ctx *RenderContext, resources []data.Resource) {
 
 	newResources := make([]data.Resource, 0)
-	for _, resource := range ctx.Resources {
+	for _, resource := range resources {
 		if resource.Kind() == "DaemonSet" && processor.Trigger.active(&resource) {
 
 			serviceNode := createService(&resource)
@@ -21,7 +21,7 @@ func (processor *DaemonToStatefulSet) Before(ctx *RenderContext) {
 
 		}
 	}
-	ctx.Resources = append(ctx.Resources, newResources...)
+	ctx.AddResources(newResources...)
 }
 func createService(resource *data.Resource) *data.MapNode {
 	root := data.NewMapNode(data.NewPath())

@@ -24,7 +24,7 @@ func init() {
 			} else {
 				logrus.SetLevel(logrus.ErrorLevel)
 			}
-			context := processor.CreateRenderContext("k8s", file, args[0])
+			context := processor.CreateRenderContext("k8s", args[0], file)
 			context.ImageOverride = imageOverride
 			context.Namespace = namespaceOverride
 			pkg.Run(context)

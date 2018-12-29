@@ -20,7 +20,7 @@ type K8sWriter struct {
 	file              *os.File
 }
 
-func (writer *K8sWriter) Before(ctx *RenderContext) {
+func (writer *K8sWriter) Before(ctx *RenderContext, resources []data.Resource) {
 	writer.resourceOutputDir = ctx.OutputDir
 }
 func (writer *K8sWriter) createOutputPath(outputDir, name, kind string) string {

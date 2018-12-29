@@ -16,7 +16,7 @@ type HelmDecorator struct {
 	HostNames []string
 }
 
-func (processor *HelmDecorator) After(ctx *RenderContext) {
+func (processor *HelmDecorator) After(ctx *RenderContext, resources []data.Resource) {
 	data, err := yaml.Marshal(processor.Values)
 	if err != nil {
 		panic(err)
@@ -27,9 +27,9 @@ func (processor *HelmDecorator) After(ctx *RenderContext) {
 	}
 }
 
-func (p *HelmDecorator) Before(ctx *RenderContext) {
+func (p *HelmDecorator) Before(ctx *RenderContext, resources []data.Resource) {
 	p.HostNames = make([]string, 0)
-	for _, resource := range ctx.Resources {
+	for _, resource := range resources {
 		kind := resource.Kind()
 		if kind == "StatefulSet" {
 			name := resource.Name()

@@ -11,9 +11,9 @@ type Prefix struct {
 	HostNames []string
 }
 
-func (p *Prefix) Before(ctx *RenderContext) {
+func (p *Prefix) Before(ctx *RenderContext, resources []data.Resource) {
 	p.HostNames = make([]string, 0)
-	for _, resource := range ctx.Resources {
+	for _, resource := range resources {
 		kind := resource.Kind()
 		if kind == "StatefulSet" {
 			name := resource.Name()

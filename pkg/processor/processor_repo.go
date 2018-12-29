@@ -88,20 +88,6 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 	}
 	return processors, nil
 }
-//
-////
-//func InitLocalTransformations(context *RenderContext) error {
-//	for file, trafoDef := range context.LocalTransformations {
-//		processors, err := ReadProcessorDefinition(trafoDef)
-//		if err != nil {
-//			return err
-//		}
-//		for i := 0; i < len(processors); i++ {
-//			processors[i].OnlyForFiles(file)
-//		}
-//	}
-//	return nil
-//}
 
 func CreateProcessor(processorTypeName string) interface{} {
 	if factory, ok := ProcessorTypeRegistry.TypeMap[processorTypeName]; ok {
@@ -119,8 +105,8 @@ func CreateProcessor(processorTypeName string) interface{} {
 
 }
 
-func CreateProcessorRepository() ProcessorRepository {
-	return ProcessorRepository{
+func CreateProcessorRepository() *ProcessorRepository {
+	return &ProcessorRepository{
 		Processors: make([]Processor, 0),
 	}
 }

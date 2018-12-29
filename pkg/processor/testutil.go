@@ -13,38 +13,29 @@ import (
 	"testing"
 )
 
-func TestFromDir(t *testing.T, dir string) RenderContext {
+func TestFromDir(t *testing.T, dir string) *RenderContext {
 	outputDir := path.Join("../../target", dir)
 	inputDir := path.Join("../../testdata", dir)
 	expectedDir := path.Join(inputDir, "expected")
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
 }
 
-func TestExample(t *testing.T, name string) RenderContext {
+func TestExample(t *testing.T, name string) *RenderContext {
 	outputDir := path.Join("../../target/examples", name)
 	inputDir := path.Join("../../examples", name)
 	expectedDir := path.Join("../../testdata/examplesresults", name)
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
 }
 
-func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expectedDir string) RenderContext {
+func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expectedDir string) *RenderContext {
 
-	context := RenderContext{
-		OutputDir: outputDir,
-		Mode:      "k8s",
-		InputDir:  []string{inputDir},
-	}
-	_, err := context.ReadConfigs()
+	context := CreateRenderContext("k8s", inputDir, outputDir)
+
+	err := context.Init()
 	assert.Nil(t, err)
-	context.LoadDefinitions()
 
-	repository := CreateProcessorRepository()
-	//InitLocalTransformations(&context)
-	for _, directory := range context.InputDir {
-		repository.ParseProcessors(directory)
-	}
-	repository.Append(&K8sWriter{})
-	Generate(repository, &context)
+	context.AppendProcessor(&K8sWriter{})
+	context.Render()
 	compareDir(t, expectedDir, outputDir)
 	return context
 }
@@ -84,34 +75,6 @@ func readDir(t *testing.T, dirName string) map[string]*data.MapNode {
 		dirContent[f.Name()] = parsedFragment
 	}
 	return dirContent
-}
-
-func ExecuteProcessorAndCompare(t *testing.T, dir string, prefix string) RenderContext {
-	testdir := path.Join("../../testdata", dir)
-	//given\
-	processors, err := ReadProcessorDefinitionFile(path.Join(testdir, prefix+"_config.yaml"))
-	assert.Nil(t, err)
-
-	processor := processors[0]
-	resources, err := data.LoadFrom(testdir, prefix+".yaml")
-	assert.Nil(t, err)
-
-	ctx := RenderContext{
-		Resources: resources,
-	}
-	//when
-	processor.Before(&ctx)
-	processor.BeforeResource(&ctx.Resources[0])
-	ctx.Resources[0].Content.Accept(processor)
-
-	//then
-	expected, err := data.LoadFrom(testdir, prefix+"_expected.yaml")
-	assert.Nil(t, err)
-
-	assert.EqualValues(t, ToSimpleYaml(&expected[0]), ToSimpleYaml(&ctx.Resources[0]))
-
-	return ctx
-
 }
 
 func ToSimpleYaml(resource *data.Resource) interface{} {

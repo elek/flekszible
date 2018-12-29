@@ -3,6 +3,7 @@ package processor
 import (
 	"fmt"
 	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
@@ -37,7 +38,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 }
 
 func (context *RenderContext) LoadResourceTree() error {
-	return LoadResourceConfig(context.RootResource)
+	return context.RootResource.LoadResourceConfig()
 }
 
 //List all the resources from the resource tree.
@@ -74,19 +75,29 @@ func (context *RenderContext) Init() error {
 		return err
 	}
 	context.LoadDefinitions()
-	context.InitializeTransformations()
-	return nil
+	return context.InitializeTransformations()
 }
 
-func (context *RenderContext) InitializeTransformations() {
-	context.RootResource.InitializeTransformations()
+func (context *RenderContext) InitializeTransformations() error {
+	return context.RootResource.InitializeTransformations()
 }
 
-func (node *ResourceNode) InitializeTransformations() {
+func (node *ResourceNode) InitializeTransformations() error {
+	if node.PreImportTransformations != nil {
+		processors, err := ReadProcessorDefinition(node.PreImportTransformations)
+		if err != nil {
+			return err
+		}
+		node.ProcessorRepository.AppendAll(processors)
+	}
 	node.ProcessorRepository.ParseProcessors(node.Dir)
 	for _, child := range node.Children {
-		child.InitializeTransformations()
+		err := child.InitializeTransformations()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (context *RenderContext) AppendProcessor(processor Processor) {
@@ -120,11 +131,10 @@ func (ctx *RenderContext) Render() {
 	}
 	process := func(processor Processor, context *RenderContext, resources []data.Resource) {
 		for _, resource := range resources {
-			if processor.Valid(resource) {
-				processor.BeforeResource(&resource)
-				resource.Content.Accept(processor)
-				processor.AfterResource(&resource)
-			}
+			processor.BeforeResource(&resource)
+			resource.Content.Accept(processor)
+			processor.AfterResource(&resource)
+
 		}
 		processor.After(context, resources)
 	}
@@ -133,7 +143,8 @@ func (ctx *RenderContext) Render() {
 	ctx.RootResource.Execute(ctx, after)
 }
 
-func LoadResourceConfig(node *ResourceNode) error {
+//parse the directory structure and the flekszible configs from the dirs
+func (node *ResourceNode) LoadResourceConfig() error {
 	configFile := path.Join(node.Dir, "flekszible.yaml")
 	conf, err := data.ReadConfiguration(configFile)
 	if err != nil {
@@ -148,9 +159,16 @@ func LoadResourceConfig(node *ResourceNode) error {
 			importedDir = importDefinition.Path
 		}
 		childNode := CreateResourceNode(importedDir)
-		err := LoadResourceConfig(childNode)
+		err := childNode.LoadResourceConfig()
 		if err != nil {
 			return err
+		}
+		if len(importDefinition.Transformations) > 0 {
+			bytes, err := yaml.Marshal(importDefinition.Transformations)
+			if err != nil {
+				return err
+			}
+			childNode.PreImportTransformations = bytes
 		}
 		node.Children = append(node.Children, childNode)
 	}

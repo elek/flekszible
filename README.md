@@ -8,7 +8,7 @@ Features:
  2. Can generate final k8s resources
  3. Or can generate helm charts.
 
-## Recipes
+## Recipes (Features)
 
 ### Getting started
 
@@ -144,7 +144,7 @@ Setting the namespace or an image are very typical task. Therefore they could be
 
 ```
 
-### Deplloy dev build (the skaffold use case)
+### Deploy dev build (the skaffold use case)
 
 Skaffold is a tool which could be used to deploy a specific dev build to the kubernetes cluster. While skaffold has many functionality (automatic redeploy, coud build) the basic functionality (local build, simple deploy) could be replaced with the following 4 lines:
 
@@ -160,6 +160,47 @@ Notes:
  * `flekszible.yaml` configuration file is optional
  * You can generate the k8s resources files to the standard output instead of directory (all the additional log lines are suppressed)
  * image and namespace could be changed without any config file
+
+### Instantiate 
+
+During the import of an external resource set you can apply additinonal transformations just for the imported resources. 
+
+Example `flekszible.yaml`:
+
+```yaml
+import:
+  - path: ./zookeeper
+    transformations:
+      - type: Prefix
+        prefix: zk1
+```
+
+Here the resources from the zookeeper dir will be imported to the current kubernetes resource set with an additional prefix.
+
+With this method you can import the same resource more than once. For example if you need a separated zookeeper instance for Hadoop HDFS HA and an for HBase you can import it twice:
+
+```yaml
+import:
+  - path: ./zookeeper
+    transformations:
+      - type: Prefix
+        prefix: zk1
+  - path: ./zookeeper
+    transformations:
+      - type: Prefix
+        prefix: zk2
+```
+
+As a result the zookeeper instances will be imported twice with different prefixes:
+
+```bash
+ls -lah 
+Permissions Size User Date Modified Name
+.rw-r--r--   184 elek 29 Dec 12:15  zk1-zookeeper-service.yaml
+.rw-r--r--   749 elek 29 Dec 12:15  zk1-zookeeper-statefulset.yaml
+.rw-r--r--   184 elek 29 Dec 12:15  zk2-zookeeper-service.yaml
+.rw-r--r--   749 elek 29 Dec 12:15  zk2-zookeeper-statefulset.yaml
+```
 
 ## Definitions
 

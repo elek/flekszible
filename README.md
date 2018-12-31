@@ -57,8 +57,10 @@ Create an override file to the `./transformations/mylabels.yaml`
 And execute the generation:
 
 ```bash
-./flekszible k8s . ./out
+./flekszible generate . ./out
 ```
+
+__Note__: Before v0.4.0 you should use `flekszible k8s` instead of `flekszible generate`
 
 The result will be something like this:
 
@@ -152,11 +154,12 @@ Skaffold is a tool which could be used to deploy a specific dev build to the kub
 export IMAGE=elek/ozone:$(git describe --tag)
 docker build -t $IMAGE .
 docker push $IMAGE
-flekszible k8s --image=$IMAGE --namespace=mynamespace k8s/resources/ - | kubectl apply -f 
+flekszible generate --image=$IMAGE --namespace=mynamespace k8s/resources/ - | kubectl apply -f 
 ```
 
 Notes:
-
+ 
+ * Before v0.4.0 you should use `flekszible k8s` instead of `flekszible generate`
  * `flekszible.yaml` configuration file is optional
  * You can generate the k8s resources files to the standard output instead of directory (all the additional log lines are suppressed)
  * image and namespace could be changed without any config file

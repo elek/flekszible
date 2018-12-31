@@ -1,13 +1,19 @@
 # fle[ksz]ible
 
-Flekszible is a Kubernetes resource manager.
+Flekszible is a Kubernetes resource manager. It's composition based (like kustomize) instead of templates (like helm).
+
+Compared to kustomize or ksonnet:
+
+ * It's almost as powerful as them but it's more simple to use. The key challenge here is to find the balance between simplicity and usability.
 
 Features:
 
- 1. Based on k8s resource fragments (yaml) and mixin rules
- 2. Can generate final k8s resources
- 3. Or can generate helm charts.
-
+ 1. Zero-config: it can work without any external files
+ 2. Mixins: you can define additional transformations to change k8s resources
+ 3. Imports: You can compose resources from multiple sources
+ 4. Multi-tenancy: With imports you can manage multiple environments (dev,prod,...)
+ 5. Multi-instance: You can import the same template (eg. zookeeper resources) with different flavour. With this approach you can create two different zookeeper ring from a template to your cluster.
+ 
 ## Recipes (Features)
 
 ### Getting started
@@ -63,7 +69,6 @@ metadata:
   name: nginx-deployment
   labels:
     felkszible: generated
-  annotations: {}
 spec:
   selector:
     matchLabels:
@@ -73,23 +78,19 @@ spec:
     metadata:
       labels:
         app: nginx
-      annotations: {}
     spec:
       containers:
         - name: nginx
           image: nginx:1.7.9
           ports:
             - containerPort: 80
-          volumeMounts: []
-          env: []
-          envFrom: []
-      volumes: []
+
 ```
 
 As you can see the original k8s source is modified base on the transformation rules.
 
 
-### Source other dirs
+### Import/Source other dirs
 
 Let's imagine that you would like to run the same nginx as in the previous section but you need 10 replicas for production and 2 for dev.
 
@@ -97,14 +98,14 @@ You can do it with creating 3 directories:
 
 You need the following files:
 
- * common
-   * nginx.yaml (same as before but with replicas = 10) 
- * dev
-   * flekszible.yaml (include common)
-   * transformations
-     * replicas.yaml (override replicas with 2)
- * prod
-   * flekszible.yaml (include common)
+ * `common`
+   * `nginx.yaml` (same as before but with replicas = 10) 
+ * `dev`
+   * `flekszible.yaml` (include common)
+   * `transformations`
+     * `replicas.yaml` (override replicas with 2)
+ * `prod`
+   * `flekszible.yaml` (include common)
 
 You can include all the resource files and transformations from common with using the following `flekszible.yaml` in both the `dev` and `prod` folder:
 

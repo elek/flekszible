@@ -14,7 +14,7 @@ func init() {
 	var namespaceOverride string
 
 	var k8sCmd = &cobra.Command{
-		Use:   "k8s [sourceDir] [destDir]",
+		Use:   "generate [sourceDir] [destDir]",
 		Short: "Generate k8s resource files",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {

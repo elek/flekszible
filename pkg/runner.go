@@ -25,12 +25,6 @@ func AddInternalTransformations(context *processor.RenderContext) {
 		})
 	}
 
-	if context.Mode == "helm" {
-		context.RootResource.ProcessorRepository.Append(&processor.HelmDecorator{})
-		context.RootResource.ProcessorRepository.Append(&processor.HelmWriter{
-			OutputDir: context.OutputDir,
-		})
-	}
 	if context.Mode == "k8s" {
 		context.RootResource.ProcessorRepository.Append(&processor.K8sWriter{})
 	}

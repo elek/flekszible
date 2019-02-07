@@ -315,10 +315,11 @@ var mapChildren = []Path{
 
 var listChildren = []Path{
 	NewPath("spec", "template", "spec", "containers", ".*"),
+	NewPath("spec", "template", "spec", "initContainers", ".*"),
 	NewPath("spec", "template", "spec", "volumes"),
-	NewPath("spec", "template", "spec", "containers", ".*", "env"),
-	NewPath("spec", "template", "spec", "containers", ".*", "envFrom"),
-	NewPath("spec", "template", "spec", "containers", ".*", "volumeMounts"),
+	NewPath("spec", "template", "spec", ".*ontainers", ".*", "env"),
+	NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom"),
+	NewPath("spec", "template", "spec", ".*ontainers", ".*", "volumeMounts"),
 }
 
 func (visitor *SmartGetAll) BeforeMap(node *MapNode) {

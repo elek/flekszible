@@ -4,16 +4,16 @@ import (
 	"github.com/elek/flekszible/pkg/processor"
 )
 
-func Run(context *processor.RenderContext) {
+func Run(context *processor.RenderContext, minikube bool) {
 	err := context.Init()
 	if err != nil {
 		panic(err)
 	}
-	AddInternalTransformations(context)
+	AddInternalTransformations(context, minikube)
 	context.Render()
 }
 
-func AddInternalTransformations(context *processor.RenderContext) {
+func AddInternalTransformations(context *processor.RenderContext, minikube bool) {
 	if len(context.ImageOverride) > 0 {
 		context.RootResource.ProcessorRepository.Append(&processor.Image{
 			Image: context.ImageOverride,
@@ -24,7 +24,10 @@ func AddInternalTransformations(context *processor.RenderContext) {
 			Namespace: context.Namespace,
 		})
 	}
-
+	if (minikube) {
+		context.RootResource.ProcessorRepository.Append(&processor.DaemonToStatefulSet{})
+		context.RootResource.ProcessorRepository.Append(&processor.PublishStatefulSet{})
+	}
 	if context.Mode == "k8s" {
 		context.RootResource.ProcessorRepository.Append(&processor.K8sWriter{})
 	}

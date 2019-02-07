@@ -12,7 +12,7 @@ import (
 func init() {
 	var imageOverride string
 	var namespaceOverride string
-
+	var minikube bool;
 	var k8sCmd = &cobra.Command{
 		Use:   "generate [sourceDir] [destDir]",
 		Short: "Generate k8s resource files",
@@ -27,11 +27,11 @@ func init() {
 			context := processor.CreateRenderContext("k8s", args[0], file)
 			context.ImageOverride = imageOverride
 			context.Namespace = namespaceOverride
-			pkg.Run(context)
+			pkg.Run(context, minikube)
 		},
 	}
 	k8sCmd.Flags().StringVarP(&imageOverride, "image", "i", "", "docker image name override")
 	k8sCmd.Flags().StringVarP(&namespaceOverride, "namespace", "n", "", "kubernetes namespace override")
-
+	k8sCmd.Flags().BoolVarP(&minikube, "minikube", "m", false, "Enable minikube specific defaults (eg. daemonset to statefulset conversion)")
 	rootCmd.AddCommand(k8sCmd)
 }

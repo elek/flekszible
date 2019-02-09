@@ -1,0 +1,4 @@
+- type: ConfigHash
+  trigger:
+    metadata:
+      name: hdfs-config

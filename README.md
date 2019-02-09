@@ -382,6 +382,22 @@ Example (`transformations/set.yaml`):
   namespace: myns
 ```
 
+#### ConfigHash
+
+Add a kubernetes annotation with the hash of the used configmap. With 
+this approach you can force to re-create the k8s resources in case of config change. 
+In case of configmap change the annotation value will be different and the resource
+will be recreated.
+
+As of now it supports only one configmap per resource and only the top-level
+resource will be annotated (in case of statefulset this is the statefulset 
+not the pod).
+
+Example (`transformations/config.yaml`):
+
+```yaml
+- type: ConfigHash
+```
 
 #### PublishStatefulSet
 

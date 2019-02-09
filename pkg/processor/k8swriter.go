@@ -146,3 +146,12 @@ func printKey(output io.Writer, path data.Path, rawValue interface{}) {
 func write(w io.Writer, content string) (int, error) {
 	return w.Write([]byte(content))
 }
+
+func ToString(resource *data.Resource) string {
+	buffer := strings.Builder{}
+	writer := K8sWriter{
+		output: &buffer,
+	}
+	resource.Content.Accept(&writer)
+	return string(buffer.String())
+}

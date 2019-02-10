@@ -32,8 +32,15 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 				for _, key := range mapNode.Keys() {
 					typedTarget.Put(key, mapNode.Get(key))
 				}
+			case *data.ListNode:
+				node, err := data.ConvertToNode(typedValue, match.Path)
+				if err != nil {
+					panic(err)
+				}
+				typedTarget.Append(node)
+
 			default:
-				panic(fmt.Errorf("Unsupported value adding %T to %T", match.Value, processor.Value))
+				panic(fmt.Errorf("Unsupported value adding %T to %T", processor.Value, match.Value))
 			}
 		}
 
@@ -52,7 +59,7 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 					typedTarget.Append(childNode)
 				}
 			default:
-				panic(fmt.Errorf("Unsupported value adding %T to %T %s", match.Value, processor.Value, resource.Filename))
+				panic(fmt.Errorf("Unsupported value adding %T to %T %s", processor.Value, match.Value, resource.Filename))
 			}
 		}
 	default:

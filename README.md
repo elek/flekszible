@@ -335,6 +335,7 @@ Extends existing k8s resources with additional elements.
 |---------------------------------------------------|---------------------|------------
 | Map                                               | Map                 | Yes
 | Array                                             | Array               | Yes
+| Array                                             | Map                 | Yes
 
 
 #### Image

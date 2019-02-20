@@ -1,0 +1,4 @@
+import:
+  - path: common
+    transformations:
+      - type: flokkr.github.io/prometheus

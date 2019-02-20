@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: datanode
+spec:
+  selector:
+    matchLabels:
+      app: ozone
+      component: datanode
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: datanode
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "28942"
+    spec:
+      containers:
+        - name: datanode
+          image: elek/ozone
+          args:
+            - ozone
+            - datanode
+          env:
+            - name: "PROMETHEUSJMX_ENABLED"
+              value: "true"
+            - name: "PROMETHEUSJMX_AGENTOPTS"
+              value: "port=28942"
+

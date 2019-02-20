@@ -12,6 +12,7 @@ type Configuration struct {
 
 type ImportConfiguration struct {
 	Path            string
+	Destination     string
 	Transformations []yaml.MapSlice
 }
 

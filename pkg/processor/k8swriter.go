@@ -23,9 +23,10 @@ type K8sWriter struct {
 func (writer *K8sWriter) Before(ctx *RenderContext, resources []data.Resource) {
 	writer.resourceOutputDir = ctx.OutputDir
 }
-func (writer *K8sWriter) createOutputPath(outputDir, name, kind string) string {
+func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destination string) string {
 	fileName := name + "-" + strings.ToLower(kind) + ".yaml"
-	return path.Join(outputDir, fileName)
+	return path.Join(outputDir, destination, fileName)
+
 }
 
 func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
@@ -35,8 +36,12 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
 		writer.output = os.Stderr
 	} else {
 
-		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind())
-		os.MkdirAll(outputDir, os.ModePerm)
+		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination)
+		println(path.Dir(outputFile))
+		err := os.MkdirAll(path.Dir(outputFile), os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
 		output, err := os.Create(outputFile)
 		if err != nil {
 			panic(err)

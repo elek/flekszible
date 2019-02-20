@@ -12,9 +12,10 @@ import (
 )
 
 type Resource struct {
-	Path     string
-	Filename string
-	Content  *MapNode
+	Path        string
+	Filename    string
+	Content     *MapNode
+	Destination string
 }
 
 func (r *Resource) Name() string {
@@ -69,6 +70,7 @@ func LoadFrom(dir string, file string) ([]Resource, error) {
 	return results, nil
 }
 
+//read all the resources from a directory
 func ReadResourcesFromDir(dir string) []Resource {
 	logrus.Infof("Reading resources from %s", dir)
 	resources := make([]Resource, 0)

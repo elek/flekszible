@@ -1,0 +1,19 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: two
+  annotations: {}
+spec:
+  serviceName: two
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: test
+        comptwont: two
+    spec:
+      containers:
+      - name: two
+        image: elek/test
+        args: ["oztwo","two"]
+        env: []

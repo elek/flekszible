@@ -22,6 +22,7 @@ type RenderContext struct {
 
 type ResourceNode struct {
 	Dir                      string
+	Destination              string
 	Resources                []data.Resource
 	Children                 []*ResourceNode
 	PreImportTransformations []byte
@@ -32,7 +33,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	return &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
-		RootResource: CreateResourceNode(inputDir),
+		RootResource: CreateResourceNode(inputDir, ""),
 	}
 }
 
@@ -56,11 +57,12 @@ func (node *ResourceNode) AllResources() []data.Resource {
 	return result
 }
 
-func CreateResourceNode(dir string) *ResourceNode {
+func CreateResourceNode(dir string, destination string) *ResourceNode {
 	node := ResourceNode{
 		Dir:                 dir,
 		ProcessorRepository: CreateProcessorRepository(),
 		Children:            make([]*ResourceNode, 0),
+		Destination:         destination,
 	}
 	return &node
 }
@@ -150,6 +152,9 @@ func (node *ResourceNode) LoadResourceConfig() error {
 		return err
 	}
 	node.Resources = data.ReadResourcesFromDir(node.Dir)
+	for ix, _ := range node.Resources {
+		node.Resources[ix].Destination = node.Destination
+	}
 	for _, importDefinition := range conf.Import {
 		var importedDir string
 		if !filepath.IsAbs(importDefinition.Path) {
@@ -157,7 +162,7 @@ func (node *ResourceNode) LoadResourceConfig() error {
 		} else {
 			importedDir = importDefinition.Path
 		}
-		childNode := CreateResourceNode(importedDir)
+		childNode := CreateResourceNode(importedDir, importDefinition.Destination)
 		err := childNode.LoadResourceConfig()
 		if err != nil {
 			return err

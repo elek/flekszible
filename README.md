@@ -205,7 +205,7 @@ Permissions Size User Date Modified Name
 .rw-r--r--   749 elek 29 Dec 12:15  zk2-zookeeper-statefulset.yaml
 ```
 
-## Definitions
+## Reference
 
 ### Path
 
@@ -304,6 +304,42 @@ Example: `./transformations/label.yaml`
 ```
 
 All the yaml files from the `definitions` directory will be parsed as composit transformation type. You can define multiple transoformation and name it. It may be used form other transformation files.
+
+## Import
+
+You can import other directory structures with adding references to the `flekszible.yaml`
+
+For example
+
+```
+import:
+  - path: ../../hadoop
+```
+
+All the transformations + definitions + k8s resources will be added and applied. Note: the transformations from the imported directory will be applied only to the imported resources.
+
+The imported resources could be generated to a subdirectory:
+
+```
+import;
+  - path: ../../hadoop
+  - path: ../../prometheus
+    destination: monitoring
+```
+
+With this approach the prometheus related resources will be saved to the `monitoring` subdirectory of the destination path.
+
+Transforamtions also can be applied to the imported resources:
+
+```
+import:
+  - path: ../../hadoop
+    transformations:
+       - type: Image
+         image: elek/ozone
+```
+
+The hadoop resources are imported here and the image reference is changed during the import (only for the imported resources).
 
 ## Available transformation types
 

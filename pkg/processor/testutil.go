@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"sort"
 	"strings"
@@ -61,6 +62,11 @@ func keysFromMap(nodes map[string]*data.MapNode) []string {
 
 func readDir(t *testing.T, dirName string) map[string]*data.MapNode {
 	dirContent := make(map[string]*data.MapNode)
+	readOneDir(t, dirName, &dirContent)
+	return dirContent
+}
+
+func readOneDir(t *testing.T, dirName string, dirContent *map[string]*data.MapNode) {
 	files, err := ioutil.ReadDir(dirName)
 	if err != nil {
 		log.Fatal(err)
@@ -68,13 +74,16 @@ func readDir(t *testing.T, dirName string) map[string]*data.MapNode {
 
 	for _, f := range files {
 		filename := path.Join(dirName, f.Name())
-		fileContent, err := ioutil.ReadFile(filename)
-		assert.Nil(t, err)
-		parsedFragment, err := data.ReadString(fileContent)
-		assert.Nil(t, err)
-		dirContent[f.Name()] = parsedFragment
+		if info, err := os.Stat(filename); err == nil && !info.IsDir() {
+			fileContent, err := ioutil.ReadFile(filename)
+			assert.Nil(t, err)
+			parsedFragment, err := data.ReadString(fileContent)
+			assert.Nil(t, err)
+			(*dirContent)[f.Name()] = parsedFragment
+		} else {
+			readOneDir(t, filename, dirContent)
+		}
 	}
-	return dirContent
 }
 
 func ToSimpleYaml(resource *data.Resource) interface{} {

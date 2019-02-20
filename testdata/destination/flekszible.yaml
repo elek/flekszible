@@ -1,0 +1,4 @@
+import:
+  - path: dir1
+  - path: dir2
+    destination: sub

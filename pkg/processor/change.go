@@ -7,17 +7,23 @@ import (
 
 type Change struct {
 	DefaultProcessor
+	Trigger     Trigger
+	Path        data.Path
 	Pattern     string
 	Replacement string
 }
 
-func (change *Change) ProcessKey(path data.Path, value interface{}) interface{} {
-	re, err := regexp.Compile(change.Pattern)
-	if err != nil {
-		panic(err)
+func (processor *Change) BeforeResource(resource *data.Resource) {
+	var re = regexp.MustCompile(processor.Pattern)
+	if !processor.Trigger.active(resource) {
+		return
 	}
-	return re.ReplaceAllString(value.(string), change.Replacement)
-
+	getter := data.SmartGetAll{Path: processor.Path}
+	resource.Content.Accept(&getter)
+	for _, result := range getter.Result {
+		key := result.Value.(*data.KeyNode)
+		key.Value = re.ReplaceAllString(key.Value.(string), processor.Replacement)
+	}
 }
 
 func init() {

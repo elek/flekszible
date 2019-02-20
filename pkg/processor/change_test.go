@@ -4,10 +4,6 @@ import (
 	"testing"
 )
 
-func TestChangeKey(t *testing.T) {
-	//ExecuteProcessorAndCompare(t, "change", "key")
-}
-
-func TestChangeEnv(t *testing.T) {
-	//ExecuteProcessorAndCompare(t, "change", "env")
+func TestChange(t *testing.T) {
+	TestFromDir(t, "change")
 }

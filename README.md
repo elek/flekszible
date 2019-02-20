@@ -403,6 +403,29 @@ Example (`transformations/set.yaml`):
   namespace: myns
 ```
 
+#### Change
+
+Change is a simple replacement like `sed`. You can apply a regular expression based replacement to a specific _string_ value:
+
+Example: 
+
+```
+- type: Change
+  trigger:
+    metadata:
+      name: namenode
+  path:
+  - spec
+  - serviceName
+  pattern: (.*)
+  replacement: prefix-$1
+```
+
+| Name     | Type     | Value 
+|----------|----------|-------
+| pattern  | string   | Regular expression to replace a string value (see: https://github.com/google/re2/wiki/Syntax)
+| replacement | string   | Replacement value.
+
 #### Prefix
 
 Add a specific prefix for all of the names.

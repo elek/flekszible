@@ -1,0 +1,6 @@
+- type: Change
+  path:
+    - data
+    - prometheus.yaml
+  pattern: default
+  replacement: ns

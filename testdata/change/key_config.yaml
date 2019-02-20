@@ -1,7 +1,0 @@
-- type: Change
-  path:
-  - spec
-  - serviceName
-  value:
-    pattern: (.*)
-    replacement: prefix-$1

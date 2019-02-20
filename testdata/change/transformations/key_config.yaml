@@ -1,0 +1,9 @@
+- type: Change
+  trigger:
+    metadata:
+      name: namenode
+  path:
+  - spec
+  - serviceName
+  pattern: (.*)
+  replacement: prefix-$1

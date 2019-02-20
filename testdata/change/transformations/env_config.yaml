@@ -8,6 +8,5 @@
   - env
   - KEY
   - value
-  value:
-    pattern: (.*)
-    replacement: prefix-$1
+  pattern: (.*)
+  replacement: prefix-$1

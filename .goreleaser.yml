@@ -18,3 +18,9 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+brew:
+ github: 
+   owner: elek
+   name: homebrew-brew
+ description: "Composition based kubernetes resource file manager"
+

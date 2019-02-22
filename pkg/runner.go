@@ -1,8 +1,9 @@
 package pkg
 
 import (
+	"fmt"
+	"github.com/apcera/termtables"
 	"github.com/elek/flekszible/pkg/processor"
-	"github.com/sirupsen/logrus"
 )
 
 func ListResources(context *processor.RenderContext) {
@@ -10,12 +11,19 @@ func ListResources(context *processor.RenderContext) {
 	if err != nil {
 		panic(err)
 	}
-	listResources(context.RootResource)
+	table := termtables.CreateTable()
+	table.AddHeaders("name", "kind")
+	listResources(context.RootResource, table)
+	fmt.Println("Detected resources:")
+	fmt.Println(table.Render())
 }
 
-func listResources(node *processor.ResourceNode) {
+func listResources(node *processor.ResourceNode, table *termtables.Table) {
 	for _, resource := range node.Resources {
-		logrus.Infof(resource.Name() + " (" + resource.Kind() + ")")
+		table.AddRow(resource.Name(), resource.Kind())
+	}
+	for _, child := range node.Children {
+		listResources(child, table)
 	}
 }
 

@@ -1,6 +1,7 @@
 module github.com/elek/flekszible
 
 require (
+	github.com/apcera/termtables v0.0.0-20170405184538-bcbc5dc54055
 	github.com/hashicorp/go-getter v1.1.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect

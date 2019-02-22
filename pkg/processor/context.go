@@ -159,7 +159,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		node.Resources[ix].Destination = node.Destination
 	}
 	for _, importDefinition := range conf.Import {
-		importedDir, err := locate(importDefinition.Path, node.Source, sourceCache)
+		importedDir, err := locate(node.Dir, importDefinition.Path, node.Source, sourceCache)
 		if err != nil {
 			return err
 		}
@@ -206,15 +206,16 @@ func (node *ResourceNode) LoadDefinitions() {
 
 }
 
-func locate(dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (string, error) {
+func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (string, error) {
 	if os.Getenv("FLEKSZIBLE_PATH") != "" {
 		fromEnv := path.Join(os.Getenv("FLEKSZIBLE_PATH"), dir)
 		if _, err := os.Stat(fromEnv); !os.IsNotExist(err) {
 			return fromEnv, nil
 		}
 	}
-	if _, err := os.Stat(dir); !os.IsNotExist(err) {
-		return dir, nil
+	current := path.Join(basedir, dir)
+	if _, err := os.Stat(current); !os.IsNotExist(err) {
+		return current, nil
 	}
 	for _, source := range sources {
 		err := cacheManager.EnsureDownloaded(source)

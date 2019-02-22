@@ -75,7 +75,6 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 			if err != nil {
 				panic(err)
 			}
-			println(string(processorConfigYaml))
 			err = yaml.Unmarshal(processorConfigYaml, proc)
 			if err != nil {
 				panic(err)

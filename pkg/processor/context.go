@@ -2,7 +2,6 @@ package processor
 
 import (
 	"errors"
-	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
@@ -107,8 +106,6 @@ func (context *RenderContext) AppendProcessor(processor Processor) {
 	root := context.RootResource
 	repo := root.ProcessorRepository
 	repo.Append(processor)
-	fmt.Println(repo)
-	fmt.Println(root)
 }
 
 type execute func(transformation Processor, context *RenderContext, resources []data.Resource)
@@ -206,6 +203,7 @@ func (node *ResourceNode) LoadDefinitions() {
 
 }
 
+//try to find a specific path in possible sources
 func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (string, error) {
 	if os.Getenv("FLEKSZIBLE_PATH") != "" {
 		fromEnv := path.Join(os.Getenv("FLEKSZIBLE_PATH"), dir)

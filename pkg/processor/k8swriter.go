@@ -37,7 +37,6 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
 	} else {
 
 		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination)
-		println(path.Dir(outputFile))
 		err := os.MkdirAll(path.Dir(outputFile), os.ModePerm)
 		if err != nil {
 			panic(err)

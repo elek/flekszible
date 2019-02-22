@@ -30,6 +30,7 @@ type ResourceNode struct {
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
+	logrus.Infof("Input dir: %s, output dir: %s", inputDir, outputDir)
 	return &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,

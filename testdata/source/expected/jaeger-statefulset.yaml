@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jaeger
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+      component: jaeger
+  replicas: 1
+  serviceName: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        component: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: jaegertracing/all-in-one:latest
+          ports:
+            - containerPort: 16686
+              name: web
+          env:
+            - name: "COLLECTOR_ZIPKIN_HTTP_PORT"
+              value: "9411"

@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"errors"
 	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
@@ -8,7 +9,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
 )
 
 type RenderContext struct {
@@ -26,6 +26,7 @@ type ResourceNode struct {
 	Resources                []data.Resource
 	Children                 []*ResourceNode
 	PreImportTransformations []byte
+	Source                   []data.Source
 	ProcessorRepository      *ProcessorRepository
 }
 
@@ -38,7 +39,8 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 }
 
 func (context *RenderContext) LoadResourceTree() error {
-	return context.RootResource.LoadResourceConfig()
+	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
+	return context.RootResource.LoadResourceConfig(&cacheManager)
 }
 
 //List all the resources from the resource tree.
@@ -145,25 +147,24 @@ func (ctx *RenderContext) Render() {
 }
 
 //parse the directory structure and the flekszible configs from the dirs
-func (node *ResourceNode) LoadResourceConfig() error {
+func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
 	configFile := path.Join(node.Dir, "flekszible.yaml")
 	conf, err := data.ReadConfiguration(configFile)
 	if err != nil {
 		return err
 	}
 	node.Resources = data.ReadResourcesFromDir(node.Dir)
+	node.Source = conf.Source
 	for ix, _ := range node.Resources {
 		node.Resources[ix].Destination = node.Destination
 	}
 	for _, importDefinition := range conf.Import {
-		var importedDir string
-		if !filepath.IsAbs(importDefinition.Path) {
-			importedDir = path.Join(node.Dir, importDefinition.Path)
-		} else {
-			importedDir = importDefinition.Path
+		importedDir, err := locate(importDefinition.Path, node.Source, sourceCache)
+		if err != nil {
+			return err
 		}
 		childNode := CreateResourceNode(importedDir, importDefinition.Destination)
-		err := childNode.LoadResourceConfig()
+		err = childNode.LoadResourceConfig(sourceCache)
 		if err != nil {
 			return err
 		}
@@ -203,4 +204,27 @@ func (node *ResourceNode) LoadDefinitions() {
 		child.LoadDefinitions()
 	}
 
+}
+
+func locate(dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (string, error) {
+	if os.Getenv("FLEKSZIBLE_PATH") != "" {
+		fromEnv := path.Join(os.Getenv("FLEKSZIBLE_PATH"), dir)
+		if _, err := os.Stat(fromEnv); !os.IsNotExist(err) {
+			return fromEnv, nil
+		}
+	}
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		return dir, nil
+	}
+	for _, source := range sources {
+		err := cacheManager.EnsureDownloaded(source)
+		if err != nil {
+			return "", err
+		}
+		realDir := path.Join(cacheManager.GetCacheDir(source), dir)
+		if _, err := os.Stat(realDir); !os.IsNotExist(err) {
+			return realDir, nil
+		}
+	}
+	return "", errors.New("Couldn't find dir: " + dir)
 }

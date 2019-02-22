@@ -1,0 +1,4 @@
+source:
+  - url: github.com/flokkr/k8s
+import:
+  - path: jaeger

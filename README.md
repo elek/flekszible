@@ -307,6 +307,9 @@ All the yaml files from the `definitions` directory will be parsed as composit t
 
 ## Import
 
+
+### Simple import
+
 You can import other directory structures with adding references to the `flekszible.yaml`
 
 For example
@@ -317,6 +320,9 @@ import:
 ```
 
 All the transformations + definitions + k8s resources will be added and applied. Note: the transformations from the imported directory will be applied only to the imported resources.
+
+
+### Import to subdirectory
 
 The imported resources could be generated to a subdirectory:
 
@@ -329,7 +335,9 @@ import;
 
 With this approach the prometheus related resources will be saved to the `monitoring` subdirectory of the destination path.
 
-Transforamtions also can be applied to the imported resources:
+### Import with transformations
+
+Transformations also can be applied to the imported resources:
 
 ```
 import:
@@ -339,7 +347,27 @@ import:
          image: elek/ozone
 ```
 
+
 The hadoop resources are imported here and the image reference is changed during the import (only for the imported resources).
+
+### Import from external source
+
+Imported path is checked in the following location (in this order):
+
+ 1. The directory which is defined with the `FLEKSZIBLE_PATH` environment variable
+ 2. In the current directory (or more  preciously: relative to the current directory).
+ 3. In any remote source
+ 
+Remote sources can be defined with the `source` tag:
+
+```
+source:
+   - url: github.com/flokkr/k8s
+import:
+   path: ozone
+```
+
+The remote repositories are downloaded with [go-getter](https://github.com/hashicorp/go-getter) and the downloaded directory is stored in the `.cache` directory (relative to the input dir). 
 
 ## Available transformation types
 

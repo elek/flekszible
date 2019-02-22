@@ -7,8 +7,11 @@ import (
 )
 
 type Configuration struct {
+	Source []Source
 	Import []ImportConfiguration
 }
+
+
 
 type ImportConfiguration struct {
 	Path            string

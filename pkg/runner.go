@@ -2,7 +2,22 @@ package pkg
 
 import (
 	"github.com/elek/flekszible/pkg/processor"
+	"github.com/sirupsen/logrus"
 )
+
+func ListResources(context *processor.RenderContext) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+	listResources(context.RootResource)
+}
+
+func listResources(node *processor.ResourceNode) {
+	for _, resource := range node.Resources {
+		logrus.Infof(resource.Name() + " (" + resource.Kind() + ")")
+	}
+}
 
 func Run(context *processor.RenderContext, minikube bool) {
 	err := context.Init()

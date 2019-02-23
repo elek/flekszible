@@ -30,8 +30,8 @@ func listResources(node *processor.ResourceNode, table *termtables.Table) {
 
 func addSourceToTable(manager *data.SourceCacheManager, table *termtables.Table, source data.Source) {
 	typ, value := source.ToString()
-	source.GetPath(manager, "")
-	table.AddRow(typ, value)
+	path, _ := source.GetPath(manager, "")
+	table.AddRow(typ, value, path)
 }
 func ListSources(context *processor.RenderContext) {
 	err := context.Init()
@@ -47,15 +47,22 @@ func ListSources(context *processor.RenderContext) {
 	addSourceToTable(&cacheManager, table, &data.EnvSource{})
 	addSourceToTable(&cacheManager, table, &data.LocalSource{RelativeTo: context.RootResource.Dir})
 
-	listSources(&cacheManager, context.RootResource, table)
+	sourceSet := make(map[string]bool)
+	id, _ := context.RootResource.Origin.GetPath(&cacheManager, "")
+	sourceSet[id] = true
+	listSources(&sourceSet, &cacheManager, context.RootResource, table)
 	fmt.Println("Detected sources:")
 	fmt.Println(table.Render())
 }
 
-func listSources(manager *data.SourceCacheManager, node *processor.ResourceNode, table *termtables.Table) {
-	addSourceToTable(manager, table, node.Origin)
+func listSources(sourceSet *map[string]bool, manager *data.SourceCacheManager, node *processor.ResourceNode, table *termtables.Table) {
+	id, _ := node.Origin.GetPath(manager, "")
+	if _, hasKey := (*sourceSet)[id]; !hasKey {
+		addSourceToTable(manager, table, node.Origin)
+		(*sourceSet)[id] = true
+	}
 	for _, child := range node.Children {
-		listSources(manager, child, table)
+		listSources(sourceSet, manager, child, table)
 	}
 }
 

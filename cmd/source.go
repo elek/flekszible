@@ -9,15 +9,14 @@ import (
 func init() {
 	var inputDir string;
 	var outputDir string;
-	var resources = &cobra.Command{
-		Use:   "resource",
-		Short: "List processed k8s resources",
+	var sources = &cobra.Command{
+		Use:   "source",
+		Short: "List imported sources",
 		Run: func(cmd *cobra.Command, args []string) {
 			context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
-			pkg.ListResources(context)
+			pkg.ListSources(context)
 		},
 	}
-	sourceDestFlags(rootCmd, &inputDir, &outputDir)
-	rootCmd.AddCommand(resources)
+	sourceDestFlags(sources, &inputDir, &outputDir)
+	rootCmd.AddCommand(sources)
 }
-

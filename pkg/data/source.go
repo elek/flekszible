@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/hashicorp/go-getter"
+	"os"
 	"path"
 	"regexp"
 )
@@ -15,16 +16,9 @@ func NewSourceCacheManager(root string) SourceCacheManager {
 		RootPath: root,
 	}
 }
-func (manager *SourceCacheManager) GetCacheDir(source Source) string {
-	cleanUrl := cleanUrl(source.Url)
-	cacheDir := path.Join(manager.RootPath, ".cache", cleanUrl)
+func (manager *SourceCacheManager) GetCacheDir(id string) string {
+	cacheDir := path.Join(manager.RootPath, ".cache", id)
 	return cacheDir
-}
-
-func (manager *SourceCacheManager) EnsureDownloaded(source Source) error {
-	setPwd := func(client *getter.Client) error { client.Pwd = manager.RootPath; return nil; }
-	return getter.Get(manager.GetCacheDir(source), source.Url, setPwd)
-
 }
 
 func cleanUrl(s string) string {
@@ -32,7 +26,54 @@ func cleanUrl(s string) string {
 	return re.ReplaceAllString(s, `_`)
 }
 
-type Source struct {
+type Source interface {
+	GetPath(manager *SourceCacheManager, relativeDir string) (string, error)
+	ToString() string
+}
+type LocalSource struct {
+	RelativeTo string
+}
+
+func (source *LocalSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+	return path.Join(source.RelativeTo, relativeDir), nil
+
+}
+func (source *LocalSource) ToString() string {
+	return source.RelativeTo
+}
+
+type EnvSource struct {
+}
+
+func (source *EnvSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+	if os.Getenv("FLEKSZIBLE_PATH") != "" {
+		return path.Join(os.Getenv("FLEKSZIBLE_PATH"), relativeDir), nil
+	}
+	return "", nil
+}
+
+func (source *EnvSource) ToString() string {
+	return "$FLEKSZIBLE_PATH"
+}
+
+type GoGetter struct {
 	Url      string
 	CacheDir string
+}
+
+func (source *GoGetter) ToString() string {
+	return source.Url
+}
+
+func (source *GoGetter) EnsureDownloaded(manager *SourceCacheManager) error {
+	setPwd := func(client *getter.Client) error { client.Pwd = manager.RootPath; return nil; }
+	return getter.Get(manager.GetCacheDir(cleanUrl(source.Url)), source.Url, setPwd)
+}
+
+func (source *GoGetter) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+	err := source.EnsureDownloaded(manager)
+	if err != nil {
+		return "", err
+	}
+	return manager.GetCacheDir(cleanUrl(source.Url)), nil
 }

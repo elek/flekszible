@@ -3,6 +3,7 @@ package pkg
 import (
 	"fmt"
 	"github.com/apcera/termtables"
+	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/processor"
 )
 
@@ -24,6 +25,35 @@ func listResources(node *processor.ResourceNode, table *termtables.Table) {
 	}
 	for _, child := range node.Children {
 		listResources(child, table)
+	}
+}
+
+func ListSources(context *processor.RenderContext) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	table := termtables.CreateTable()
+	table.AddHeaders("source")
+
+	env := data.EnvSource{}
+	table.AddRow(env.ToString())
+
+	local := data.LocalSource{RelativeTo: context.RootResource.Dir}
+	table.AddRow(local.ToString())
+
+	listSources(context.RootResource, table)
+	fmt.Println("Detected sources:")
+	fmt.Println(table.Render())
+}
+
+func listSources(node *processor.ResourceNode, table *termtables.Table) {
+	for _, source := range node.Source {
+		table.AddRow(source.ToString())
+	}
+	for _, child := range node.Children {
+		listSources(child, table)
 	}
 }
 

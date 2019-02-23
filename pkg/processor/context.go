@@ -25,6 +25,7 @@ type ResourceNode struct {
 	Resources                []data.Resource
 	Children                 []*ResourceNode
 	PreImportTransformations []byte
+	Origin                   data.Source
 	Source                   []data.Source
 	ProcessorRepository      *ProcessorRepository
 }
@@ -152,16 +153,21 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		return err
 	}
 	node.Resources = data.ReadResourcesFromDir(node.Dir)
-	node.Source = conf.Source
+	node.Source = make([]data.Source, 0)
+	for _, definedSource := range conf.Source {
+		node.Source = append(node.Source, &data.GoGetter{Url: definedSource.Url})
+	}
 	for ix, _ := range node.Resources {
 		node.Resources[ix].Destination = node.Destination
 	}
 	for _, importDefinition := range conf.Import {
-		importedDir, err := locate(node.Dir, importDefinition.Path, node.Source, sourceCache)
+		source, err := locate(node.Dir, importDefinition.Path, node.Source, sourceCache)
 		if err != nil {
 			return err
 		}
-		childNode := CreateResourceNode(importedDir, importDefinition.Destination)
+		dir, _ := source.GetPath(sourceCache, importDefinition.Path)
+		childNode := CreateResourceNode(dir, importDefinition.Destination)
+		childNode.Origin = source
 		err = childNode.LoadResourceConfig(sourceCache)
 		if err != nil {
 			return err
@@ -204,27 +210,22 @@ func (node *ResourceNode) LoadDefinitions() {
 
 }
 
-//try to find a specific path in possible sources
-func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (string, error) {
-	if os.Getenv("FLEKSZIBLE_PATH") != "" {
-		fromEnv := path.Join(os.Getenv("FLEKSZIBLE_PATH"), dir)
-		if _, err := os.Stat(fromEnv); !os.IsNotExist(err) {
-			return fromEnv, nil
-		}
-	}
-	current := path.Join(basedir, dir)
-	if _, err := os.Stat(current); !os.IsNotExist(err) {
-		return current, nil
-	}
-	for _, source := range sources {
-		err := cacheManager.EnsureDownloaded(source)
+//try to find the first Source which contains the file
+func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (data.Source, error) {
+	allSources := make([]data.Source, 0)
+	allSources = append(allSources, &data.EnvSource{})
+	allSources = append(allSources, &data.LocalSource{RelativeTo: basedir})
+	allSources = append(allSources, sources...)
+
+	for _, source := range allSources {
+		resourcePath, err := source.GetPath(cacheManager, dir)
 		if err != nil {
-			return "", err
-		}
-		realDir := path.Join(cacheManager.GetCacheDir(source), dir)
-		if _, err := os.Stat(realDir); !os.IsNotExist(err) {
-			return realDir, nil
+			logrus.Error("Can't check dir from the source " + source.ToString() + " " + err.Error())
+		} else if resourcePath != "" {
+			if _, err := os.Stat(resourcePath); !os.IsNotExist(err) {
+				return source, nil
+			}
 		}
 	}
-	return "", errors.New("Couldn't find dir: " + dir)
+	return nil, errors.New("Couldn't find dir: " + dir)
 }

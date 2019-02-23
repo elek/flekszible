@@ -7,11 +7,13 @@ import (
 )
 
 type Configuration struct {
-	Source []Source
+	Source []ConfigSource
 	Import []ImportConfiguration
 }
 
-
+type ConfigSource struct {
+	Url string
+}
 
 type ImportConfiguration struct {
 	Path            string

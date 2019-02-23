@@ -28,35 +28,58 @@ func listResources(node *processor.ResourceNode, table *termtables.Table) {
 	}
 }
 
+func addSourceToTable(manager *data.SourceCacheManager, table *termtables.Table, source data.Source) {
+	typ, value := source.ToString()
+	source.GetPath(manager, "")
+	table.AddRow(typ, value)
+}
 func ListSources(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {
 		panic(err)
 	}
 
+	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+
 	table := termtables.CreateTable()
-	table.AddHeaders("source")
+	table.AddHeaders("source", "location", "path")
 
-	env := data.EnvSource{}
-	table.AddRow(env.ToString())
+	addSourceToTable(&cacheManager, table, &data.EnvSource{})
+	addSourceToTable(&cacheManager, table, &data.LocalSource{RelativeTo: context.RootResource.Dir})
 
-	local := data.LocalSource{RelativeTo: context.RootResource.Dir}
-	table.AddRow(local.ToString())
-
-	listSources(context.RootResource, table)
+	listSources(&cacheManager, context.RootResource, table)
 	fmt.Println("Detected sources:")
 	fmt.Println(table.Render())
 }
 
-func listSources(node *processor.ResourceNode, table *termtables.Table) {
-	for _, source := range node.Source {
-		table.AddRow(source.ToString())
-	}
+func listSources(manager *data.SourceCacheManager, node *processor.ResourceNode, table *termtables.Table) {
+	addSourceToTable(manager, table, node.Origin)
 	for _, child := range node.Children {
-		listSources(child, table)
+		listSources(manager, child, table)
 	}
 }
 
+func ListComponent(context *processor.RenderContext) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	table := termtables.CreateTable()
+	table.AddHeaders("component", "source")
+
+	listComponent(context.RootResource, table)
+	fmt.Println("Detected components (dirs):")
+	fmt.Println(table.Render())
+}
+
+func listComponent(node *processor.ResourceNode, table *termtables.Table) {
+	tpe, _ := node.Origin.ToString()
+	table.AddRow(node.Dir, tpe)
+	for _, child := range node.Children {
+		listComponent(child, table)
+	}
+}
 func Run(context *processor.RenderContext, minikube bool) {
 	err := context.Init()
 	if err != nil {

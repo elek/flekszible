@@ -66,6 +66,7 @@ func CreateResourceNode(dir string, destination string) *ResourceNode {
 		ProcessorRepository: CreateProcessorRepository(),
 		Children:            make([]*ResourceNode, 0),
 		Destination:         destination,
+		Origin:              &data.LocalSource{RelativeTo: dir},
 	}
 	return &node
 }
@@ -220,7 +221,8 @@ func locate(basedir string, dir string, sources []data.Source, cacheManager *dat
 	for _, source := range allSources {
 		resourcePath, err := source.GetPath(cacheManager, dir)
 		if err != nil {
-			logrus.Error("Can't check dir from the source " + source.ToString() + " " + err.Error())
+			tpe, value := source.ToString()
+			logrus.Error("Can't check dir from the source " + tpe + "/" + value + err.Error())
 		} else if resourcePath != "" {
 			if _, err := os.Stat(resourcePath); !os.IsNotExist(err) {
 				return source, nil

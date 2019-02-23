@@ -28,7 +28,7 @@ func cleanUrl(s string) string {
 
 type Source interface {
 	GetPath(manager *SourceCacheManager, relativeDir string) (string, error)
-	ToString() string
+	ToString() (string, string)
 }
 type LocalSource struct {
 	RelativeTo string
@@ -38,8 +38,8 @@ func (source *LocalSource) GetPath(manager *SourceCacheManager, relativeDir stri
 	return path.Join(source.RelativeTo, relativeDir), nil
 
 }
-func (source *LocalSource) ToString() string {
-	return source.RelativeTo
+func (source *LocalSource) ToString() (string, string) {
+	return "current dir", source.RelativeTo
 }
 
 type EnvSource struct {
@@ -52,8 +52,8 @@ func (source *EnvSource) GetPath(manager *SourceCacheManager, relativeDir string
 	return "", nil
 }
 
-func (source *EnvSource) ToString() string {
-	return "$FLEKSZIBLE_PATH"
+func (source *EnvSource) ToString() (string, string) {
+	return "$FLEKSZIBLE_PATH", os.Getenv("FLEKSZIBLE_PATH")
 }
 
 type GoGetter struct {
@@ -61,8 +61,8 @@ type GoGetter struct {
 	CacheDir string
 }
 
-func (source *GoGetter) ToString() string {
-	return source.Url
+func (source *GoGetter) ToString() (string, string) {
+	return "GoGetter", source.Url
 }
 
 func (source *GoGetter) EnsureDownloaded(manager *SourceCacheManager) error {

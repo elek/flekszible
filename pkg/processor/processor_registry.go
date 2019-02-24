@@ -10,11 +10,13 @@ type ProcessorMetadata struct {
 	Name        string
 	Description string
 	Parameter   []ProcessorParameter
+	Doc         string
 }
 type ProcessorParameter struct {
 	Name        string
 	Description string
 	Required    bool
+	Default     string
 }
 
 type ProcessorDefinition struct {

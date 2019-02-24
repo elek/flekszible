@@ -45,10 +45,23 @@ func (processor *Change) BeforeResource(resource *data.Resource) {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "Change",
+			Name:        "Change",
+			Description: "Replace existing value literal in the yaml struct.",
+			Parameter: []ProcessorParameter{
+				ProcessorParameter{
+					Name:        "pattern",
+					Description: "Regular expression to test the existing value. Value will be changed only if matches.",
+					Default:     ".*",
+				},
+				ProcessorParameter{
+					Name:        "replacement",
+					Description: "The value to replace the field in case of match",
+					Required:    true,
+				},
+			},
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			return configureProcessorFromYamlFragment(&Change{}, config)
+			return configureProcessorFromYamlFragment(&Change{Pattern: ".*"}, config)
 		},
 	})
 }

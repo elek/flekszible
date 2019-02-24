@@ -28,6 +28,48 @@ func listResources(node *processor.ResourceNode, table *termtables.Table) {
 	}
 }
 
+func ListProcessor(context *processor.RenderContext) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+	table := termtables.CreateTable()
+
+	for name, definition := range processor.ProcessorTypeRegistry.TypeMap {
+		table.AddRow(name, definition.Metadata.Description)
+	}
+	fmt.Println(table.Render())
+
+}
+
+func ShowProcessor(context *processor.RenderContext, command string) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	if procDefinition, found := processor.ProcessorTypeRegistry.TypeMap[command]; found {
+		fmt.Println("### " + command)
+		fmt.Println()
+		fmt.Println(procDefinition.Metadata.Description)
+		fmt.Println()
+		fmt.Println("#### Parameters")
+		fmt.Println("")
+		table := termtables.CreateTable()
+		table.AddHeaders("name", "default", "description")
+		for _, parameter := range procDefinition.Metadata.Parameter {
+			table.AddRow(parameter.Name, parameter.Default, parameter.Description)
+		}
+		fmt.Println(table.Render())
+		fmt.Println()
+		fmt.Println(procDefinition.Metadata.Doc)
+
+	} else {
+		fmt.Println("No such processor definition: " + command)
+	}
+
+}
+
 func addSourceToTable(manager *data.SourceCacheManager, table *termtables.Table, source data.Source) {
 	typ, value := source.ToString()
 	path, _ := source.GetPath(manager, "")

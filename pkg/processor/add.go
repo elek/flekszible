@@ -70,10 +70,37 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "Add",
+			Name:        "Add",
+			Description: "Extends yaml fragment to an existing k8s resources.",
+			Doc:         addDoc,
+			Parameter: []ProcessorParameter{
+				ProcessorParameter{
+					Name:        "value",
+					Description: "A yaml struct to replaced the defined value",
+				},
+			},
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&Add{}, config)
 		},
 	})
 }
+
+var addDoc = `#### Supported value types
+
+| Type of the destination node (selected by 'Path') | Type of the 'Value' | Supported
+|---------------------------------------------------|---------------------|------------
+| Map                                               | Map                 | Yes
+| Array                                             | Array               | Yes
+| Array                                             | Map                 | Yes
+
+#### Example
+
+'''
+- type: Add
+  path:
+  - metadata
+  - annotations
+  value:
+     flekszible: generated
+'''`

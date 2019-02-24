@@ -22,7 +22,6 @@ func splitDefinitionFile(data []byte) ([]byte, []byte) {
 		} else {
 			body += line + "\n";
 		}
-		println(line)
 	}
 	return []byte(head), []byte(body)
 }

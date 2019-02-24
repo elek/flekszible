@@ -2,11 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 )
-
-var cfgFile string
 
 var rootCmd = &cobra.Command{
 	Use:   "flekszible",
@@ -27,6 +26,7 @@ func Execute() {
 }
 
 func init() {
+	logrus.SetOutput(os.Stdout)
 	cobra.OnInitialize()
 
 }

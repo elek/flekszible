@@ -39,6 +39,19 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	}
 }
 
+func (context *RenderContext) ListResourceNodes() []*ResourceNode {
+	return listResourceNodesInt(context.RootResource)
+}
+
+func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
+	result := make([]*ResourceNode, 0)
+	result = append(result, node)
+	for _, child := range node.Children {
+		result = append(result, listResourceNodesInt(child)...)
+	}
+	return result
+}
+
 func (context *RenderContext) LoadResourceTree() error {
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	return context.RootResource.LoadResourceConfig(&cacheManager)

@@ -14,19 +14,16 @@ func ListResources(context *processor.RenderContext) {
 	}
 	table := termtables.CreateTable()
 	table.AddHeaders("name", "kind")
-	listResources(context.RootResource, table)
+	nodes := context.ListResourceNodes()
+	for _, node := range nodes {
+		for _, resource := range node.Resources {
+			table.AddRow(resource.Name(), resource.Kind())
+		}
+	}
 	fmt.Println("Detected resources:")
 	fmt.Println(table.Render())
 }
 
-func listResources(node *processor.ResourceNode, table *termtables.Table) {
-	for _, resource := range node.Resources {
-		table.AddRow(resource.Name(), resource.Kind())
-	}
-	for _, child := range node.Children {
-		listResources(child, table)
-	}
-}
 
 func ListProcessor(context *processor.RenderContext) {
 	err := context.Init()
@@ -76,6 +73,7 @@ func addSourceToTable(manager *data.SourceCacheManager, table *termtables.Table,
 	path, _ := source.GetPath(manager, "")
 	table.AddRow(typ, value, path)
 }
+
 func ListSources(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {
@@ -90,46 +88,45 @@ func ListSources(context *processor.RenderContext) {
 	addSourceToTable(&cacheManager, table, &data.EnvSource{})
 	addSourceToTable(&cacheManager, table, &data.LocalSource{RelativeTo: context.RootResource.Dir})
 
+	nodes := context.ListResourceNodes()
+
 	sourceSet := make(map[string]bool)
 	id, _ := context.RootResource.Origin.GetPath(&cacheManager, "")
 	sourceSet[id] = true
-	listSources(&sourceSet, &cacheManager, context.RootResource, table)
+
+	for _, node := range nodes {
+		id, _ := node.Origin.GetPath(&cacheManager, "")
+		if _, hasKey := sourceSet[id]; !hasKey {
+			addSourceToTable(&cacheManager, table, node.Origin)
+			sourceSet[id] = true
+		}
+
+	}
+
 	fmt.Println("Detected sources:")
 	fmt.Println(table.Render())
 }
 
-func listSources(sourceSet *map[string]bool, manager *data.SourceCacheManager, node *processor.ResourceNode, table *termtables.Table) {
-	id, _ := node.Origin.GetPath(manager, "")
-	if _, hasKey := (*sourceSet)[id]; !hasKey {
-		addSourceToTable(manager, table, node.Origin)
-		(*sourceSet)[id] = true
-	}
-	for _, child := range node.Children {
-		listSources(sourceSet, manager, child, table)
-	}
+func SearchComponent(context *processor.RenderContext) {
 }
 
-func ListComponent(context *processor.RenderContext) {
+func ListApp(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {
 		panic(err)
 	}
 
 	table := termtables.CreateTable()
-	table.AddHeaders("component", "source")
+	table.AddHeaders("dir")
 
-	listComponent(context.RootResource, table)
+	nodes := context.ListResourceNodes()
+	for _, node := range nodes {
+		table.AddRow(node.Dir)
+	}
 	fmt.Println("Detected components (dirs):")
 	fmt.Println(table.Render())
 }
 
-func listComponent(node *processor.ResourceNode, table *termtables.Table) {
-	tpe, _ := node.Origin.ToString()
-	table.AddRow(node.Dir, tpe)
-	for _, child := range node.Children {
-		listComponent(child, table)
-	}
-}
 func Run(context *processor.RenderContext, minikube bool) {
 	err := context.Init()
 	if err != nil {

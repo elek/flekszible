@@ -1,0 +1,15 @@
+name: flokkr.github.io/prometheus
+description: Enable prometheus monitoring
+parameters:
+  - name: replicas
+    default: 2
+    required: false
+    type: int
+---
+- type: Add
+  path:
+    - spec
+    - template
+    - spec
+  value:
+    replicas: {{.replicas}}

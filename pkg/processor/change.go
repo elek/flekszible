@@ -2,6 +2,7 @@ package processor
 
 import (
 	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
 	"regexp"
 	"strconv"
@@ -42,6 +43,12 @@ func (processor *Change) BeforeResource(resource *data.Resource) {
 }
 
 func init() {
-	prototype := Change{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "Change",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&Change{}, config)
+		},
+	})
 }

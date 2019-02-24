@@ -1,0 +1,7 @@
+- type: Add
+  path:
+    - spec
+    - template
+    - spec
+  value:
+    replicas: {{.replicas}}

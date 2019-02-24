@@ -1,0 +1,7 @@
+name: prometheus
+description: Enable prometheus monitoring
+parameters:
+  - name: replicas
+    default: 2
+    required: false
+    type: int

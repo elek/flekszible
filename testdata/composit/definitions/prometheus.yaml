@@ -1,24 +1,25 @@
-type: flokkr.github.io/prometheus
-transformations:
-  - type: Add
-    path:
-      - spec
-      - template
-      - metadata
-      - annotations
-    value:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "28942"
-  - type: Add
-    path:
-      - spec
-      - template
-      - spec
-      - containers
-      - ".*"
-      - env
-    value:
-      - name: "PROMETHEUSJMX_ENABLED"
-        value: "true"
-      - name:  "PROMETHEUSJMX_AGENTOPTS"
-        value: "port=28942"
+name: flokkr.github.io/prometheus
+description: Enable prometheus monitoring
+---
+- type: Add
+  path:
+    - spec
+    - template
+    - metadata
+    - annotations
+  value:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "28942"
+- type: Add
+  path:
+    - spec
+    - template
+    - spec
+    - containers
+    - ".*"
+    - env
+  value:
+    - name: "PROMETHEUSJMX_ENABLED"
+      value: "true"
+    - name:  "PROMETHEUSJMX_AGENTOPTS"
+      value: "port=28942"

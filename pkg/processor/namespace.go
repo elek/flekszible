@@ -1,6 +1,9 @@
 package processor
 
-import "github.com/elek/flekszible/pkg/data"
+import (
+	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
+)
 
 type Namespace struct {
 	DefaultProcessor
@@ -13,6 +16,12 @@ func (processor *Namespace) BeforeResource(resource *data.Resource) {
 }
 
 func init() {
-	prototype := Namespace{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "Namespace",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&Namespace{}, config)
+		},
+	})
 }

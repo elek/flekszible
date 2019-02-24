@@ -27,7 +27,7 @@ type ResourceNode struct {
 	PreImportTransformations []byte
 	Origin                   data.Source
 	Source                   []data.Source
-	ProcessorRepository      *ProcessorRepository
+	ProcessorRepository      *TransformationRepository
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {

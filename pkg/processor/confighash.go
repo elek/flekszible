@@ -3,6 +3,7 @@ package processor
 import (
 	"encoding/hex"
 	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
 )
 
 import "crypto/md5"
@@ -48,6 +49,12 @@ func (p *ConfigHash) BeforeResource(resource *data.Resource) {
 
 }
 func init() {
-	prototype := ConfigHash{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "ConfigHash",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&ConfigHash{}, config)
+		},
+	})
 }

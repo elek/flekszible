@@ -2,6 +2,7 @@ package processor
 
 import (
 	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -111,8 +112,14 @@ func identedPrint(output io.Writer, ident int, s string) {
 }
 
 func init() {
-	prototype := K8sWriter{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "K8sWriter",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&K8sWriter{}, config)
+		},
+	})
 }
 
 func printKey(output io.Writer, path data.Path, rawValue interface{}) {

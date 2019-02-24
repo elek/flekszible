@@ -11,3 +11,7 @@ func TestComposit(t *testing.T) {
 func TestCompositInherited(t *testing.T) {
 	TestFromDir(t, "composit-inherited")
 }
+
+func TestCompositWithParam(t *testing.T) {
+	TestFromDir(t, "composit-param")
+}

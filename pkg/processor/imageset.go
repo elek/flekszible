@@ -1,6 +1,9 @@
 package processor
 
-import "github.com/elek/flekszible/pkg/data"
+import (
+	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
+)
 
 type Image struct {
 	DefaultProcessor
@@ -14,6 +17,12 @@ func (imageSet *Image) BeforeResource(resource *data.Resource) {
 	}
 }
 func init() {
-	prototype := Image{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "Image",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&Image{}, config)
+		},
+	})
 }

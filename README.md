@@ -502,10 +502,9 @@ Useful for minikube based environments where you may not have enough node to run
 
 You can create additional transformations with grouping existing transformations. For example the following definition register a new transformation type:
 
-
 ```yaml
-type: flokkr.github.io/prometheus
-transformations:
+name: flokkr.github.io/prometheus
+---
   - type: Add
     path:
       - spec

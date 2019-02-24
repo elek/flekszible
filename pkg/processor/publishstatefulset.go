@@ -2,6 +2,7 @@ package processor
 
 import (
 	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
 	"strings"
 )
 
@@ -35,8 +36,14 @@ func hasNoneClusterIp(slice *data.MapNode) bool {
 }
 
 func init() {
-	prototype := PublishStatefulSet{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "PublishStatefulSet",
+		},
+		Factory: func(slice *yaml.MapSlice) (Processor, error) {
+			return &PublishStatefulSet{}, nil
+		},
+	})
 }
 
 func DeepCopy(src data.Node) *data.MapNode {

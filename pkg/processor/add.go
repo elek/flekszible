@@ -68,6 +68,12 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 }
 
 func init() {
-	prototype := Add{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "Add",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&Add{}, config)
+		},
+	})
 }

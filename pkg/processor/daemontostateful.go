@@ -1,6 +1,9 @@
 package processor
 
-import "github.com/elek/flekszible/pkg/data"
+import (
+	"github.com/elek/flekszible/pkg/data"
+	"github.com/elek/flekszible/pkg/yaml"
+)
 
 type DaemonToStatefulSet struct {
 	DefaultProcessor
@@ -62,6 +65,12 @@ func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) {
 }
 
 func init() {
-	prototype := DaemonToStatefulSet{}
-	ProcessorTypeRegistry.Add(&prototype)
+	ProcessorTypeRegistry.Add(ProcessorDefinition{
+		Metadata: ProcessorMetadata{
+			Name: "DaemonToStatefulSet",
+		},
+		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			return configureProcessorFromYamlFragment(&DaemonToStatefulSet{}, config)
+		},
+	})
 }

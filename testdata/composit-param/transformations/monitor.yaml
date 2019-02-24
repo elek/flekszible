@@ -1,0 +1,2 @@
+- type: flokkr.github.io/prometheus
+  replicas: 3

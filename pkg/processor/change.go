@@ -46,7 +46,7 @@ func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Change",
-			Description: "Replace existing value literal in the yaml struct.",
+			Description: "Replace existing value literal in the yaml struct",
 			Parameter: []ProcessorParameter{
 				ProcessorParameter{
 					Name:        "pattern",

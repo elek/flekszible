@@ -114,7 +114,8 @@ func identedPrint(output io.Writer, ident int, s string) {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "K8sWriter",
+			Name:        "K8sWriter",
+			Description: "Internal transformation to print out k8s resources as yaml",
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&K8sWriter{}, config)

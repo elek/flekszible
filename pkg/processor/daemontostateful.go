@@ -67,7 +67,9 @@ func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "DaemonToStatefulSet",
+			Name:        "DaemonToStatefulSet",
+			Description: "Converts daemonset to statefulset",
+			Doc:         `Useful for minikube based environments where you may not have enough node to run a daemonset based cluster.`,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&DaemonToStatefulSet{}, config)

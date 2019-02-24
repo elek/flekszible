@@ -18,7 +18,17 @@ func (processor *Namespace) BeforeResource(resource *data.Resource) {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "Namespace",
+			Name:        "Namespace",
+			Description: "Use explicit namespace",
+			Doc: `Note: This transformations could also added with the '--namespace' CLI argument.
+
+Example ('transformations/set.yaml''):
+
+'''yaml
+- type: Namespace
+  namespace: myns
+'''
+`,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&Namespace{}, config)

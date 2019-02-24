@@ -49,6 +49,7 @@ func ShowProcessor(context *processor.RenderContext, command string) {
 	}
 
 	if procDefinition, found := processor.ProcessorTypeRegistry.TypeMap[command]; found {
+		fmt.Println("")
 		fmt.Println("### " + command)
 		fmt.Println()
 		fmt.Println(procDefinition.Metadata.Description)

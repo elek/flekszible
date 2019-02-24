@@ -62,7 +62,14 @@ func (p *Prefix) BeforeResource(resource *data.Resource) {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "Prefix",
+			Name:        "Prefix",
+			Description: "Add same prefix to all the k8s names",
+			Parameter: []ProcessorParameter{
+				{
+					Name:        "prefix",
+					Description: "The prefix to use before the name of the resources.",
+				},
+			},
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&Prefix{}, config)

@@ -71,7 +71,7 @@ func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Add",
-			Description: "Extends yaml fragment to an existing k8s resources.",
+			Description: "Extends yaml fragment to an existing k8s resources",
 			Doc:         addDoc,
 			Parameter: []ProcessorParameter{
 				ProcessorParameter{

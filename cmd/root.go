@@ -27,6 +27,7 @@ func Execute() {
 
 func init() {
 	logrus.SetOutput(os.Stdout)
+	logrus.SetLevel(logrus.ErrorLevel)
 	cobra.OnInitialize()
 
 }

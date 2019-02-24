@@ -38,7 +38,8 @@ func hasNoneClusterIp(slice *data.MapNode) bool {
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
-			Name: "PublishStatefulSet",
+			Name:        "PublishStatefulSet",
+			Description: "Creates additional NodeType service for StatefulSet internal services",
 		},
 		Factory: func(slice *yaml.MapSlice) (Processor, error) {
 			return &PublishStatefulSet{}, nil

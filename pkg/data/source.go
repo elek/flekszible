@@ -89,5 +89,5 @@ func (source *GoGetter) GetPath(manager *SourceCacheManager, relativeDir string)
 	if err != nil {
 		return "", err
 	}
-	return manager.GetCacheDir(cleanUrl(source.Url)), nil
+	return path.Join(manager.GetCacheDir(cleanUrl(source.Url)), relativeDir), nil
 }

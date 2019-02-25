@@ -30,16 +30,30 @@ type Source interface {
 	GetPath(manager *SourceCacheManager, relativeDir string) (string, error)
 	ToString() (string, string)
 }
+
+type CurrentDir struct {
+	CurrentDir string
+}
+
+func (source *CurrentDir) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+	return path.Join(source.CurrentDir, relativeDir), nil
+
+}
+func (source *CurrentDir) ToString() (string, string) {
+	return "current dir", "."
+}
+
 type LocalSource struct {
-	RelativeTo string
+	BaseDir     string
+	RelativeDir string
 }
 
 func (source *LocalSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
-	return path.Join(source.RelativeTo, relativeDir), nil
+	return path.Join(source.BaseDir, source.RelativeDir, relativeDir), nil
 
 }
 func (source *LocalSource) ToString() (string, string) {
-	return "current dir", source.RelativeTo
+	return "local dir", source.RelativeDir
 }
 
 type EnvSource struct {
@@ -62,7 +76,7 @@ type GoGetter struct {
 }
 
 func (source *GoGetter) ToString() (string, string) {
-	return "GoGetter", source.Url
+	return "remote dir", source.Url
 }
 
 func (source *GoGetter) EnsureDownloaded(manager *SourceCacheManager) error {

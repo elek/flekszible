@@ -35,7 +35,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	return &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
-		RootResource: CreateResourceNode(inputDir, ""),
+		RootResource: CreateResourceNode(inputDir, "", &data.CurrentDir{CurrentDir: inputDir}),
 	}
 }
 
@@ -73,13 +73,13 @@ func (node *ResourceNode) AllResources() []data.Resource {
 	return result
 }
 
-func CreateResourceNode(dir string, destination string) *ResourceNode {
+func CreateResourceNode(dir string, destination string, source data.Source) *ResourceNode {
 	node := ResourceNode{
 		Dir:                 dir,
 		ProcessorRepository: CreateProcessorRepository(),
 		Children:            make([]*ResourceNode, 0),
 		Destination:         destination,
-		Origin:              &data.LocalSource{RelativeTo: dir},
+		Origin:              source,
 	}
 	return &node
 }
@@ -172,7 +172,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		if definedSource.Url != "" {
 			node.Source = append(node.Source, &data.GoGetter{Url: definedSource.Url})
 		} else if definedSource.Path != "" {
-			node.Source = append(node.Source, &data.LocalSource{RelativeTo: path.Join(node.Dir, definedSource.Path)})
+			node.Source = append(node.Source, &data.LocalSource{BaseDir: node.Dir, RelativeDir: definedSource.Path})
 		}
 	}
 	for ix, _ := range node.Resources {
@@ -184,7 +184,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 			return err
 		}
 		dir, _ := source.GetPath(sourceCache, importDefinition.Path)
-		childNode := CreateResourceNode(dir, importDefinition.Destination)
+		childNode := CreateResourceNode(dir, importDefinition.Destination, source)
 		childNode.Origin = source
 		err = childNode.LoadResourceConfig(sourceCache)
 		if err != nil {
@@ -232,7 +232,7 @@ func (node *ResourceNode) LoadDefinitions() {
 func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (data.Source, error) {
 	allSources := make([]data.Source, 0)
 	allSources = append(allSources, &data.EnvSource{})
-	allSources = append(allSources, &data.LocalSource{RelativeTo: basedir})
+	allSources = append(allSources, &data.CurrentDir{CurrentDir: basedir})
 	allSources = append(allSources, sources...)
 
 	for _, source := range allSources {

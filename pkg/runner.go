@@ -5,6 +5,12 @@ import (
 	"github.com/apcera/termtables"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/processor"
+	"github.com/elek/flekszible/pkg/yaml"
+	"github.com/sirupsen/logrus"
+	"io/ioutil"
+	"os"
+	"path"
+	"path/filepath"
 )
 
 func ListResources(context *processor.RenderContext) {
@@ -23,7 +29,6 @@ func ListResources(context *processor.RenderContext) {
 	fmt.Println("Detected resources:")
 	fmt.Println(table.Render())
 }
-
 
 func ListProcessor(context *processor.RenderContext) {
 	err := context.Init()
@@ -68,12 +73,34 @@ func ShowProcessor(context *processor.RenderContext, command string) {
 
 }
 
-func addSourceToTable(manager *data.SourceCacheManager, table *termtables.Table, source data.Source) {
-	typ, value := source.ToString()
-	path, _ := source.GetPath(manager, "")
-	table.AddRow(typ, value, path)
-}
+func listUniqSources(context *processor.RenderContext) []data.Source {
 
+	sources := make([]data.Source, 0)
+	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+
+	sources = append(sources, &data.EnvSource{})
+	sources = append(sources, &data.LocalSource{RelativeTo: context.RootResource.Dir})
+
+	nodes := context.ListResourceNodes()
+
+	sourceSet := make(map[string]bool)
+	id, _ := context.RootResource.Origin.GetPath(&cacheManager, "")
+	sourceSet[id] = true
+
+	for _, node := range nodes {
+		for
+		_, source := range node.Source {
+			id, _ := source.GetPath(&cacheManager, "")
+			if _, hasKey := sourceSet[id]; !hasKey {
+				sources = append(sources, source)
+				sourceSet[id] = true
+			}
+		}
+
+	}
+
+	return sources
+}
 func ListSources(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {
@@ -85,29 +112,74 @@ func ListSources(context *processor.RenderContext) {
 	table := termtables.CreateTable()
 	table.AddHeaders("source", "location", "path")
 
-	addSourceToTable(&cacheManager, table, &data.EnvSource{})
-	addSourceToTable(&cacheManager, table, &data.LocalSource{RelativeTo: context.RootResource.Dir})
-
-	nodes := context.ListResourceNodes()
-
-	sourceSet := make(map[string]bool)
-	id, _ := context.RootResource.Origin.GetPath(&cacheManager, "")
-	sourceSet[id] = true
-
-	for _, node := range nodes {
-		id, _ := node.Origin.GetPath(&cacheManager, "")
-		if _, hasKey := sourceSet[id]; !hasKey {
-			addSourceToTable(&cacheManager, table, node.Origin)
-			sourceSet[id] = true
-		}
-
+	for _, source := range listUniqSources(context) {
+		typ, value := source.ToString()
+		path, _ := source.GetPath(&cacheManager, "")
+		table.AddRow(typ, value, path)
 	}
-
 	fmt.Println("Detected sources:")
 	fmt.Println(table.Render())
 }
 
 func SearchComponent(context *processor.RenderContext) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	table := termtables.CreateTable()
+	table.AddHeaders("path", "description")
+	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+	for _, source := range listUniqSources(context) {
+		findApps(source, &cacheManager, table)
+
+	}
+	fmt.Println(table.Render())
+}
+
+func findApps(source data.Source, manager *data.SourceCacheManager, table *termtables.Table) {
+
+	dir, err := source.GetPath(manager, "")
+	if dir == "" {
+		return
+	}
+	if err != nil {
+		logrus.Error("Can't find real path of the source")
+	}
+	err = filepath.Walk(dir, func(filePath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() && info.Name() == ".cache" {
+			return filepath.SkipDir
+		}
+		if path.Base(filePath) == "flekszible.yaml" {
+			relpath, err := filepath.Rel(dir, filepath.Dir(filePath))
+			if relpath == "." {
+				return nil
+			}
+			if err != nil {
+				logrus.Error("Can't find relative path of" + filePath + " " + err.Error())
+			}
+			fleksz := make(map[string]interface{})
+			bytes, err := ioutil.ReadFile(filePath)
+			if err != nil {
+				logrus.Error("Can't read flekszible.yaml from " + filePath + " " + err.Error())
+			}
+			name := ""
+			err = yaml.Unmarshal(bytes, &fleksz)
+			if err != nil {
+				logrus.Error("Can't parse flekszible.yaml from " + filePath + " " + err.Error())
+			}
+			if declaredName, found := fleksz["description"]; found {
+				name = declaredName.(string)
+				table.AddRow(relpath, name)
+			}
+		}
+
+		return nil
+	})
+
 }
 
 func ListApp(context *processor.RenderContext) {

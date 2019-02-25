@@ -12,7 +12,8 @@ type Configuration struct {
 }
 
 type ConfigSource struct {
-	Url string
+	Url  string
+	Path string
 }
 
 type ImportConfiguration struct {

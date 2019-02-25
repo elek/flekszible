@@ -36,7 +36,7 @@ func ListProcessor(context *processor.RenderContext) {
 		panic(err)
 	}
 	table := termtables.CreateTable()
-
+	table.AddHeaders("name", "description")
 	for name, definition := range processor.ProcessorTypeRegistry.TypeMap {
 		table.AddRow(name, definition.Metadata.Description)
 	}

@@ -169,7 +169,11 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	node.Resources = data.ReadResourcesFromDir(node.Dir)
 	node.Source = make([]data.Source, 0)
 	for _, definedSource := range conf.Source {
-		node.Source = append(node.Source, &data.GoGetter{Url: definedSource.Url})
+		if definedSource.Url != "" {
+			node.Source = append(node.Source, &data.GoGetter{Url: definedSource.Url})
+		} else if definedSource.Path != "" {
+			node.Source = append(node.Source, &data.LocalSource{RelativeTo: path.Join(node.Dir, definedSource.Path)})
+		}
 	}
 	for ix, _ := range node.Resources {
 		node.Resources[ix].Destination = node.Destination

@@ -76,7 +76,7 @@ func init() {
 			Parameter: []ProcessorParameter{
 				ProcessorParameter{
 					Name:        "value",
-					Description: "A yaml struct to replaced the defined value",
+					Description: "A yaml struct to replace the defined value",
 				},
 			},
 		},

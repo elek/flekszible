@@ -17,6 +17,19 @@ func init() {
 			pkg.ListSources(context)
 		},
 	}
+
+	var add = &cobra.Command{
+		Use:   "add",
+		Short: "Add source to the flekszible.yaml definition",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
+			pkg.AddSource(context, findInputDir(inputDir), args[0])
+		},
+	}
+
 	sourceDestFlags(sources, &inputDir, &outputDir)
+	sourceDestFlags(add, &inputDir, &outputDir)
 	rootCmd.AddCommand(sources)
+	sources.AddCommand(add)
 }

@@ -101,6 +101,43 @@ func listUniqSources(context *processor.RenderContext) []data.Source {
 
 	return sources
 }
+
+func AddSource(context *processor.RenderContext, inputDir string, source string) {
+	configFile := path.Join(inputDir, "flekszible.yaml")
+	var conf data.Configuration
+	conf, err := data.ReadConfiguration(configFile)
+	if err != nil {
+		panic(err)
+	}
+	conf.Source = append(conf.Source, data.ConfigSource{Url: source})
+	out, err := yaml.Marshal(conf)
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile(configFile, out, 0755)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func AddApp(context *processor.RenderContext, inputDir string, app string) {
+	configFile := path.Join(inputDir, "flekszible.yaml")
+	var conf data.Configuration
+	conf, err := data.ReadConfiguration(configFile)
+	if err != nil {
+		panic(err)
+	}
+	conf.Import = append(conf.Import, data.ImportConfiguration{Path: app})
+	out, err := yaml.Marshal(conf)
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile(configFile, out, 0755)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func ListSources(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {

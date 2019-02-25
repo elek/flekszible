@@ -25,8 +25,19 @@ func init() {
 			pkg.SearchComponent(context)
 		},
 	}
+	var add = &cobra.Command{
+		Use:   "add",
+		Short: "Add (import) new app to the flekszible.yaml.",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
+			pkg.AddApp(context, findInputDir(inputDir), args[0])
+		},
+	}
 	sourceDestFlags(search, &inputDir, &outputDir)
+	sourceDestFlags(add, &inputDir, &outputDir)
 	app.AddCommand(search)
+	app.AddCommand(add)
 	sourceDestFlags(app, &inputDir, &outputDir)
 	rootCmd.AddCommand(app)
 }

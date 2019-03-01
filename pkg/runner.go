@@ -141,7 +141,7 @@ func SearchSource() {
 	table := termtables.CreateTable()
 	table.AddHeaders("name", "description")
 	for _, repo := range results.Items {
-		table.AddRow(repo.FullName, repo.Description)
+		table.AddRow("github.com/"+repo.FullName, repo.Description)
 	}
 	fmt.Println("Available flekszible repositories:")
 	fmt.Println()

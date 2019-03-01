@@ -1,6 +1,6 @@
 # fle[ksz]ible
 
-Flekszible is a Kubernetes resource manager. It helps to manage your kubernetes resourc files before the deployment. 
+Flekszible is a Kubernetes configuration/manifest manager. It helps to manage your kubernetes yaml files before the deployment. 
 
  * It is similar to Helm: 
    * but it's more flexible: you can modify any part of the source kubernetes resources

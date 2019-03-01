@@ -28,8 +28,17 @@ func init() {
 		},
 	}
 
+	var search = &cobra.Command{
+		Use:   "search",
+		Short: "Search for the available source repositoris (github repositories with flekszible:topic)",
+		Run: func(cmd *cobra.Command, args []string) {
+			pkg.SearchSource()
+		},
+	}
+
 	sourceDestFlags(sources, &inputDir, &outputDir)
 	sourceDestFlags(add, &inputDir, &outputDir)
 	rootCmd.AddCommand(sources)
 	sources.AddCommand(add)
+	sources.AddCommand(search)
 }

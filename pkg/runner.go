@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/apcera/termtables"
 	"github.com/elek/flekszible/pkg/data"
@@ -8,9 +10,11 @@ import (
 	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 )
 
 func ListResources(context *processor.RenderContext) {
@@ -102,6 +106,51 @@ func listUniqSources(context *processor.RenderContext) []data.Source {
 	return sources
 }
 
+type GitRepo struct {
+	FullName    string `json:"full_name"`
+	Description string
+}
+type GitRepos struct {
+	Items []GitRepo
+}
+
+func SearchSource() {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "https://api.github.com/search/repositories?q=topic:flekszible&sort=stars", nil)
+	req.Header.Add("Accept", "application/vnd.github.mercy-preview+json")
+	if err != nil {
+		panic(err)
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	if res.StatusCode != 200 {
+		panic(errors.New("Github API call was unsuccessfull: " + strconv.Itoa(res.StatusCode)))
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+	results := GitRepos{}
+	err = json.Unmarshal(body, &results)
+	if err != nil {
+		panic(err)
+	}
+	table := termtables.CreateTable()
+	table.AddHeaders("name", "description")
+	for _, repo := range results.Items {
+		table.AddRow(repo.FullName, repo.Description)
+	}
+	fmt.Println("Available flekszible repositories:")
+	fmt.Println()
+	fmt.Println(table.Render())
+	fmt.Println()
+	fmt.Println("Add flekszible topic to your repository to show your repository here.")
+	fmt.Println()
+
+}
 func AddSource(context *processor.RenderContext, inputDir string, source string) {
 	configFile := path.Join(inputDir, "flekszible.yaml")
 	var conf data.Configuration

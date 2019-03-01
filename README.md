@@ -1,10 +1,15 @@
 # fle[ksz]ible
 
-Flekszible is a Kubernetes resource manager. It's composition based (like kustomize) instead of templates (like helm).
+Flekszible is a Kubernetes resource manager. It helps to manage your kubernetes resourc files before the deployment. 
 
-Compared to kustomize or ksonnet:
-
- * It's almost as powerful as them but it's more simple to use. The key challenge here is to find the balance between simplicity and usability.
+ * It is similar to Helm: 
+   * but it's more flexible: you can modify any part of the source kubernetes resources
+   * It's composition based instead of templates (but supports templates)
+ * It is similar to Kustomize:
+   * But with less [limitations](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/eschewedFeatures.md)
+   * With more generic design (generic Yaml tree + transformations instead of k8s resource merging)
+   * It tries to be more user friendly (easier syntax, flexible composition)
+   * It has a simple but powerful package management
 
 ## Features:
 
@@ -14,7 +19,10 @@ Compared to kustomize or ksonnet:
   4. Multi-tenancy: With imports you can manage multiple environments (dev,prod,...)
   5. Multi-instance: You can import the same template (eg. zookeeper resources) with different flavour. With this approach you can create two different zookeeper ring from a template to your cluster.
   6. Reusable transformations: you can define transformations and reuse them later.
-
+  7. Package management: 
+  8. Side-car pattern friendly design
+  8. GitOps friendy: generates all the final resources to static files
+  
 ## Install
 
 On macOS, you can install flekszible with Homebrew package manager:
@@ -586,6 +594,18 @@ And you have all the kubernetes resource files:
     ├── scm-service.yaml
     └── scm-statefulset.yaml
 ```
+
+### Package management: custom repository
+
+You can search for the available repositories with 
+
+```
+flekszible search source
+```
+
+You don't need to create any PR to show up your own repository. Just tag your repository with `flekszible` topic. The previous command is just a simple github search.
+
+(As there is no moderation, including a repository is just as safe as executing a downloaded script.)
 
 ## Reference
 

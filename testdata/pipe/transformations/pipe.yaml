@@ -1,0 +1,6 @@
+- type: Pipe
+  command: sed
+  trigger:
+    metadata:
+      name: nginx-deployment
+  args: ["s/nginx/qwe/g"]

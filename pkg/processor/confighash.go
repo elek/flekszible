@@ -14,11 +14,11 @@ type ConfigHash struct {
 	nameToHash map[string]string
 }
 
-func (processor *ConfigHash) Before(ctx *RenderContext, resources []data.Resource) {
+func (processor *ConfigHash) Before(ctx *RenderContext, resources []*data.Resource) {
 	processor.nameToHash = make(map[string]string)
 	for _, resource := range resources {
-		if resource.Kind() == "ConfigMap" && processor.Trigger.active(&resource) {
-			str := ToString(&resource)
+		if resource.Kind() == "ConfigMap" && processor.Trigger.active(resource) {
+			str := ToString(resource)
 			hash := md5.Sum([]byte(str))
 			processor.nameToHash[resource.Name()] = hex.EncodeToString(hash[:md5.Size])
 		}

@@ -803,7 +803,7 @@ Extends existing k8s resources with additional elements.
 | Array                                             | Map                 | Yes
 
 
-#### Image
+### Image
 
 Replaces the docker image definition everywhere
 
@@ -814,13 +814,13 @@ Replaces the docker image definition everywhere
 
 Note: This transformations could also added with the `--image` CLI argument.
 
-#### Namespace
+### Namespace
 
 Similar to the image namespace also can be changed with simple transformation:
 
 
-| Name    | Type     | Value 
-|---------|----------|-------
+| Name        | Type     | Value 
+|-------------|----------|-------
 | namespace   | string   | Name of the used kubernetes namespace.
 
 Note: This transformations could also added with the `--namespace` CLI argument.
@@ -832,7 +832,7 @@ Example (`transformations/set.yaml`):
   namespace: myns
 ```
 
-#### Change
+### Change
 
 Change is a simple replacement like `sed`. You can apply a regular expression based replacement to a specific _string_ value:
 
@@ -855,7 +855,7 @@ Example:
 | pattern  | string   | Regular expression to replace a string value (see: https://github.com/google/re2/wiki/Syntax)
 | replacement | string   | Replacement value.
 
-#### Prefix
+### Prefix
 
 Add a specific prefix for all of the names.
 
@@ -870,6 +870,32 @@ Example (`transformations/set.yaml`):
 - type: Namespace
   namespace: myns
 ```
+
+### Pipe
+
+Transform content with external shell command.
+
+#### Parameters
+
+| Name      | Type     | Value 
+|-----------|----------|-------
+| command   | string   | External program which transforms standard input to output.
+| args      | []string | List of the arguments of the command.
+
+
+
+Pipe executes a specific command to transform a k8s resources to a new resources.
+
+The original manifest will be sent to the stdin of the process and the stdout will be processed as a the stdout of the file.
+
+Example:
+
+```
+- type: Pipe
+  command: sed
+  args: ["s/nginx/qwe/g"]
+```
+
 
 #### ConfigHash
 

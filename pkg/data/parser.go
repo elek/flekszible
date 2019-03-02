@@ -31,6 +31,29 @@ func ReadFile(file string) (*MapNode, error) {
 	return ReadString(data)
 }
 
+//Converts internal node tree to Yaml
+func ConvertToYaml(root Node) interface{} {
+	switch object := root.(type) {
+	case *MapNode:
+		slice := yaml.MapSlice{}
+		for _, key := range object.keys {
+			convertedValue := ConvertToYaml(object.Get(key))
+			slice = slice.Put(key, convertedValue)
+		}
+		return slice
+	case *KeyNode:
+		return object.Value
+	case *ListNode:
+		list := make([]interface{}, 0)
+		for _, item := range object.Children {
+			list = append(list, ConvertToYaml(item))
+		}
+		return list
+	}
+	return nil
+}
+
+//Converts raw Yaml structure to file to internal node tree
 func ConvertToNode(object interface{}, path Path) (Node, error) {
 	switch object := object.(type) {
 	case yaml.MapSlice:

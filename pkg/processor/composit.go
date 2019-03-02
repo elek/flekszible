@@ -37,8 +37,8 @@ func (c *Composit) AfterList(node *data.ListNode)                               
 func (c *Composit) BeforeListItem(node *data.ListNode, item data.Node, index int) {}
 func (c *Composit) AfterListItem(node *data.ListNode, item data.Node, index int)  {}
 
-func (c *Composit) Before(ctx *RenderContext, resources []data.Resource) {}
-func (c *Composit) After(ctx *RenderContext, resources []data.Resource)  {}
+func (c *Composit) Before(ctx *RenderContext, resources []*data.Resource) {}
+func (c *Composit) After(ctx *RenderContext, resources []*data.Resource)  {}
 
 func (c *Composit) BeforeResource(resource *data.Resource) {
 	for _, p := range c.Processors {

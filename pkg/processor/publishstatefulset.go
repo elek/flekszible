@@ -11,10 +11,10 @@ type PublishStatefulSet struct {
 	Trigger Trigger
 }
 
-func (processor *PublishStatefulSet) Before(ctx *RenderContext, resources []data.Resource) {
-	newResources := make([]data.Resource, 0)
+func (processor *PublishStatefulSet) Before(ctx *RenderContext, resources []*data.Resource) {
+	newResources := make([]*data.Resource, 0)
 	for _, resource := range resources {
-		if processor.Trigger.active(&resource) && resource.Kind() == "Service" && hasNoneClusterIp(resource.Content) {
+		if processor.Trigger.active(resource) && resource.Kind() == "Service" && hasNoneClusterIp(resource.Content) {
 			newContent := DeepCopy(resource.Content)
 
 			metadata := newContent.Get("metadata").(*data.MapNode)
@@ -25,7 +25,7 @@ func (processor *PublishStatefulSet) Before(ctx *RenderContext, resources []data
 			r := data.Resource{
 				Content: newContent,
 			}
-			newResources = append(newResources, r)
+			newResources = append(newResources, &r)
 		}
 
 	}

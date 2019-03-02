@@ -37,13 +37,13 @@ func (r *Resource) Get(path Path) string {
 		return ""
 	}
 }
-func LoadFromFileInfo(dir string, file os.FileInfo) ([]Resource, error) {
+func LoadFromFileInfo(dir string, file os.FileInfo) ([]*Resource, error) {
 	return LoadFrom(dir, file.Name())
 }
 
 //Load k8s resources from one yaml file
-func LoadFrom(dir string, file string) ([]Resource, error) {
-	results := make([]Resource, 0)
+func LoadFrom(dir string, file string) ([]*Resource, error) {
+	results := make([]*Resource, 0)
 	fullPath := path.Join(dir, file)
 	content, err := ioutil.ReadFile(fullPath)
 	if err != nil {
@@ -61,7 +61,7 @@ func LoadFrom(dir string, file string) ([]Resource, error) {
 				r := Resource{}
 				r.Content = parsedFragment
 				r.Filename = file
-				results = append(results, r)
+				results = append(results, &r)
 			} else {
 				return results, fmt.Errorf("Can't parse the resource file %s: %s", fullPath, err)
 			}
@@ -71,9 +71,9 @@ func LoadFrom(dir string, file string) ([]Resource, error) {
 }
 
 //read all the resources from a directory
-func ReadResourcesFromDir(dir string) []Resource {
+func ReadResourcesFromDir(dir string) []*Resource {
 	logrus.Infof("Reading resources from %s", dir)
-	resources := make([]Resource, 0)
+	resources := make([]*Resource, 0)
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)

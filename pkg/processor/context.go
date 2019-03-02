@@ -22,7 +22,7 @@ type RenderContext struct {
 type ResourceNode struct {
 	Dir                      string
 	Destination              string
-	Resources                []data.Resource
+	Resources                []*data.Resource
 	Children                 []*ResourceNode
 	PreImportTransformations []byte
 	Origin                   data.Source
@@ -58,14 +58,14 @@ func (context *RenderContext) LoadResourceTree() error {
 }
 
 //List all the resources from the resource tree.
-func (context *RenderContext) Resources() []data.Resource {
-	result := make([]data.Resource, 0)
+func (context *RenderContext) Resources() []*data.Resource {
+	result := make([]*data.Resource, 0)
 	result = append(result, context.RootResource.AllResources()...)
 	return result
 }
 
-func (node *ResourceNode) AllResources() []data.Resource {
-	result := make([]data.Resource, 0)
+func (node *ResourceNode) AllResources() []*data.Resource {
+	result := make([]*data.Resource, 0)
 	result = append(result, node.Resources...)
 	for _, child := range node.Children {
 		result = append(result, child.AllResources()...)
@@ -83,7 +83,7 @@ func CreateResourceNode(dir string, destination string, source data.Source) *Res
 	}
 	return &node
 }
-func (context *RenderContext) AddResources(resources ...data.Resource) {
+func (context *RenderContext) AddResources(resources ...*data.Resource) {
 	context.RootResource.Resources = append(context.RootResource.Resources, resources...)
 }
 
@@ -124,10 +124,10 @@ func (context *RenderContext) AppendProcessor(processor Processor) {
 	repo.Append(processor)
 }
 
-type execute func(transformation Processor, context *RenderContext, resources []data.Resource)
+type execute func(transformation Processor, context *RenderContext, resources []*data.Resource)
 
-func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) []data.Resource {
-	resources := make([]data.Resource, 0)
+func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) []*data.Resource {
+	resources := make([]*data.Resource, 0)
 	for _, child := range node.Children {
 		resources = append(resources, child.Execute(context, functionCall)...)
 	}
@@ -139,17 +139,17 @@ func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) 
 
 }
 func (ctx *RenderContext) Render() {
-	before := func(processor Processor, context *RenderContext, resources []data.Resource) {
+	before := func(processor Processor, context *RenderContext, resources []*data.Resource) {
 		processor.Before(context, resources)
 	}
-	after := func(processor Processor, context *RenderContext, resources []data.Resource) {
+	after := func(processor Processor, context *RenderContext, resources []*data.Resource) {
 		processor.After(context, resources)
 	}
-	process := func(processor Processor, context *RenderContext, resources []data.Resource) {
+	process := func(processor Processor, context *RenderContext, resources []*data.Resource) {
 		for _, resource := range resources {
-			processor.BeforeResource(&resource)
+			processor.BeforeResource(resource)
 			resource.Content.Accept(processor)
-			processor.AfterResource(&resource)
+			processor.AfterResource(resource)
 
 		}
 		processor.After(context, resources)

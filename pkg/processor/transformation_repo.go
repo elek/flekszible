@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 //the instatiated transformations for a specific run
@@ -33,7 +34,7 @@ func ReadProcessorDefinitionFile(filename string) ([]Processor, error) {
 }
 
 func CreateTransformation(processorTypeName string, config *yaml.MapSlice) (Processor, error) {
-	if definition, ok := ProcessorTypeRegistry.TypeMap[processorTypeName]; ok {
+	if definition, ok := ProcessorTypeRegistry.TypeMap[strings.ToLower(processorTypeName)]; ok {
 		processor, err := definition.Factory(config)
 		if err != nil {
 			return nil, err

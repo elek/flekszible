@@ -15,6 +15,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 func ListResources(context *processor.RenderContext) {
@@ -41,8 +42,8 @@ func ListProcessor(context *processor.RenderContext) {
 	}
 	table := termtables.CreateTable()
 	table.AddHeaders("name", "description")
-	for name, definition := range processor.ProcessorTypeRegistry.TypeMap {
-		table.AddRow(name, definition.Metadata.Description)
+	for _, definition := range processor.ProcessorTypeRegistry.TypeMap {
+		table.AddRow(definition.Metadata.Name, definition.Metadata.Description)
 	}
 	fmt.Println(table.Render())
 
@@ -54,7 +55,7 @@ func ShowProcessor(context *processor.RenderContext, command string) {
 		panic(err)
 	}
 
-	if procDefinition, found := processor.ProcessorTypeRegistry.TypeMap[command]; found {
+	if procDefinition, found := processor.ProcessorTypeRegistry.TypeMap[strings.ToLower(command)]; found {
 		fmt.Println("")
 		fmt.Println("### " + command)
 		fmt.Println()

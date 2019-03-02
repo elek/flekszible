@@ -2,6 +2,7 @@ package processor
 
 import (
 	"github.com/elek/flekszible/pkg/yaml"
+	"strings"
 )
 
 var ProcessorTypeRegistry ProcessorTypes
@@ -35,7 +36,7 @@ func (pt *ProcessorTypes) Add(definition ProcessorDefinition) {
 	if pt.TypeMap == nil {
 		pt.TypeMap = make(map[string]ProcessorDefinition)
 	}
-	pt.TypeMap[definition.Metadata.Name] = definition
+	pt.TypeMap[strings.ToLower(definition.Metadata.Name)] = definition
 }
 
 

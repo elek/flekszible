@@ -40,6 +40,9 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "PublishStatefulSet",
 			Description: "Creates additional NodeType service for StatefulSet internal services",
+			Parameter: []ProcessorParameter{
+				TriggerParameter,
+			},
 		},
 		Factory: func(slice *yaml.MapSlice) (Processor, error) {
 			return &PublishStatefulSet{}, nil

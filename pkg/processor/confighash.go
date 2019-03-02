@@ -53,6 +53,9 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "ConfigHash",
 			Description: "Add labels to the k8s resources with the hash of the used configmaps",
+			Parameter: []ProcessorParameter{
+				TriggerParameter,
+			},
 			Doc: `
 Add a kubernetes annotation with the hash of the used configmap. With 
 this approach you can force to re-create the k8s resources in case of config change. 
@@ -67,7 +70,7 @@ Example ('transformations/config.yaml'):
 '''yaml
 - type: ConfigHash
 '''
-`,
+` + TriggerDoc,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&ConfigHash{}, config)

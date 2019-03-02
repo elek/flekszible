@@ -48,6 +48,8 @@ func init() {
 			Name:        "Change",
 			Description: "Replace existing value literal in the yaml struct",
 			Parameter: []ProcessorParameter{
+				PathParameter,
+				TriggerParameter,
 				ProcessorParameter{
 					Name:        "pattern",
 					Description: "Regular expression to test the existing value. Value will be changed only if matches.",

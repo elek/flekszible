@@ -74,6 +74,8 @@ func init() {
 			Description: "Extends yaml fragment to an existing k8s resources",
 			Doc:         addDoc,
 			Parameter: []ProcessorParameter{
+				PathParameter,
+				TriggerParameter,
 				ProcessorParameter{
 					Name:        "value",
 					Description: "A yaml struct to replace the defined value",
@@ -103,4 +105,4 @@ var addDoc = `#### Supported value types
   - annotations
   value:
      flekszible: generated
-'''`
+'''` + TriggerDoc + PathDoc

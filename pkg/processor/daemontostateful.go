@@ -69,7 +69,10 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "DaemonToStatefulSet",
 			Description: "Converts daemonset to statefulset",
-			Doc:         `Useful for minikube based environments where you may not have enough node to run a daemonset based cluster.`,
+			Parameter: []ProcessorParameter{
+				TriggerParameter,
+			},
+			Doc: `Useful for minikube based environments where you may not have enough node to run a daemonset based cluster.` + TriggerDoc,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&DaemonToStatefulSet{}, config)

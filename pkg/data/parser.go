@@ -98,6 +98,9 @@ func ConvertToNode(object interface{}, path Path) (Node, error) {
 	case int:
 		res := NewKeyNode(path, object)
 		return &res, nil
+	case nil:
+		res := NewKeyNode(path, nil)
+		return &res, nil
 	default:
 		return nil, fmt.Errorf("I don't know about type %T! %s\n", object, path.ToString())
 	}

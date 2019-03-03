@@ -10,6 +10,7 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
    * With more generic design (generic Yaml tree + transformations instead of k8s resource merging)
    * It tries to be more user friendly (easier syntax, flexible composition)
    * It has a simple but powerful package management
+   * Service-mesh friendly
 
 ## Features:
 
@@ -21,7 +22,8 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
   6. Reusable transformations: you can define transformations and reuse them later.
   7. Package management: 
   8. Side-car pattern friendly design
-  8. GitOps friendy: generates all the final resources to static files
+  9. GitOps friendy: generates all the final resources to static files
+  10. Supports external processors like service-mesh injectors
   
 ## Install
 
@@ -606,6 +608,33 @@ flekszible search source
 You don't need to create any PR to show up your own repository. Just tag your repository with `flekszible` topic. The previous command is just a simple github search.
 
 (As there is no moderation, including a repository is just as safe as executing a downloaded script.)
+
+### Service-mesh support
+
+There are multiple built-in processor definition which can be parameterized in the `transformations` file. One notable is the `pipe` type which can execute any command to transform the given kubernetes manifest file.
+
+For example to inject istio service-mesh fragments, you can define the following `flekszible.yaml`:
+
+```
+import:
+- path: kube
+  transformations:
+  - type: pipe
+    command: istioctl
+    args:
+    - kube-inject
+    - "-f"
+    - "-"
+
+```
+
+Note: you should put the `istioctl` cli to your path and define the istio sample dir as a source of imports. For example with environment vaiable:
+
+```
+example FLEKSZIBLE_PATH=/home/elek/prog/istio-1.0.5/samples/bookinfo/platform/
+```
+
+Please note, that istio injection could be slow as it requires a live connection to the existing istio services.
 
 ## Reference
 

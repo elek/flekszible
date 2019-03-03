@@ -1,0 +1,9 @@
+import:
+- path: kube
+  transformations:
+  - type: pipe
+    command: istioctl
+    args:
+    - kube-inject
+    - "-f"
+    - "-"

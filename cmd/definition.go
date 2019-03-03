@@ -10,8 +10,9 @@ func init() {
 	var inputDir string;
 	var outputDir string;
 	var list = &cobra.Command{
-		Use:   "processor",
-		Short: "List available processor definitions",
+		Use:     "definition",
+		Aliases: []string{"processor", "def"},
+		Short:   "List available processor definitions",
 		Run: func(cmd *cobra.Command, args []string) {
 			context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
 			pkg.ListProcessor(context)

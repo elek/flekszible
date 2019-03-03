@@ -24,6 +24,53 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
   8. Side-car pattern friendly design
   9. GitOps friendy: generates all the final resources to static files
   10. Supports external processors like service-mesh injectors
+
+
+## Term of contents
+
+   * [Install](README.md#install)
+   * [Recipes (Features)](README.md#recipes-features)
+      * [Getting started](README.md#getting-started)
+      * [Import/Source other dirs](README.md#importsource-other-dirs)
+      * [Set image or namespace](README.md#set-image-or-namespace)
+      * [Deploy dev build (the skaffold use case)](README.md#deploy-dev-build-the-skaffold-use-case)
+      * [Instantiate](README.md#instantiate)
+      * [Destination dir support](README.md#destination-dir-support)
+      * [External sources](README.md#external-sources)
+      * [FLEKSZIBLE_PATH](README.md#flekszible_path)
+      * [Define transformations](README.md#define-transformations)
+      * [List defintion](README.md#list-defintion)
+      * [Define reusable processor definitions](README.md#define-reusable-processor-definitions)
+      * [Template support](README.md#template-support)
+      * [Templating in the definition files](README.md#templating-in-the-definition-files)
+      * [Package managent](README.md#package-managent)
+      * [Package management: custom repository](README.md#package-management-custom-repository)
+      * [Service-mesh support](README.md#service-mesh-support)
+   * [Reference](README.md#reference)
+      * [Path](README.md#path)
+      * [Trigger](README.md#trigger)
+      * [Directory structure](README.md#directory-structure)
+      * [Imports](README.md#imports)
+         * [Simple import](README.md#simple-import)
+         * [Import to subdirectory](README.md#import-to-subdirectory)
+         * [Import with transformations](README.md#import-with-transformations)
+         * [Import from external source](README.md#import-from-external-source)
+   * [Available transformation types](README.md#available-transformation-types)
+      * [Add](README.md#add)
+         * [Parameters](README.md#parameters)
+         * [Example](README.md#example)
+         * [Supported add methods](README.md#supported-add-methods)
+      * [Image](README.md#image)
+      * [Namespace](README.md#namespace)
+      * [Change](README.md#change)
+      * [Prefix](README.md#prefix)
+      * [Pipe](README.md#pipe)
+         * [Parameters](README.md#parameters-1)
+      * [ConfigHash](README.md#confighash)
+      * [PublishStatefulSet](README.md#publishstatefulset)
+      * [DaemonToStatefulset](README.md#daemontostatefulset)
+      * [Composite](README.md#composite)
+
   
 ## Install
 

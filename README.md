@@ -453,7 +453,7 @@ No parameters.
 
 ```
 
-## Templating in the definition files
+### Templating in the definition files
 
 The reusable definitions can have additional parameter variables.
 
@@ -710,7 +710,7 @@ This definition will apply only to the k8s resources where the value of `metadat
 You can use multiple values in the trigger. All the key nodes will be collected and should be the same in the target resource.
 
 
-## Directory structure
+### Directory structure
 
 TLDR;
 
@@ -736,9 +736,9 @@ Example: `./transformations/label.yaml`
 
 All the yaml files from the `definitions` directory will be parsed as composit transformation type. You can define multiple transoformation and name it. It may be used form other transformation files.
 
-## Import
+### Imports
 
-### Simple import
+#### Simple import
 
 You can import other directory structures with adding references to the `flekszible.yaml`
 
@@ -752,7 +752,7 @@ import:
 All the transformations + definitions + k8s resources will be added and applied. Note: the transformations from the imported directory will be applied only to the imported resources.
 
 
-### Import to subdirectory
+#### Import to subdirectory
 
 The imported resources could be generated to a subdirectory:
 
@@ -765,7 +765,7 @@ import;
 
 With this approach the prometheus related resources will be saved to the `monitoring` subdirectory of the destination path.
 
-### Import with transformations
+#### Import with transformations
 
 Transformations also can be applied to the imported resources:
 
@@ -780,7 +780,7 @@ import:
 
 The hadoop resources are imported here and the image reference is changed during the import (only for the imported resources).
 
-### Import from external source
+#### Import from external source
 
 Imported path is checked in the following location (in this order):
 
@@ -926,7 +926,7 @@ Example:
 ```
 
 
-#### ConfigHash
+### ConfigHash
 
 Add a kubernetes annotation with the hash of the used configmap. With 
 this approach you can force to re-create the k8s resources in case of config change. 
@@ -943,18 +943,18 @@ Example (`transformations/config.yaml`):
 - type: ConfigHash
 ```
 
-#### PublishStatefulSet
+### PublishStatefulSet
 
 Creates additional NodeType service for StatefulSet internal services.
 
 
-#### DaemonToStatefulset
+### DaemonToStatefulset
 
 Converts daemonset to statefulset.
 
 Useful for minikube based environments where you may not have enough node to run a daemonset based cluster.
 
-#### Composit
+### Composite
 
 You can create additional transformations with grouping existing transformations. For example the following definition register a new transformation type:
 

@@ -59,7 +59,7 @@ func CreateProcessorRepository() *TransformationRepository {
 }
 
 //read transformations from ./transformations/... files
-func (repository *TransformationRepository) ParseProcessors(inputDir string) {
+func (repository *TransformationRepository) ParseTransformations(inputDir string) {
 	mixinDir := path.Join(inputDir, "transformations")
 	if _, err := os.Stat(mixinDir); !os.IsNotExist(err) {
 		files, err := ioutil.ReadDir(mixinDir)

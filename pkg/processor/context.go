@@ -108,7 +108,7 @@ func (node *ResourceNode) InitializeTransformations() error {
 		}
 		node.ProcessorRepository.AppendAll(processors)
 	}
-	node.ProcessorRepository.ParseProcessors(node.Dir)
+	node.ProcessorRepository.ParseTransformations(node.Dir)
 	for _, child := range node.Children {
 		err := child.InitializeTransformations()
 		if err != nil {

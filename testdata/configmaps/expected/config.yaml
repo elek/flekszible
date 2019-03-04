@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: name
+data:
+  test.sh: |-
+    #!/usr/bin/env bash
+    echo "hello1"
+  test2.sh: |-
+    #!/usr/bin/env bash
+    echo "hello2"
+

@@ -331,6 +331,7 @@ The default directory structure of a component is:
  * `flekszible.yaml` (optional)
  * `transformations` directory which contains 
  * `definitions` reusable definitions
+ * `configmaps` raw resources to import them as configmaps (name convention: configmapname_keyname.ext)
  * `...*.yaml` Any kubernetes sresource file.
  
  In the transformation we can create any number files which can contain transformations:
@@ -764,6 +765,7 @@ TLDR;
  * `*.yaml`: used as k8s resources
  * `transformations/*.yaml`: will be applied to all the resources according to the specified rules
  * `definitions/*.yaml`: composit definitions which could be used in `transformations.yaml`. Won't be applied by default.
+ * `configmaps/*_*.*`: all the files from here will be imported as configmaps. The first part of the filename (before the first `_`) will be used as the name of the configmap, the remaining part is the key inside the configmap.
  * `flekszible.yaml`: configuration file. Could include other directories (all the resources + transformations + definitions will be added from that directory.)
 
 In the output directory all the `yaml` files (except the `flekszible.yaml` configuration file) are considered to be a k8s resource. One file could contain multiple resources.

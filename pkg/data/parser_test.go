@@ -8,7 +8,7 @@ import (
 )
 
 func TestReadFile(t *testing.T) {
-	node, err := ReadFile("../../testdata/parser/datanode.yaml")
+	node, err := ReadManifestFile("../../testdata/parser/datanode.yaml")
 	assert.Nil(t, err)
 	node.Accept(PrintVisitor{})
 }

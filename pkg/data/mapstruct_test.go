@@ -11,7 +11,7 @@ func TestApply(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	get := Get{Path: NewPath("metadata", "name")}
-	node, err := ReadFile("../../testdata/mapstruct/get.yaml")
+	node, err := ReadManifestFile("../../testdata/mapstruct/get.yaml")
 	assert.Nil(t, err)
 	node.Accept(&get)
 	assert.Equal(t, "datanode", get.ReturnValue.(*KeyNode).Value.(string))
@@ -32,10 +32,10 @@ func TestSmartGet(t *testing.T) {
 }
 
 func ExecuteAndCompare(t *testing.T, name string, visitor Visitor) {
-	node, err := ReadFile("../../testdata/mapstruct/" + name + ".yaml")
+	node, err := ReadManifestFile("../../testdata/mapstruct/" + name + ".yaml")
 	assert.Nil(t, err)
 
-	expected, err := ReadFile("../../testdata/mapstruct/" + name + "_expected.yaml")
+	expected, err := ReadManifestFile("../../testdata/mapstruct/" + name + "_expected.yaml")
 	assert.Nil(t, err)
 
 	node.Accept(visitor)

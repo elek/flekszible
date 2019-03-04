@@ -58,7 +58,7 @@ func DeepCopy(src data.Node) *data.MapNode {
 	}
 	src.Accept(&writer)
 
-	mapNode, err := data.ReadString([]byte(buffer.String()))
+	mapNode, err := data.ReadManifestString([]byte(buffer.String()))
 	if err != nil {
 		panic(err)
 	}

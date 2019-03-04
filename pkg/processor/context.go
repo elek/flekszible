@@ -88,11 +88,14 @@ func (context *RenderContext) AddResources(resources ...*data.Resource) {
 }
 
 func (context *RenderContext) Init() error {
+	//load flekszible.yaml (recursive)
 	err := context.LoadResourceTree()
 	if err != nil {
 		return err
 	}
+	//load 'definitions' subdirs
 	context.LoadDefinitions()
+	//load 'transformations' subdirs
 	return context.InitializeTransformations()
 }
 

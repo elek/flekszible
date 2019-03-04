@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -56,7 +57,7 @@ func LoadFrom(dir string, file string) ([]*Resource, error) {
 		fragmentContent := strings.TrimSpace(fragment)
 		if len(fragmentContent) > 0 {
 
-			parsedFragment, err := ReadString([]byte(fragmentContent))
+			parsedFragment, err := ReadManifestString([]byte(fragmentContent))
 			if err == nil {
 				r := Resource{}
 				r.Content = parsedFragment
@@ -88,5 +89,55 @@ func ReadResourcesFromDir(dir string) []*Resource {
 		}
 	}
 
+	configMaps, err := ReadConfigMaps(dir)
+	if err != nil {
+		resources = append(resources, configMaps...)
+	} else {
+		panic(err)
+	}
 	return resources
+}
+
+func ReadConfigMaps(dir string) ([]*Resource, error) {
+	resources := make([]*Resource, 0)
+	configDirPath := path.Join(dir, "configmaps")
+	files, err := ioutil.ReadDir(configDirPath)
+	if err != nil {
+		return resources, err
+	}
+	configMapWithData := make(map[string]map[string]string)
+	for _, file := range files {
+		if !file.IsDir() {
+			filename := file.Name()
+			pieces := strings.SplitN(filename, "_", 2)
+			if len(pieces) != 2 {
+				return resources, errors.New("Filename should be in the format: configmap_key.ext. " + filename)
+			}
+			data, err := ioutil.ReadFile(path.Join(configDirPath, filename))
+			if err != nil {
+				return resources, err
+			}
+			if _, found := configMapWithData[pieces[0]]; !found {
+				configMapWithData[pieces[0]] = make(map[string]string)
+			}
+			configMapWithData[pieces[0]][pieces[1]] = string(data)
+		}
+	}
+	for name, dataMap := range configMapWithData {
+		rootNode := NewMapNode(NewPath())
+		rootNode.PutValue("apiVersion", "v1")
+		rootNode.PutValue("kind", "ConfigMap")
+		metadata := rootNode.CreateMap("metadata")
+		metadata.PutValue("name", name)
+		data := rootNode.CreateMap("data")
+		for keyName, rawData := range dataMap {
+			data.PutValue(keyName, rawData)
+		}
+		r := Resource{}
+		r.Content = &rootNode
+		//r.Filename = filename
+		resources = append(resources, &r)
+	}
+
+	return resources, nil
 }

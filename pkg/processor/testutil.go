@@ -80,7 +80,7 @@ func readOneDir(t *testing.T, dirName string, dirContent *map[string]*data.MapNo
 		if info, err := os.Stat(filename); err == nil && !info.IsDir() {
 			fileContent, err := ioutil.ReadFile(filename)
 			assert.Nil(t, err)
-			parsedFragment, err := data.ReadString(fileContent)
+			parsedFragment, err := data.ReadManifestString(fileContent)
 			assert.Nil(t, err)
 			(*dirContent)[f.Name()] = parsedFragment
 		} else {

@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func ReadString(content []byte) (*MapNode, error) {
+func ReadManifestString(content []byte) (*MapNode, error) {
 	yamlDoc := yaml.MapSlice{}
 	err := yaml.Unmarshal(content, &yamlDoc)
 	if err != nil {
@@ -22,13 +22,13 @@ func ReadString(content []byte) (*MapNode, error) {
 	return result, nil
 }
 
-func ReadFile(file string) (*MapNode, error) {
+func ReadManifestFile(file string) (*MapNode, error) {
 
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
-	return ReadString(data)
+	return ReadManifestString(data)
 }
 
 //Converts internal node tree to Yaml

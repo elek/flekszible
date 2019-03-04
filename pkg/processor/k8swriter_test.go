@@ -7,7 +7,7 @@ import (
 )
 
 func TestK8sWriter(t *testing.T) {
-	node, err := data.ReadFile("../../testdata/writer/ss.yaml")
+	node, err := data.ReadManifestFile("../../testdata/writer/ss.yaml")
 	assert.Nil(t, err)
 	assert.NotNil(t, node)
 

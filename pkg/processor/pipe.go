@@ -41,7 +41,7 @@ func (p *Pipe) BeforeResource(resource *data.Resource) {
 	}
 	output := builder.String()
 	logrus.Infof("Command is executed with the following output %s", output)
-	node, err := data.ReadString([]byte(output ))
+	node, err := data.ReadManifestString([]byte(output ))
 	if err != nil {
 		logrus.Error("Can't parse the result of the piped command for " + resource.Path + " " + err.Error())
 		return

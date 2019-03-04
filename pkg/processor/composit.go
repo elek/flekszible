@@ -114,7 +114,7 @@ func parseDefintion(path string) error {
 //
 ////pase definition yaml file and register definitions to the global registry.
 //func parseDefintion(path string) error {
-//	content, err := ioutil.ReadFile(path)
+//	content, err := ioutil.ReadManifestFile(path)
 //	if err != nil {
 //		return err
 //	}

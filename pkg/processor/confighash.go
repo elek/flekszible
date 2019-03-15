@@ -16,9 +16,13 @@ type ConfigHash struct {
 
 func (processor *ConfigHash) Before(ctx *RenderContext, resources []*data.Resource) {
 	processor.nameToHash = make(map[string]string)
+
 	for _, resource := range resources {
 		if resource.Kind() == "ConfigMap" && processor.Trigger.active(resource) {
-			str := ToString(resource)
+			str, err := resource.Content.ToString()
+			if err != nil {
+				panic(err)
+			}
 			hash := md5.Sum([]byte(str))
 			processor.nameToHash[resource.Name()] = hex.EncodeToString(hash[:md5.Size])
 		}

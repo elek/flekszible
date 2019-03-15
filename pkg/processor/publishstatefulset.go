@@ -3,7 +3,6 @@ package processor
 import (
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
-	"strings"
 )
 
 type PublishStatefulSet struct {
@@ -50,15 +49,12 @@ func init() {
 	})
 }
 
-func DeepCopy(src data.Node) *data.MapNode {
-
-	buffer := strings.Builder{}
-	writer := K8sWriter{
-		output: &buffer,
+func DeepCopy(src *data.MapNode) *data.MapNode {
+	content, err := src.ToString();
+	if err != nil {
+		panic(err)
 	}
-	src.Accept(&writer)
-
-	mapNode, err := data.ReadManifestString([]byte(buffer.String()))
+	mapNode, err := data.ReadManifestString([]byte(content))
 	if err != nil {
 		panic(err)
 	}

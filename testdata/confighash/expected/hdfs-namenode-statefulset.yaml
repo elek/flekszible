@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: hdfs-namenode
   annotations:
-    flekszible/config-hash: "a0424462a9f680548815756df171a904"
+    flekszible/config-hash: "6a2c8fdd15a5fa191ec7be6c1e4432da"
 spec:
   serviceName: hdfs-namenode
   replicas: 1

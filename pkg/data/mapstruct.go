@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"github.com/elek/flekszible/pkg/yaml"
 	"strconv"
 )
 
@@ -77,6 +78,15 @@ func (node *MapNode) Accept(v Visitor) {
 
 	}
 	v.AfterMap(node)
+}
+
+func (node *MapNode) ToString() (string, error) {
+	converted := ConvertToYaml(node)
+	bytes, err := yaml.Marshal(converted)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
 }
 
 func (node MapNode) Get(s string) Node {

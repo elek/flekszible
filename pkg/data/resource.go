@@ -90,7 +90,7 @@ func ReadResourcesFromDir(dir string) []*Resource {
 	}
 
 	configMaps, err := ReadConfigMaps(dir)
-	if err != nil {
+	if err == nil {
 		resources = append(resources, configMaps...)
 	} else {
 		panic(err)
@@ -101,6 +101,13 @@ func ReadResourcesFromDir(dir string) []*Resource {
 func ReadConfigMaps(dir string) ([]*Resource, error) {
 	resources := make([]*Resource, 0)
 	configDirPath := path.Join(dir, "configmaps")
+	if _, err := os.Stat(configDirPath); err != nil {
+		if os.IsNotExist(err) {
+			return resources, nil
+		} else {
+			return resources, err
+		}
+	}
 	files, err := ioutil.ReadDir(configDirPath)
 	if err != nil {
 		return resources, err

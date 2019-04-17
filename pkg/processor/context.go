@@ -164,8 +164,7 @@ func (ctx *RenderContext) Render() {
 
 //parse the directory structure and the flekszible configs from the dirs
 func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
-	configFile := path.Join(node.Dir, "flekszible.yaml")
-	conf, err := data.ReadConfiguration(configFile)
+	conf, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
 		return err
 	}

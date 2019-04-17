@@ -18,11 +18,13 @@ type K8sWriter struct {
 	resourceOutputDir string
 	output            io.Writer
 	file              *os.File
+	header            string
 }
 
 func (writer *K8sWriter) Before(ctx *RenderContext, resources []*data.Resource) {
 	writer.resourceOutputDir = ctx.OutputDir
 }
+
 func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destination string) string {
 	fileName := name + "-" + strings.ToLower(kind) + ".yaml"
 	return path.Join(outputDir, destination, fileName)
@@ -35,7 +37,12 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
 	if outputDir == "-" {
 		writer.output = os.Stderr
 	} else {
-
+		licenceHeader := ""
+		licenceHeaderFile := path.Join(outputDir, "LICENSE.header")
+		if _, err := os.Stat(licenceHeader); os.IsNotExist(err) {
+			content, _ := ioutil.ReadFile(licenceHeaderFile)
+			licenceHeader = string(content) + "\n"
+		}
 		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination)
 		err := os.MkdirAll(path.Dir(outputFile), os.ModePerm)
 		if err != nil {
@@ -47,7 +54,7 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
 			panic(err);
 		}
 
-		err = ioutil.WriteFile(outputFile, []byte(content), 0655)
+		err = ioutil.WriteFile(outputFile, []byte(licenceHeader+content), 0655)
 		if err != nil {
 			panic(err);
 		}

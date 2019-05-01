@@ -8,9 +8,10 @@ import (
 )
 
 type Configuration struct {
-	Source []ConfigSource
-	Import []ImportConfiguration
+	Source          []ConfigSource
+	Import          []ImportConfiguration
 	Transformations []yaml.MapSlice
+	Standalone      bool
 }
 
 type ConfigSource struct {
@@ -25,7 +26,7 @@ type ImportConfiguration struct {
 }
 
 //read flekszible.yaml configuration from one file
-func readFromFile(file string, conf *Configuration) error {
+func readFromFile(file string, conf *Configuration, standalone bool) error {
 	if _, err := os.Stat(file); ! os.IsNotExist(err) {
 		bytes, err := ioutil.ReadFile(file)
 		if err != nil {
@@ -36,6 +37,7 @@ func readFromFile(file string, conf *Configuration) error {
 		if err != nil {
 			return err
 		}
+		conf.Standalone = standalone
 	}
 	return nil
 
@@ -46,12 +48,12 @@ func ReadConfiguration(dir string) (Configuration, error) {
 
 	conf := Configuration{}
 
-	err := readFromFile(path.Join(dir, "flekszible.yaml"), &conf)
+	err := readFromFile(path.Join(dir, "flekszible.yaml"), &conf, false)
 	if err != nil {
 		return conf, err
 	}
 
-	err = readFromFile(path.Join(dir, "Flekszible"), &conf)
+	err = readFromFile(path.Join(dir, "Flekszible"), &conf, true)
 	if err != nil {
 		return conf, err
 	}

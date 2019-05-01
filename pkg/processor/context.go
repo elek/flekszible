@@ -28,6 +28,7 @@ type ResourceNode struct {
 	Origin                   data.Source
 	Source                   []data.Source
 	ProcessorRepository      *TransformationRepository
+	Standalone               bool
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
@@ -111,7 +112,9 @@ func (node *ResourceNode) InitializeTransformations() error {
 		}
 		node.ProcessorRepository.AppendAll(processors)
 	}
-	node.ProcessorRepository.ParseTransformations(node.Dir)
+	if !node.Standalone {
+		node.ProcessorRepository.ParseTransformations(node.Dir)
+	}
 	for _, child := range node.Children {
 		err := child.InitializeTransformations()
 		if err != nil {
@@ -168,7 +171,10 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	if err != nil {
 		return err
 	}
-	node.Resources = data.ReadResourcesFromDir(node.Dir)
+	node.Standalone = conf.Standalone
+	if !conf.Standalone {
+		node.Resources = data.ReadResourcesFromDir(node.Dir)
+	}
 	node.Source = make([]data.Source, 0)
 	for _, definedSource := range conf.Source {
 		if definedSource.Url != "" {
@@ -217,6 +223,9 @@ func (ctx *RenderContext) LoadDefinitions() {
 }
 
 func (node *ResourceNode) LoadDefinitions() {
+	if node.Standalone {
+		return
+	}
 	defDir := path.Join(node.Dir, "definitions")
 	if _, err := os.Stat(defDir); !os.IsNotExist(err) {
 		files, err := ioutil.ReadDir(defDir)

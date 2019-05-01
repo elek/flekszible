@@ -180,6 +180,13 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	for ix, _ := range node.Resources {
 		node.Resources[ix].Destination = node.Destination
 	}
+	if len(conf.Transformations) > 0 {
+		bytes, err := yaml.Marshal(conf.Transformations)
+		if err != nil {
+			return err
+		}
+		node.PreImportTransformations = bytes
+	}
 	for _, importDefinition := range conf.Import {
 		source, err := locate(node.Dir, importDefinition.Path, node.Source, sourceCache)
 		if err != nil {

@@ -10,6 +10,7 @@ import (
 type Configuration struct {
 	Source []ConfigSource
 	Import []ImportConfiguration
+	Transformations []yaml.MapSlice
 }
 
 type ConfigSource struct {

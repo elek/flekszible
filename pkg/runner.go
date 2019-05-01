@@ -155,7 +155,7 @@ func SearchSource() {
 func AddSource(context *processor.RenderContext, inputDir string, source string) {
 	configFile := path.Join(inputDir, "flekszible.yaml")
 	var conf data.Configuration
-	conf, err := data.ReadConfiguration(configFile)
+	conf, err := data.ReadConfiguration(inputDir)
 	if err != nil {
 		panic(err)
 	}

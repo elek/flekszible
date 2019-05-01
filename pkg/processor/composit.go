@@ -76,7 +76,9 @@ func compositFactory(config *yaml.MapSlice, templateBytes []byte) (Processor, er
 		return nil, errors.New("The definition template is invalid: " + err.Error())
 	}
 	output := strings.Builder{}
-	err = tpl.Execute(&output, parseTransformationParameters(config))
+	parameters := parseTransformationParameters(config)
+	addDefaultParameters(parameters)
+	err = tpl.Execute(&output, parameters)
 	if err != nil {
 		return nil, errors.New("The render was failed: " + err.Error())
 	}
@@ -87,6 +89,15 @@ func compositFactory(config *yaml.MapSlice, templateBytes []byte) (Processor, er
 	return &Composit{
 		Processors: processors,
 	}, nil
+}
+
+func addDefaultParameters(parameters map[string]interface{}) {
+	kubeConfig := data.CreateKubeConfig();
+	ns, err := kubeConfig.ReadCurrentNamespace()
+	if err != nil {
+		ns = "default"
+	}
+	parameters["namespace"] = ns
 }
 
 //pase definition yaml file and register definitions to the global registry.

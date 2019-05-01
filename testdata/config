@@ -1,0 +1,20 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: foo
+    server: https://10.8.0.1:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    namespace: qwe
+    user: kubernetes-admin
+  name: kubernetes-admin@kubernetes
+current-context: kubernetes-admin@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: foo
+    client-key-data: foo

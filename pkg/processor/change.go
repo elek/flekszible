@@ -55,7 +55,7 @@ func init() {
 					Description: "Regular expression to test the existing value. Value will be changed only if matches.",
 					Default:     ".*",
 				},
-				ProcessorParameter{
+				{
 					Name:        "replacement",
 					Description: "The value to replace the field in case of match",
 					Required:    true,

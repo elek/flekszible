@@ -6,8 +6,8 @@ import (
 )
 
 func TestReadNamespace(t *testing.T) {
-	kubeConf := CreateKubeConfig("../../testdata/config")
-	namespace, err := kubeConf.readCurrentNamespace()
+	kubeConf := CreateKubeConfigFromFile("../../testdata/config")
+	namespace, err := kubeConf.ReadCurrentNamespace()
 	assert.Nil(t, err)
 	assert.Equal(t, "qwe", namespace)
 }

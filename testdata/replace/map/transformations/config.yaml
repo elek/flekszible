@@ -1,0 +1,10 @@
+- type: Replace
+  path:
+    - spec
+    - template
+    - spec
+    - containers
+  value:
+    - name: other
+      image: elek/ozone
+      args: ["ozone","scm"]

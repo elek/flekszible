@@ -78,7 +78,7 @@ func init() {
 				TriggerParameter,
 				ProcessorParameter{
 					Name:        "value",
-					Description: "A yaml struct to replace the defined value",
+					Description: "A yaml struct to add to the defined path",
 				},
 			},
 		},

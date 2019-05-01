@@ -50,6 +50,10 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
       * [Path](README.md#path)
       * [Trigger](README.md#trigger)
       * [Directory structure](README.md#directory-structure)
+         * [Simple os dir](README.md#simple-os-dir)
+         * [Simplified descriptor (Flekszible)](README.md#simplified-descriptor-flekszible)
+         * [Fully featured descriptor (flekszible.yaml)](README.md#fully-featured-descriptor-flekszibleyaml)
+         * [Summary](README.md#summary)
       * [Imports](README.md#imports)
          * [Simple import](README.md#simple-import)
          * [Import to subdirectory](README.md#import-to-subdirectory)
@@ -760,7 +764,24 @@ You can use multiple values in the trigger. All the key nodes will be collected 
 
 ### Directory structure
 
-TLDR;
+Flekszible directories can contain:
+
+ * kubernetes resource files
+ * transformations
+ * definition (transformation templates)
+ * raw configuration (to convert them to configmaps) 
+
+#### Simple os dir
+
+A simple OS dir can work as a source directory for flekszible __without any descriptor__. In this case all the kubernetes resource files will be imported and used from the dir.
+
+#### Simplified descriptor (Flekszible)
+
+In case of a `Flekszible` file does exist, it will be parsed and all the imports/sources/transformations will be used based on the Flekszible file. In this case __none__ of the other files in the directory will be used. Best to use this structure to generate the final k8s resources.
+
+#### Fully featured descriptor (flekszible.yaml)
+
+If `flekszible.yaml` does exist in the directory it's handled as a full flekszible definition and all the resources/transformations/configs will be used from the directory based on the following naming convention:
 
  * `*.yaml`: used as k8s resources
  * `transformations/*.yaml`: will be applied to all the resources according to the specified rules
@@ -783,13 +804,25 @@ Example: `./transformations/label.yaml`
     felkszible: generated
 ```
 
-All the yaml files from the `definitions` directory will be parsed as composit transformation type. You can define multiple transoformation and name it. It may be used form other transformation files.
+All the yaml files from the `definitions` directory will be parsed as composit transformation type. You can define multiple transformation and name it. It may be used form other transformation files.
+
+#### Summary
+
+You have the following options to read a directory.
+
+| descriptor file   | k8s resource files to load      | transformations               | definitions    | configs  
+|-------------------|---------------------------------|-------------------------------|----------------|-------------
+| None              | all the yaml files              | None                          | None           | None
+| `Flekszible`      | None                            | desc(1)                       | None           | None            
+| `flekszible.yaml` | *.yaml                          | ./transformations/* + desc(1) | ./definitions  | ./configmaps/*
+
+(1) Only from the descriptor file
 
 ### Imports
 
 #### Simple import
 
-You can import other directory structures with adding references to the `flekszible.yaml`
+You can import other directory structures with adding references to the `flekszible.yaml`/`Flekszible`
 
 For example
 
@@ -798,7 +831,7 @@ import:
   - path: ../../hadoop
 ```
 
-All the transformations + definitions + k8s resources will be added and applied. Note: the transformations from the imported directory will be applied only to the imported resources.
+All the transformations + definitions + k8s resources will be added and applied (see the previos section about the directories). Note: the transformations from the imported directory will be applied only to the imported resources.
 
 
 #### Import to subdirectory

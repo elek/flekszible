@@ -167,7 +167,7 @@ func (ctx *RenderContext) Render() {
 
 //parse the directory structure and the flekszible configs from the dirs
 func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
-	conf, err := data.ReadConfiguration(node.Dir)
+	conf, _, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
 		return err
 	}

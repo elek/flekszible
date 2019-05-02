@@ -153,9 +153,8 @@ func SearchSource() {
 
 }
 func AddSource(context *processor.RenderContext, inputDir string, source string) {
-	configFile := path.Join(inputDir, "flekszible.yaml")
 	var conf data.Configuration
-	conf, err := data.ReadConfiguration(inputDir)
+	conf, configFile, err := data.ReadConfiguration(inputDir)
 	if err != nil {
 		panic(err)
 	}
@@ -171,9 +170,8 @@ func AddSource(context *processor.RenderContext, inputDir string, source string)
 }
 
 func AddApp(context *processor.RenderContext, inputDir string, app string) {
-	configFile := path.Join(inputDir, "flekszible.yaml")
 	var conf data.Configuration
-	conf, err := data.ReadConfiguration(configFile)
+	conf, configFile, err := data.ReadConfiguration(inputDir)
 	if err != nil {
 		panic(err)
 	}

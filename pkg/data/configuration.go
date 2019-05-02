@@ -25,38 +25,47 @@ type ImportConfiguration struct {
 	Transformations []yaml.MapSlice
 }
 
-//read flekszible.yaml configuration from one file
-func readFromFile(file string, conf *Configuration, standalone bool) error {
+//read flekszible.yaml/Flekszible configuration from one file
+func readFromFile(file string, conf *Configuration) (bool, error) {
 	if _, err := os.Stat(file); ! os.IsNotExist(err) {
 		bytes, err := ioutil.ReadFile(file)
 		if err != nil {
-			return err
+			return false, err
 		}
 
 		err = yaml.Unmarshal(bytes, &conf)
 		if err != nil {
-			return err
+			return false, err
 		}
-		conf.Standalone = standalone
+		return true, nil
+	} else {
+		return false, nil
 	}
-	return nil
+
 
 }
 
 //read configuration from flekszible.yaml or Flekszible file
-func ReadConfiguration(dir string) (Configuration, error) {
+func ReadConfiguration(dir string) (Configuration, string, error) {
 
 	conf := Configuration{}
-
-	err := readFromFile(path.Join(dir, "flekszible.yaml"), &conf, false)
+	configFilePath := path.Join(dir, "flekszible.yaml")
+	loaded, err := readFromFile(configFilePath, &conf)
 	if err != nil {
-		return conf, err
+		return conf, "", err
+	}
+	if loaded {
+		return conf, configFilePath, nil
 	}
 
-	err = readFromFile(path.Join(dir, "Flekszible"), &conf, true)
+	configFilePath = path.Join(dir, "Flekszible")
+	loaded, err = readFromFile(configFilePath, &conf)
 	if err != nil {
-		return conf, err
+		return conf, "", err
 	}
-	return conf, nil
+	if loaded {
+		conf.Standalone = true
+	}
+	return conf, configFilePath, nil
 
 }

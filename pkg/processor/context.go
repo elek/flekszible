@@ -167,12 +167,16 @@ func (ctx *RenderContext) Render() {
 
 //parse the directory structure and the flekszible configs from the dirs
 func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
-	conf, _, err := data.ReadConfiguration(node.Dir)
+	conf, configFilePath, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
 		return err
 	}
-	node.Standalone = conf.Standalone
-	if !conf.Standalone {
+	if path.Base(configFilePath) == "flekszible.yaml" {
+		node.Standalone = false
+	} else {
+		node.Standalone = true
+	}
+	if !node.Standalone {
 		node.Resources = data.ReadResourcesFromDir(node.Dir)
 	}
 	node.Source = make([]data.Source, 0)
@@ -223,20 +227,19 @@ func (ctx *RenderContext) LoadDefinitions() {
 }
 
 func (node *ResourceNode) LoadDefinitions() {
-	if node.Standalone {
-		return
-	}
-	defDir := path.Join(node.Dir, "definitions")
-	if _, err := os.Stat(defDir); !os.IsNotExist(err) {
-		files, err := ioutil.ReadDir(defDir)
-		if err != nil {
-			logrus.Warningf("Can't load definition directory %s: %s", defDir, err.Error())
-		}
-		for _, file := range files {
-			definitionFile := path.Join(defDir, file.Name())
-			err := parseDefintion(definitionFile)
+	if !node.Standalone {
+		defDir := path.Join(node.Dir, "definitions")
+		if _, err := os.Stat(defDir); !os.IsNotExist(err) {
+			files, err := ioutil.ReadDir(defDir)
 			if err != nil {
-				logrus.Errorf("Can't parse the definition file %s: %s", definitionFile, err.Error())
+				logrus.Warningf("Can't load definition directory %s: %s", defDir, err.Error())
+			}
+			for _, file := range files {
+				definitionFile := path.Join(defDir, file.Name())
+				err := parseDefintion(definitionFile)
+				if err != nil {
+					logrus.Errorf("Can't parse the definition file %s: %s", definitionFile, err.Error())
+				}
 			}
 		}
 	}

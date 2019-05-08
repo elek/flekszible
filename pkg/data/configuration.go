@@ -63,9 +63,6 @@ func ReadConfiguration(dir string) (Configuration, string, error) {
 	if err != nil {
 		return conf, "", err
 	}
-	if loaded {
-		conf.Standalone = true
-	}
 	return conf, configFilePath, nil
 
 }

@@ -84,7 +84,7 @@ func compositFactory(config *yaml.MapSlice, templateBytes []byte) (Processor, er
 	}
 	processors, err := ReadProcessorDefinition([]byte(output.String()))
 	if err != nil {
-		panic(err)
+		panic("The composit factory can't be parsed" + err.Error())
 	}
 	return &Composit{
 		Processors: processors,

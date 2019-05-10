@@ -205,6 +205,9 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		dir, _ := source.GetPath(sourceCache, importDefinition.Path)
 		childNode := CreateResourceNode(dir, importDefinition.Destination, source)
 		childNode.Origin = source
+		if node.Dir == childNode.Dir {
+			panic("Recursive directory parser " + node.Dir + " loads" + childNode.Dir)
+		}
 		err = childNode.LoadResourceConfig(sourceCache)
 		if err != nil {
 			return err

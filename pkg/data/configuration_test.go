@@ -6,7 +6,7 @@ import (
 )
 
 func TestReadConfiguration(t *testing.T) {
-	configuration, e := ReadConfiguration("../../testdata/conf")
+	configuration, _, e := ReadConfiguration("../../testdata/conf")
 
 	assert.Nil(t, e)
 

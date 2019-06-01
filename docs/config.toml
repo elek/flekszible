@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://flekszible.netlify.com/"
 languageCode = "en-us"
 title = "Fle[ksz]ible"
 theme = "hugo-theme-techdoc"

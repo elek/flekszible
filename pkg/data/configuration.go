@@ -63,6 +63,9 @@ func ReadConfiguration(dir string) (Configuration, string, error) {
 	if err != nil {
 		return conf, "", err
 	}
-	return conf, configFilePath, nil
+	if loaded {
+		return conf, configFilePath, nil
+	}
+	return conf, "", nil
 
 }

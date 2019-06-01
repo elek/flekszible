@@ -171,7 +171,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	if err != nil {
 		return err
 	}
-	if path.Base(configFilePath) == "flekszible.yaml" {
+	if path.Base(configFilePath) != "Flekszible" {
 		node.Standalone = false
 	} else {
 		node.Standalone = true

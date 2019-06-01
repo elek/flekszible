@@ -21,7 +21,7 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
   11. GitOps friendy: generates all the final resources to static files
   12. Supports external processors like service-mesh injectors
 
-For more information and for comparison with Helm and Kustomize: [Check the docs](https://serene-mccarthy-8aad6e.netlify.com/) 
+For more information and for comparison with Helm and Kustomize: [Check the docs](https://flekszible.netlify.com/) 
 
 ## Install
 
@@ -35,4 +35,4 @@ For linux: download the binary from the [Release page](https://github.com/elek/f
 
 ## Documentation
 
-Latest docs are available from [HERE](https://serene-mccarthy-8aad6e.netlify.com/)
+Latest docs are available from [HERE](https://flekszible.netlify.com/)

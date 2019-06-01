@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Flekszible on Fle[ksz]ible</title>
+    <link>http://example.org/</link>
+    <description>Recent content in Flekszible on Fle[ksz]ible</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Recipes</title>
+      <link>http://example.org/recipes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/recipes/</guid>
+      <description>Getting started Put one kubernetes resource to the directory:
+./nginx.yaml:
+apiVersion: apps/v1 kind: Deployment metadata: name: nginx-deployment spec: selector: matchLabels: app: nginx replicas: 2 template: metadata: labels: app: nginx spec: containers: - name: nginx image: nginx:1.7.9 ports: - containerPort: 80  Create an override file to the ./transformations/mylabels.yaml
+- type: Add path: - metadata - annotations value: felkszible: generated  And execute the generation:
+./flekszible generate -d ./out  The result will be something like this:</description>
+    </item>
+    
+    <item>
+      <title>Reference</title>
+      <link>http://example.org/reference/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/reference/</guid>
+      <description>Path Many transformations requires a Path definition to address a specific node in the yaml tree.
+Path is a string array where each element represents a new level. Array elements are indexed from zero (eg [&amp;ldquo;foo&amp;rdquo;,&amp;ldquo;barr&amp;rdquo;,0]) _except if the elements in the array are maps with name key. In this case the index is this name.
+For example:
+apiVersion: apps/v1 kind: Deployment metadata: name: nginx-deployment labels: felkszible: generated spec: selector: matchLabels: app: nginx replicas: 2 template: metadata: labels: app: nginx annotations: {} spec: containers: - name: nginx image: nginx:1.</description>
+    </item>
+    
+    <item>
+      <title>Transformations</title>
+      <link>http://example.org/transformations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/transformations/</guid>
+      <description>Add Extends existing k8s resources with additional elements.
+Parameters    Name Type Value     path []string Path in the resource file to   value yaml Any yaml fragment which should be added to the node which is selected by the Path    Example - type: Add path: - metadata - annotations value: felkszible: generated  Supported add methods    Type of the destination node (selected by Path) Type of the Value Supported     Map Map Yes   Array Array Yes   Array Map Yes    Image Replaces the docker image definition everywhere</description>
+    </item>
+    
+  </channel>
+</rss>

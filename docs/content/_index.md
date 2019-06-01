@@ -1,3 +1,7 @@
+---
+title: Flekszible
+menu: main
+---
 # fle[ksz]ible
 
 Flekszible is a Kubernetes configuration/manifest manager. It helps to manage your kubernetes yaml files before the deployment.
@@ -21,18 +25,18 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
   11. GitOps friendy: generates all the final resources to static files
   12. Supports external processors like service-mesh injectors
 
-For more information and for comparison with Helm and Kustomize: [Check the docs](https://serene-mccarthy-8aad6e.netlify.com/) 
+## Comparison
 
-## Install
-
-On macOS, you can install flekszible with Homebrew package manager:
-
-```brew 
-brew install elek/brew/flekszible
-```
-
-For linux: download the binary from the [Release page](https://github.com/elek/flekszible/releases)
-
-## Documentation
-
-Latest docs are available from [HERE](https://serene-mccarthy-8aad6e.netlify.com/)
+ * Flekszible vs Helm: 
+   * Flekszible is based on composition instead of templates
+   * No server side component the final deployment will be handled by kubectl
+   * But it's more flexible: you can modify any part of the source kubernetes resources
+   * You don't need to add a lot of golang template conditions to customize all the parts of k8s resources
+   * The package management is simpified (No other repository formats just plain git repositories. Registry is based on github tags and stars)
+ * Flekszible vs Kustomize:
+   * It has less [limitations](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/eschewedFeatures.md). Flekszible is designed to be as flexible as possible with keeping the complexity on minimal.
+   * It's more generic design (generic Yaml tree + transformations instead of k8s resource merging)
+   * It tries to be more user friendly (easier syntax, flexible composition, it can work without registering any resource file)
+   * It has a simple but powerful package management.
+   * The transformations are *reusable*
+   * Service-mesh friendly, any external command can be invoked.

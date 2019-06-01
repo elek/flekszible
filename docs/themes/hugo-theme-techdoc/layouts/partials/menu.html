@@ -1,0 +1,27 @@
+{{$currentNode := .}}
+<nav>
+<ul>
+
+       <li><a href="/">Home</a></li>
+       {{ range where .Site.Pages "Title" "Recipes"  }}
+         {{ template "section" dict "page" .}}
+       {{end}}
+
+       {{ range where .Site.Pages "Title" "Reference"  }}
+         {{ template "section" dict "page" .}}
+       {{end}}
+
+       {{ range where .Site.Pages "Title" "Transformations"  }}
+         {{ template "section" dict "page" .}}
+       {{end}}
+
+</ul>
+</nav>
+
+{{define "section" }}
+{{with .page}}
+   <li><a href="{{.URL}}">{{.Title}}</a></li>
+   {{ $url := printf "%s#" .URL }}
+   <li>{{replace .TableOfContents "#" $url | safeHTML}}</li>
+{{end}}
+{{end}}

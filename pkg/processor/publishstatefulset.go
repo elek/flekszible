@@ -22,7 +22,8 @@ func (processor *PublishStatefulSet) Before(ctx *RenderContext, resources []*dat
 			spec.Remove("clusterIP")
 			spec.PutValue("type", "NodePort")
 			r := data.Resource{
-				Content: newContent,
+				Content:     newContent,
+				Destination: resource.Destination,
 			}
 			newResources = append(newResources, &r)
 		}

@@ -23,7 +23,8 @@ func (processor *PublishService) Before(ctx *RenderContext, resources []*data.Re
 			spec.Remove("clusterIP")
 			spec.PutValue("type", processor.Type)
 			r := data.Resource{
-				Content: newContent,
+				Content:     newContent,
+				Destination: resource.Destination,
 			}
 			newResources = append(newResources, &r)
 		}

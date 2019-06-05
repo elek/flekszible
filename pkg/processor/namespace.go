@@ -31,9 +31,22 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "Namespace",
 			Description: "Use explicit namespace",
+			Parameter: []ProcessorParameter{
+
+				{
+					Name:        "namespace",
+					Description: "The namespace to use in the k8s resources. If empty, the current namespace will be used (from ~/.kube/config or $KUBECONFIG)",
+					Default:     "",
+				},
+				{
+					Name:        "force",
+					Description: "If false (default) only the existing namespace attributes will be changed. If yes, namespace will be added to all the resources.",
+					Default:     "false",
+				},
+			},
 			Doc: `Note: This transformations could also added with the '--namespace' CLI argument.
 
-Example ('transformations/set.yaml''):
+Example):
 
 '''yaml
 - type: Namespace

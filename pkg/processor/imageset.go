@@ -24,7 +24,7 @@ func init() {
 			Doc:         "Note: This transformations could also added with the `--image` CLI argument.",
 			Parameter: []ProcessorParameter{
 				TriggerParameter,
-				ProcessorParameter{
+				{
 					Name:        "image",
 					Description: "The docker image name to use as a replacement (eg. flokkr/hadoop:3.2.0)",
 				},

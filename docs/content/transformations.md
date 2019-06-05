@@ -49,14 +49,23 @@ Note: This transformations could also added with the `--image` CLI argument.
 
 Similar to the image namespace also can be changed with simple transformation:
 
+### namespace
 
-| Name        | Type     | Value 
-|-------------|----------|-------
-| namespace   | string   | Name of the used kubernetes namespace.
+Use explicit namespace
 
-Note: This transformations could also added with the `--namespace` CLI argument.
+#### Parameters
 
-Example (`transformations/set.yaml`):
++-----------+---------+----------------------------------------------------------------------------------------------------------------------------------+
+| name      | default | description                                                                                                                      |
++-----------+---------+----------------------------------------------------------------------------------------------------------------------------------+
+| namespace |         | The namespace to use in the k8s resources. If empty, the current namespace will be used (from ~/.kube/config or $KUBECONFIG)     |
+| force     | false   | If false (default) only the existing namespace attributes will be changed. If yes, namespace will be added to all the resources. |
++-----------+---------+----------------------------------------------------------------------------------------------------------------------------------+
+
+
+Note: This transformations could also added with the '--namespace' CLI argument.
+
+Example):
 
 ```yaml
 - type: Namespace

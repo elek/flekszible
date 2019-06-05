@@ -8,14 +8,25 @@ import (
 type Namespace struct {
 	DefaultProcessor
 	Namespace string
+	Force     bool
+
 }
 
 func (processor *Namespace) BeforeResource(resource *data.Resource) {
-	resource.Content.Accept(&data.Set{Path: data.NewPath("metadata", "namespace"), NewValue: processor.Namespace})
-	resource.Content.Accept(&data.Set{Path: data.NewPath("subjects", ".*", "namespace"), NewValue: processor.Namespace})
+	pathList := []data.Path{data.NewPath("metadata", "namespace"), data.NewPath("subjects", ".*", "namespace")}
+	for _, path := range pathList {
+		if processor.Force {
+			resource.Content.Accept(&data.Set{Path: path, NewValue: processor.Namespace})
+
+		} else {
+			resource.Content.Accept(&data.ReSet{Path: path, NewValue: processor.Namespace})
+
+		}
+	}
 }
 
 func init() {
+
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Namespace",
@@ -31,7 +42,21 @@ Example ('transformations/set.yaml''):
 `,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			return configureProcessorFromYamlFragment(&Namespace{}, config)
+			ns := &Namespace{}
+			_, err := configureProcessorFromYamlFragment(ns, config)
+			if err != nil {
+				return ns, err
+			}
+			if ns.Namespace == "" {
+				conf := data.CreateKubeConfig()
+				currentNamespace, err := conf.ReadCurrentNamespace()
+				if err != nil {
+					return ns, err
+				}
+				ns.Namespace = currentNamespace
+			}
+			return ns, nil
 		},
 	})
 }
+

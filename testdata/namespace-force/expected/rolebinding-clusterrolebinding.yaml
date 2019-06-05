@@ -6,7 +6,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: sa
-    namespace: default
+    namespace: myns
 roleRef:
   kind: ClusterRole
   name: superpower

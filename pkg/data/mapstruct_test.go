@@ -18,6 +18,34 @@ func TestGet(t *testing.T) {
 
 }
 
+func TestReSetReal(t *testing.T) {
+	path := NewPath("metadata", "name")
+	value := "n1"
+	reset1 := ReSet{Path: path, NewValue: value}
+	node, err := ReadManifestFile("../../testdata/mapstruct/reset.yaml")
+	assert.Nil(t, err)
+	node.Accept(&reset1)
+
+	get1 := Get{Path: path}
+	node.Accept(&get1)
+
+	assert.True(t, get1.Found)
+	assert.Equal(t, value, get1.ReturnValue.(*KeyNode).Value)
+}
+
+func TestReSetMissing(t *testing.T) {
+	path := NewPath("metadata", "namespace")
+	reset1 := ReSet{Path: path, NewValue: "n1"}
+	node, err := ReadManifestFile("../../testdata/mapstruct/reset.yaml")
+	assert.Nil(t, err)
+	node.Accept(&reset1)
+
+	get1 := Get{Path: path}
+	node.Accept(&get1)
+
+	assert.False(t, get1.Found)
+}
+
 func TestSmartGet(t *testing.T) {
 	get := SmartGetAll{Path: NewPath("metadata", "annotations")}
 	root := NewMapNode(NewPath())

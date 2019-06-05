@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: datanode
+  annotations:
+    old: v
+spec:
+  selector:
+    matchLabels:
+      app: ozone
+      component: datanode
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: datanode
+    spec:
+      containers:
+      - name: datanode
+        image: elek/ozone
+        args: ["ozone","datanode"]
+

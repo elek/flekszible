@@ -1,0 +1,10 @@
+- type: Add
+  path:
+  - spec
+  - template
+  - spec
+  - volumes
+  - data
+  - emptyDir
+  value:
+    medium: memory

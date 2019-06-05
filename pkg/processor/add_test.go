@@ -15,3 +15,7 @@ func TestAddMapElement(t *testing.T) {
 func TestAddMapElementFiltered(t *testing.T) {
 	TestFromDir(t, "add/filtered")
 }
+
+func TestAddMapVolume(t *testing.T) {
+	TestFromDir(t, "add/volume")
+}

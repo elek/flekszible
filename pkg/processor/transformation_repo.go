@@ -21,7 +21,7 @@ func (repository *TransformationRepository) Append(processor Processor) {
 }
 
 func (repository *TransformationRepository) AppendAll(processors []Processor) {
-	repository.Processors = append(repository.Processors, processors...)
+	repository.Processors = append(processors, repository.Processors...)
 }
 
 //read processor definitions from a file (./definitions/xxx)

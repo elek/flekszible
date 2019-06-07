@@ -1,0 +1,9 @@
+name: test/label
+description: Add generic label
+---
+- type: Add
+  path:
+    - metadata
+    - labels
+  value:
+    mylabel: ok

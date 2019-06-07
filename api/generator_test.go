@@ -18,3 +18,17 @@ func TestApiUsage(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Contains(t, s, "image: test")
 }
+
+func TestCustomApiUsage(t *testing.T) {
+
+	context, err := Initialize("../testdata/api")
+	assert.Nil(t, err)
+
+	err = context.AppendCustomProcessor("test/label", make(map[string]string))
+	assert.Nil(t, err)
+
+	context.Render()
+	s, err := context.Resources()[0].Content.ToString()
+	assert.Nil(t, err)
+	assert.Contains(t, s, "mylabel: ok")
+}

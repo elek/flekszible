@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strings"
 )
 
 type RenderContext struct {
@@ -122,6 +123,23 @@ func (node *ResourceNode) InitializeTransformations() error {
 		}
 	}
 	return nil
+}
+
+func (context *RenderContext) AppendCustomProcessor(name string, parameters map[string]string) error {
+	if definition, ok := ProcessorTypeRegistry.TypeMap[strings.ToLower(name)]; ok {
+		config := yaml.MapSlice{}
+		for k, v := range parameters {
+			config.Put(k, v)
+		}
+		processor, err := definition.Factory(&config)
+		if err != nil {
+			return err
+		}
+		context.RootResource.ProcessorRepository.Append(processor)
+		return nil
+	} else {
+		return errors.New("No such processor definition")
+	}
 }
 
 func (context *RenderContext) AppendProcessor(processor Processor) {

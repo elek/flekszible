@@ -2,6 +2,7 @@ package processor
 
 import (
 	"errors"
+	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
 	"io/ioutil"
@@ -83,6 +84,7 @@ func compositFactory(config *yaml.MapSlice, templateBytes []byte) (Processor, er
 		return nil, errors.New("The render was failed: " + err.Error())
 	}
 	processors, err := ReadProcessorDefinition([]byte(output.String()))
+	fmt.Println(output.String())
 	if err != nil {
 		panic("The composit factory can't be parsed" + err.Error())
 	}

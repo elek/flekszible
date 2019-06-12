@@ -102,10 +102,10 @@ func (context *RenderContext) Init() error {
 }
 
 func (context *RenderContext) InitializeTransformations() error {
-	return context.RootResource.InitializeTransformations()
+	return context.RootResource.InitializeTransformations(context)
 }
 
-func (node *ResourceNode) InitializeTransformations() error {
+func (node *ResourceNode) InitializeTransformations(context *RenderContext) error {
 	if node.PreImportTransformations != nil {
 		processors, err := ReadProcessorDefinition(node.PreImportTransformations)
 		if err != nil {
@@ -114,10 +114,21 @@ func (node *ResourceNode) InitializeTransformations() error {
 		node.ProcessorRepository.AppendAll(processors)
 	}
 	if !node.Standalone {
-		node.ProcessorRepository.ParseTransformations(node.Dir)
+		processors, e := ParseTransformations(node.Dir)
+		if e != nil {
+			logrus.Error("Can't read transformations from " + node.Dir + " " + e.Error())
+		} else {
+			for _, processor := range processors {
+				if processor.GetScope() == "global" {
+					context.RootResource.ProcessorRepository.Append(processor)
+				} else {
+					node.ProcessorRepository.Append(processor)
+				}
+			}
+		}
 	}
 	for _, child := range node.Children {
-		err := child.InitializeTransformations()
+		err := child.InitializeTransformations(context)
 		if err != nil {
 			return err
 		}

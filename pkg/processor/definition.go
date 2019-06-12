@@ -45,6 +45,10 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 			if err != nil {
 				logrus.Error("Transformation can't be instantiated: " + typeName.(string) + " " + err.Error())
 			} else {
+				if scope, found := processorConfig.Get("scope"); found {
+					proc.SetScope(scope.(string))
+				}
+
 				processors = append(processors, proc)
 			}
 		} else {

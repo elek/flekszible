@@ -59,12 +59,13 @@ func CreateProcessorRepository() *TransformationRepository {
 }
 
 //read transformations from ./transformations/... files
-func (repository *TransformationRepository) ParseTransformations(inputDir string) {
+func ParseTransformations(inputDir string) ([]Processor, error) {
+	result := make([]Processor, 0)
 	mixinDir := path.Join(inputDir, "transformations")
 	if _, err := os.Stat(mixinDir); !os.IsNotExist(err) {
 		files, err := ioutil.ReadDir(mixinDir)
 		if err != nil {
-			panic(err)
+			return result, err
 		}
 		for _, file := range files {
 			if !file.IsDir() && filepath.Ext(file.Name()) == ".yaml" {
@@ -74,8 +75,9 @@ func (repository *TransformationRepository) ParseTransformations(inputDir string
 				if err != nil {
 					logrus.Error("Processor configuration can't be loaded from " + fullPath + " " + err.Error())
 				}
-				repository.AppendAll(processors)
+				result = append(result, processors...)
 			}
 		}
 	}
+	return result, nil
 }

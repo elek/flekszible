@@ -193,3 +193,113 @@ import:
 ```
 
 The remote repositories are downloaded with [go-getter](https://github.com/hashicorp/go-getter) and the downloaded directory is stored in the `.cache` directory (relative to the input dir). 
+
+
+# Definitions and Transformations
+
+The heart of flekszible is modifying kubernetes resources files. There are multiple way to modify existing YAML files and they are defined with different types of transformation definitions. (For example you can `Add` additional fragments or `Replace` existing one).
+
+With the help of the transformation definitions you can instantiate a transformations in the `Flekszible` file (under `transformations` key) or in the `transformation` subdirectory.
+
+For example: 
+
+```
+- type: Add
+  path:
+  - spec
+  - template
+  - spec
+  - containers
+  - "datanode"
+  - env
+  value:
+  - name: KEY1
+    value: VALUE1
+  - name: KEY2
+    value: VALUE2
+```
+
+It's very important that the transformation is activated only the subtree ver it's used.
+
+Imagine the following structure (hdfs-ha _imports_ zookeeper and hdfs resources).
+
+```             +---------+
+       import   |         |      import
+      +---------+ hdfs-ha +------------+
+      |         |         |            |
+      |         +---------+            |
+      v                                |
++-----+----+                   +-------v-----+
+|          |                   |             |
+|   hdfs   |                   |  zookeeper  |
+|          |                   |             |
++----------+                   +-------------+
+
+```
+
+In this case a transformation which is defined in the zookeeper directory is applied only the zookeeper resources.
+
+To use global transformations you have two options.
+
+  1.) You can define a composite transformation definition which may or may not be activated.
+  
+  2.) You can set the `scope` of the transformation to true.
+  
+ Let's check examples for both of these cases:
+  
+ ## Definition example
+ 
+ From the previous examples you can create a `defintions` directory in the hdfs directory and put a transformation definitions:
+ 
+ In `hdfs/definitions/prometheus.yaml`
+ 
+ ```
+name: hdfs/prometheus
+description: Enable prometheus monitoring
+---
+- type: Add
+  path:
+    - spec
+    - template
+    - spec
+  value:
+    replicas: {{.replicas}}
+```
+
+This transformation definition is not activated by default (because it's not part of a `transformation` directory).
+
+But you can turn it on if you need it. For example in the `hdfs-ha/Flekszible` file:
+
+```yaml
+import:
+  - path: ../hdfs
+    transformations:
+    type: hdfs/prometheus
+```
+
+## Using global transformation
+
+The second option is more simple. Imagine that you have a grafana dashboard defined in the `hdfs` application.
+
+You would like to define the grafana statefulset to add your configmap, but the grafana configmap imported from a different location.
+
+With using `scope: globale` parameters, you can ask flekszible to apply the transformations to _all_ the resources files not just the current subtree:
+
+```yaml
+name: prometheus
+description: Enable prometheus monitoring
+parameters:
+  - name: replicas
+    default: 2
+    required: false
+    type: int
+---
+- type: Add
+  path:
+    - spec
+    - template
+    - spec
+  value:
+    replicas: {{.replicas}}
+
+```

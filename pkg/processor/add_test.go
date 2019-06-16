@@ -19,3 +19,8 @@ func TestAddMapElementFiltered(t *testing.T) {
 func TestAddMapVolume(t *testing.T) {
 	TestFromDir(t, "add/volume")
 }
+
+
+func TestYamlize(t *testing.T) {
+	TestFromDir(t, "add/yamlize")
+}

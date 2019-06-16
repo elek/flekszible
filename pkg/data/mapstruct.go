@@ -295,6 +295,54 @@ func (visitor *GetAll) BeforeMap(node *MapNode) {
 	}
 }
 
+type Yamlize struct {
+	DefaultVisitor
+	Path       Path
+	Serialize  bool
+	parsed     bool
+	parsedPath Path
+}
+
+func (visitor *Yamlize) BeforeMapItem(node *MapNode, key string, index int) {
+	if !visitor.Serialize {
+		//deserialize phase
+		if visitor.parsed {
+			return
+		}
+		if match, _ := visitor.Path.MatchLimited(node.Path.Extend(key)); match {
+			switch value := node.Get(key).(type) {
+			case *KeyNode:
+				yamlDoc := yaml.MapSlice{}
+
+				content := value.Value.(string)
+				err := yaml.Unmarshal([]byte(content), &yamlDoc)
+				if err != nil {
+					panic(err)
+				}
+
+				newnode, err := ConvertToNode(yamlDoc, node.Path.Extend(key))
+				if err != nil {
+					panic(err)
+				}
+				node.Put(key, newnode)
+				visitor.parsed = true
+				visitor.parsedPath = node.Path.Extend(key)
+				break
+
+			}
+		}
+	} else {
+		if node.Path.Extend(key).Equal(visitor.parsedPath) {
+			content, err := node.Get(key).(*MapNode).ToString()
+			if err != nil {
+				panic(err);
+			}
+			node.Put(key, &KeyNode{content, node.Path.Extend(key)})
+		}
+	}
+
+}
+
 type SmartGetAll struct {
 	DefaultVisitor
 	Path   Path

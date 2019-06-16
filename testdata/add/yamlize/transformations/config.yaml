@@ -1,0 +1,9 @@
+- type: Add
+  yamlize: true
+  path:
+  - data
+  - dashboards.yaml
+  - providers
+  - default
+  value:
+    KEY1: VALUE1

@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -9,6 +10,22 @@ func TestApply(t *testing.T) {
 	ExecuteAndCompare(t, "apply", &Apply{Path: NewPath("metadata", "name"), Function: prefixer})
 }
 
+func TestYamlize(t *testing.T) {
+	path := NewPath("data", "dashboards.yaml", "providers", "default", "type")
+	get := Get{Path: path}
+
+	node, err := ReadManifestFile("../../testdata/mapstruct/yamlize.yaml")
+	assert.Nil(t, err)
+	yamlize := &Yamlize{Path: path}
+	node.Accept(yamlize)
+	node.Accept(&get)
+
+	assert.True(t, get.Found)
+	yamlize.Serialize = true
+	node.Accept(yamlize)
+	keyNode := node.Get("data").(*MapNode).Get("dashboards.yaml").(*KeyNode)
+	strings.Contains("path: /etc/dashboards", keyNode.Value.(string))
+}
 func TestGet(t *testing.T) {
 	get := Get{Path: NewPath("metadata", "name")}
 	node, err := ReadManifestFile("../../testdata/mapstruct/get.yaml")
@@ -93,5 +110,4 @@ func TestFixPath(t *testing.T) {
 	println("--------------")
 	n.Accept(&fp)
 	n.Accept(PrintVisitor{})
-
 }

@@ -11,6 +11,7 @@ type Add struct {
 	Path    data.Path
 	Trigger Trigger
 	Value   interface{}
+	Yamlize bool
 }
 
 func (processor *Add) BeforeResource(resource *data.Resource) {
@@ -19,6 +20,12 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 	}
 	switch typedValue := processor.Value.(type) {
 	case yaml.MapSlice:
+		forceYaml := data.Yamlize{Path: processor.Path}
+
+		if processor.Yamlize {
+			resource.Content.Accept(&forceYaml)
+		}
+
 		target := data.SmartGetAll{Path: processor.Path}
 		resource.Content.Accept(&target)
 		for _, match := range target.Result {
@@ -44,6 +51,10 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 			}
 		}
 
+		if processor.Yamlize {
+			forceYaml.Serialize = true
+			resource.Content.Accept(&forceYaml)
+		}
 	case []interface{}:
 		target := data.SmartGetAll{Path: processor.Path}
 		resource.Content.Accept(&target)
@@ -76,7 +87,7 @@ func init() {
 			Parameter: []ProcessorParameter{
 				PathParameter,
 				TriggerParameter,
-				ProcessorParameter{
+				{
 					Name:        "value",
 					Description: "A yaml struct to add to the defined path",
 				},

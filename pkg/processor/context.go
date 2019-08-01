@@ -122,7 +122,7 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 				if processor.GetScope() == "global" {
 					context.RootResource.ProcessorRepository.Append(processor)
 				} else {
-					node.ProcessorRepository.Append(processor)
+					node.ProcessorRepository.InsertToBeginning(processor)
 				}
 			}
 		}

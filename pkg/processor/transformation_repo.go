@@ -20,6 +20,10 @@ func (repository *TransformationRepository) Append(processor Processor) {
 	repository.Processors = append(repository.Processors, processor)
 }
 
+func (repository *TransformationRepository) InsertToBeginning(processor Processor) {
+	repository.Processors = append([]Processor{processor}, repository.Processors...)
+}
+
 func (repository *TransformationRepository) AppendAll(processors []Processor) {
 	repository.Processors = append(processors, repository.Processors...)
 }

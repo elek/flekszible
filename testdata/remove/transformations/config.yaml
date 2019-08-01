@@ -1,0 +1,4 @@
+- type: Remove
+  path:
+  - spec
+  - replicas

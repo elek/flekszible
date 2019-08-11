@@ -7,8 +7,9 @@ import (
 
 type Namespace struct {
 	DefaultProcessor
-	Namespace string
-	Force     bool
+	Namespace          string
+	Force              bool
+	ClusterRoleSupport bool
 
 }
 
@@ -21,6 +22,26 @@ func (processor *Namespace) BeforeResource(resource *data.Resource) {
 		} else {
 			resource.Content.Accept(&data.ReSet{Path: path, NewValue: processor.Namespace})
 
+		}
+	}
+	if processor.ClusterRoleSupport {
+		if resource.Kind() == "ClusterRole" {
+			namePath := data.NewPath("metadata", "name");
+			name := resource.Name()
+			resource.DestinationFileName = CreateOutputFileName(name, "ClusterRole")
+			resource.Content.Accept(&data.Set{Path: namePath, NewValue: name + "-" + processor.Namespace})
+		}
+		if resource.Kind() == "ClusterRoleBinding" {
+			namePath := data.NewPath("metadata", "name");
+			name := resource.Name()
+			resource.DestinationFileName = CreateOutputFileName(name, "ClusterRoleBinding")
+			resource.Content.Accept(&data.Set{Path: namePath, NewValue: name + "-" + processor.Namespace})
+		}
+		if resource.Kind() == "ClusterRoleBinding" {
+			namePath := data.NewPath("roleRef", "name");
+			get := &data.Get{Path: namePath}
+			resource.Content.Accept(get)
+			resource.Content.Accept(&data.Set{Path: namePath, NewValue: get.ValueAsString() + "-" + processor.Namespace})
 		}
 	}
 }
@@ -43,6 +64,11 @@ func init() {
 					Description: "If false (default) only the existing namespace attributes will be changed. If yes, namespace will be added to all the resources.",
 					Default:     "false",
 				},
+				{
+					Name:        "clusterrolesupport",
+					Description: "If true, the created cluster roles and cluster role bindings will be postfixed by the namespace to guarantee multitenancy.",
+					Default:     "true",
+				},
 			},
 			Doc: `Note: This transformations could also added with the '--namespace' CLI argument.
 
@@ -56,6 +82,7 @@ Example):
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			ns := &Namespace{}
+			ns.ClusterRoleSupport = true
 			_, err := configureProcessorFromYamlFragment(ns, config)
 			if err != nil {
 				return ns, err

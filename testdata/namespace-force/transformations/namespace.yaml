@@ -1,3 +1,4 @@
 - type: Namespace
   namespace: myns
   force: true
+  clusterrolesupport: false

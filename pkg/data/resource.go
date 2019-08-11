@@ -13,10 +13,11 @@ import (
 )
 
 type Resource struct {
-	Path        string
-	Filename    string
-	Content     *MapNode
-	Destination string
+	Path                string
+	Filename            string
+	Content             *MapNode
+	Destination         string
+	DestinationFileName string
 }
 
 func (r *Resource) Name() string {

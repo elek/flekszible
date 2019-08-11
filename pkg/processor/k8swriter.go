@@ -25,10 +25,15 @@ func (writer *K8sWriter) Before(ctx *RenderContext, resources []*data.Resource) 
 	writer.resourceOutputDir = ctx.OutputDir
 }
 
-func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destination string) string {
-	fileName := name + "-" + strings.ToLower(kind) + ".yaml"
-	return path.Join(outputDir, destination, fileName)
-
+func CreateOutputFileName(name string, kind string) string {
+	return strings.ToLower(name) + "-" + strings.ToLower(kind) + ".yaml";
+}
+func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destination string, destinationFile string) string {
+	if destinationFile != "" {
+		return path.Join(outputDir, destination, destinationFile)
+	} else {
+		return path.Join(outputDir, destination, CreateOutputFileName(name, kind));
+	}
 }
 
 func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
@@ -43,7 +48,7 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
 			content, _ := ioutil.ReadFile(licenceHeaderFile)
 			licenceHeader = string(content) + "\n"
 		}
-		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination)
+		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination, resource.DestinationFileName)
 		err := os.MkdirAll(path.Dir(outputFile), os.ModePerm)
 		if err != nil {
 			panic(err)

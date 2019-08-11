@@ -10,3 +10,7 @@ func TestNamespaceBeforeResource(t *testing.T) {
 func TestNamespaceBeforeResourceForce(t *testing.T) {
 	TestFromDir(t, "namespace-force")
 }
+
+func TestNamespaceBeforeResourceClusterRole(t *testing.T) {
+	TestFromDir(t, "namespace-clusterrole")
+}

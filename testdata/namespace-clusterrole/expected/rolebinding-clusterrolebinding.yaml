@@ -1,0 +1,14 @@
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rolebinding-myns
+  namespace: myns
+subjects:
+- kind: ServiceAccount
+  name: sa
+  namespace: myns
+roleRef:
+  kind: ClusterRole
+  name: superpower-myns
+  apiGroup: rbac.authorization.k8s.io

@@ -216,6 +216,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 			node.Source = append(node.Source, &data.LocalSource{BaseDir: node.Dir, RelativeDir: definedSource.Path})
 		}
 	}
+	//update destinations of the direct k8s resources
 	for ix, _ := range node.Resources {
 		node.Resources[ix].Destination = node.Destination
 	}
@@ -233,6 +234,9 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		}
 		dir, _ := source.GetPath(sourceCache, importDefinition.Path)
 		childNode := CreateResourceNode(dir, importDefinition.Destination, source)
+		if importDefinition.Destination == "" {
+			childNode.Destination = node.Destination
+		}
 		childNode.Origin = source
 		if node.Dir == childNode.Dir {
 			panic("Recursive directory parser " + node.Dir + " loads" + childNode.Dir)

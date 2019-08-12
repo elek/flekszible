@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3g-public
+spec:
+  ports:
+    - port: 9878
+      name: rest
+      nodePort: 32000
+  selector:
+    app: ozone
+    component: s3g
+  type: NodePort

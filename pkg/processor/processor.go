@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
 )
@@ -42,6 +43,7 @@ func (p *DefaultProcessor) AfterResource(*data.Resource) {
 
 func configureProcessorFromYamlFragment(processor Processor, config *yaml.MapSlice) (Processor, error) {
 	processorConfigYaml, err := yaml.Marshal(config)
+	fmt.Println(string(processorConfigYaml))
 	if err != nil {
 		return nil, err
 	}

@@ -290,7 +290,10 @@ func Run(context *processor.RenderContext, minikube bool) {
 		panic(err)
 	}
 	AddInternalTransformations(context, minikube)
-	context.Render()
+	err = context.Render()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func AddInternalTransformations(context *processor.RenderContext, minikube bool) {

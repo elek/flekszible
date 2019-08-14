@@ -229,7 +229,7 @@ func (ctx *RenderContext) Render() error {
 func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
 	conf, configFilePath, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Can't parse flekszible.yaml/Flekszible descriptor from  "+node.Dir)
 	}
 	if path.Base(configFilePath) != "Flekszible" {
 		node.Standalone = false

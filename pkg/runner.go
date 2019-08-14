@@ -306,7 +306,7 @@ func AddInternalTransformations(context *processor.RenderContext, minikube bool)
 	}
 	if (minikube) {
 		context.RootResource.ProcessorRepository.Append(&processor.DaemonToStatefulSet{})
-		context.RootResource.ProcessorRepository.Append(&processor.PublishStatefulSet{})
+		context.RootResource.ProcessorRepository.Append(&processor.PublishService{})
 	}
 	if context.Mode == "k8s" {
 		context.RootResource.ProcessorRepository.Append(&processor.K8sWriter{})

@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"github.com/pkg/errors"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
@@ -16,15 +17,14 @@ type Pipe struct {
 	Args    []string
 }
 
-func (p *Pipe) BeforeResource(resource *data.Resource) {
+func (p *Pipe) BeforeResource(resource *data.Resource) error {
 	if !p.Trigger.active(resource) {
-		return
+		return nil
 	}
 	converted := data.ConvertToYaml(resource.Content)
 	bytes, err := yaml.Marshal(converted)
 	if err != nil {
-		logrus.Error("Can't parse yaml file of " + resource.Path + err.Error())
-		return
+		return errors.Wrap(err, "Can't parse yaml file of "+resource.Path)
 	}
 	str := string(bytes)
 
@@ -36,17 +36,16 @@ func (p *Pipe) BeforeResource(resource *data.Resource) {
 	cmd.Stderr = os.Stdout
 	err = cmd.Run()
 	if err != nil {
-		logrus.Error("Can't execute the command " + p.Command + " " + err.Error())
-		return
+		return errors.Wrap(err, "Can't execute the command "+p.Command)
 	}
 	output := builder.String()
 	logrus.Infof("Command is executed with the following output %s", output)
 	node, err := data.ReadManifestString([]byte(output ))
 	if err != nil {
-		logrus.Error("Can't parse the result of the piped command for " + resource.Path + " " + err.Error())
-		return
+		return errors.Wrap(err, "Can't parse the result of the piped command for "+resource.Path)
 	}
 	resource.Content = node
+	return nil
 }
 
 func init() {

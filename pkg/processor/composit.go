@@ -1,14 +1,13 @@
 package processor
 
 import (
-	"errors"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"strings"
 	"text/template"
 )
-
 type Composit struct {
 	DefaultProcessor
 	ProcessorMetadata
@@ -37,19 +36,28 @@ func (c *Composit) AfterList(node *data.ListNode)                               
 func (c *Composit) BeforeListItem(node *data.ListNode, item data.Node, index int) {}
 func (c *Composit) AfterListItem(node *data.ListNode, item data.Node, index int)  {}
 
-func (c *Composit) Before(ctx *RenderContext, resources []*data.Resource) {}
-func (c *Composit) After(ctx *RenderContext, resources []*data.Resource)  {}
+func (c *Composit) Before(ctx *RenderContext, resources []*data.Resource) error { return nil }
+func (c *Composit) After(ctx *RenderContext, resources []*data.Resource) error  { return nil }
 
-func (c *Composit) BeforeResource(resource *data.Resource) {
+func (c *Composit) BeforeResource(resource *data.Resource) error {
 	for _, p := range c.Processors {
-		p.BeforeResource(resource)
+		err := p.BeforeResource(resource)
+		if err != nil {
+			return errors.Wrap(err, "One of the child processors of the composite resource is failed")
+		}
 	}
+	return nil
 }
 
-func (c *Composit) AfterResource(resource *data.Resource) {
+func (c *Composit) AfterResource(resource *data.Resource) error {
 	for _, p := range c.Processors {
-		p.AfterResource(resource)
+		err := p.AfterResource(resource)
+		if err != nil {
+			return errors.Wrap(err, "One of the child processors of the composite resource is failed")
+		}
+
 	}
+	return nil
 }
 func parseTransformationParameters(config *yaml.MapSlice) map[string]interface{} {
 	result := make(map[string]interface{})
@@ -121,39 +129,3 @@ func parseDefintion(path string) error {
 	return nil
 }
 
-//
-//
-////pase definition yaml file and register definitions to the global registry.
-//func parseDefintion(path string) error {
-//	content, err := ioutil.ReadManifestFile(path)
-//	if err != nil {
-//		return err
-//	}
-//	mapSlice := yaml.MapSlice{}
-//	err = yaml.Unmarshal(content, &mapSlice)
-//	if err != nil {
-//		return err
-//	}
-//	if deftype, found := mapSlice.Get("type"); found {
-//		transformations, hasDefintions := mapSlice.Get("transformations")
-//		if !hasDefintions {
-//			return errors.New(fmt.Sprintf("'transformations' key is missing from definition file %s. Please define transformations under the tranformations key.", path))
-//
-//		}
-//		rawData, err := yaml.Marshal(transformations)
-//		if err != nil {
-//			return errors.New(fmt.Sprintf("Internal error during reread the definitions part of file %s: %s", path, err.Error()))
-//		}
-//		processors, err := ReadProcessorDefinition(rawData)
-//		composit := Composit{
-//			Processors: processors,
-//		}
-//		factory := func() Processor {
-//			return &composit
-//		}
-//		ProcessorTypeRegistry.AddComposit(deftype.(string), factory)
-//		return nil
-//	} else {
-//		return errors.New(fmt.Sprintf("'type' key is missing from definition file %s. Please define a unique identifier with type.", path))
-//	}
-//}

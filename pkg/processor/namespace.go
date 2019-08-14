@@ -13,7 +13,7 @@ type Namespace struct {
 
 }
 
-func (processor *Namespace) BeforeResource(resource *data.Resource) {
+func (processor *Namespace) BeforeResource(resource *data.Resource) error {
 	pathList := []data.Path{data.NewPath("metadata", "namespace"), data.NewPath("subjects", ".*", "namespace")}
 	for _, path := range pathList {
 		if processor.Force {
@@ -44,6 +44,7 @@ func (processor *Namespace) BeforeResource(resource *data.Resource) {
 			resource.Content.Accept(&data.Set{Path: namePath, NewValue: get.ValueAsString() + "-" + processor.Namespace})
 		}
 	}
+	return nil
 }
 
 func init() {

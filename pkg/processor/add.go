@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"errors"
 	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
@@ -14,9 +15,9 @@ type Add struct {
 	Yamlize bool
 }
 
-func (processor *Add) BeforeResource(resource *data.Resource) {
+func (processor *Add) BeforeResource(resource *data.Resource) error {
 	if !processor.Trigger.active(resource) {
-		return
+		return nil
 	}
 	switch typedValue := processor.Value.(type) {
 	case yaml.MapSlice:
@@ -70,12 +71,13 @@ func (processor *Add) BeforeResource(resource *data.Resource) {
 					typedTarget.Append(childNode)
 				}
 			default:
-				panic(fmt.Errorf("Unsupported value adding %T to %T %s", processor.Value, match.Value, resource.Filename))
+				return errors.New(fmt.Sprintf("Unsupported value adding %T to %T %s", processor.Value, match.Value, resource.Filename))
 			}
 		}
 	default:
-		panic(fmt.Errorf("Unsupported value adding %T", processor.Value))
+		return errors.New(fmt.Sprintf("Unsupported value adding %T", processor.Value))
 	}
+	return nil
 }
 
 func init() {

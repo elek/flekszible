@@ -12,7 +12,7 @@ type Prefix struct {
 	HostNames []string
 }
 
-func (p *Prefix) Before(ctx *RenderContext, resources []*data.Resource) {
+func (p *Prefix) Before(ctx *RenderContext, resources []*data.Resource) error {
 	p.HostNames = make([]string, 0)
 	for _, resource := range resources {
 		kind := resource.Kind()
@@ -27,9 +27,10 @@ func (p *Prefix) Before(ctx *RenderContext, resources []*data.Resource) {
 			}
 		}
 	}
+	return nil
 }
 
-func (p *Prefix) BeforeResource(resource *data.Resource) {
+func (p *Prefix) BeforeResource(resource *data.Resource) error {
 
 	content := resource.Content
 
@@ -56,7 +57,7 @@ func (p *Prefix) BeforeResource(resource *data.Resource) {
 
 	labelsGetter := data.Get{Path: data.NewPath("metadata", "labels")}
 	content.Accept(&labelsGetter)
-
+	return nil
 }
 
 func init() {

@@ -10,7 +10,7 @@ type DaemonToStatefulSet struct {
 	Trigger Trigger
 }
 
-func (processor *DaemonToStatefulSet) Before(ctx *RenderContext, resources []*data.Resource) {
+func (processor *DaemonToStatefulSet) Before(ctx *RenderContext, resources []*data.Resource) error {
 
 	newResources := make([]*data.Resource, 0)
 	for _, resource := range resources {
@@ -25,6 +25,7 @@ func (processor *DaemonToStatefulSet) Before(ctx *RenderContext, resources []*da
 		}
 	}
 	ctx.AddResources(newResources...)
+	return nil
 }
 func createService(resource *data.Resource) *data.MapNode {
 	root := data.NewMapNode(data.NewPath())
@@ -51,7 +52,7 @@ func createService(resource *data.Resource) *data.MapNode {
 	return &root
 }
 
-func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) {
+func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) error {
 
 	if resource.Kind() == "DaemonSet" && processor.Trigger.active(resource) {
 		resource.Content.Get("kind").(*data.KeyNode).Value = "StatefulSet"
@@ -62,6 +63,7 @@ func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) {
 		spec.Put("serviceName", &data.KeyNode{Path: data.NewPath("spec", "serviceName"), Value: name})
 		spec.Put("replicas", &data.KeyNode{Path: data.NewPath("spec", "replicas"), Value: 3})
 	}
+	return nil
 }
 
 func init() {

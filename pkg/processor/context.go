@@ -1,7 +1,7 @@
 package processor
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
 	"github.com/sirupsen/logrus"
@@ -159,39 +159,70 @@ func (context *RenderContext) AppendProcessor(processor Processor) {
 	repo.Append(processor)
 }
 
-type execute func(transformation Processor, context *RenderContext, resources []*data.Resource)
+type execute func(transformation Processor, context *RenderContext, resources []*data.Resource) error
 
-func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) []*data.Resource {
+func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) ([]*data.Resource, error) {
 	resources := make([]*data.Resource, 0)
 	for _, child := range node.Children {
-		resources = append(resources, child.Execute(context, functionCall)...)
+		childResults, err := child.Execute(context, functionCall)
+		if err != nil {
+			return nil, errors.Wrap(err, "The function can't be executed on one of the childResources")
+		}
+		resources = append(resources, childResults...)
 	}
 	resources = append(resources, node.Resources...)
 	for _, transformation := range node.ProcessorRepository.Processors {
-		functionCall(transformation, context, resources)
+		err := functionCall(transformation, context, resources)
+		if err != nil {
+			return nil, errors.Wrap(err, "The function can't be executed on all the resources. Transformation: ")
+		}
 	}
-	return resources
+	return resources, nil
 
 }
-func (ctx *RenderContext) Render() {
-	before := func(processor Processor, context *RenderContext, resources []*data.Resource) {
-		processor.Before(context, resources)
+func (ctx *RenderContext) Render() error {
+	before := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
+		err := processor.Before(context, resources)
+		if err != nil {
+			return errors.Wrap(err, "Before execution phase is failed");
+		}
+		return nil
 	}
-	after := func(processor Processor, context *RenderContext, resources []*data.Resource) {
-		processor.After(context, resources)
+	after := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
+		err := processor.After(context, resources)
+		if err != nil {
+			return errors.Wrap(err, "After execution phase is failed");
+		}
+		return nil
 	}
-	process := func(processor Processor, context *RenderContext, resources []*data.Resource) {
+	process := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
 		for _, resource := range resources {
-			processor.BeforeResource(resource)
+			err := processor.BeforeResource(resource)
+			if err != nil {
+				return errors.Wrap(err, "Applyinig transformation BeforeResource "+resource.Filename+" is failed")
+			}
 			resource.Content.Accept(processor)
-			processor.AfterResource(resource)
+			err = processor.AfterResource(resource)
+			if err != nil {
+				return errors.Wrap(err, "Applyinig transformation AfterResource "+resource.Filename+" is failed")
+			}
 
 		}
-		processor.After(context, resources)
+		return nil
 	}
-	ctx.RootResource.Execute(ctx, before)
-	ctx.RootResource.Execute(ctx, process)
-	ctx.RootResource.Execute(ctx, after)
+	_, err := ctx.RootResource.Execute(ctx, before)
+	if err != nil {
+		return err
+	}
+	_, err = ctx.RootResource.Execute(ctx, process)
+	if err != nil {
+		return err
+	}
+	_, err = ctx.RootResource.Execute(ctx, after)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //parse the directory structure and the flekszible configs from the dirs

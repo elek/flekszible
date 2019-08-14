@@ -3,7 +3,7 @@ package processor
 import (
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
-	"github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 	"regexp"
 	"strconv"
 )
@@ -16,10 +16,10 @@ type Change struct {
 	Replacement string
 }
 
-func (processor *Change) BeforeResource(resource *data.Resource) {
+func (processor *Change) BeforeResource(resource *data.Resource) error {
 	var re = regexp.MustCompile(processor.Pattern)
 	if !processor.Trigger.active(resource) {
-		return
+		return nil
 	}
 	getter := data.SmartGetAll{Path: processor.Path}
 	resource.Content.Accept(&getter)
@@ -30,16 +30,17 @@ func (processor *Change) BeforeResource(resource *data.Resource) {
 			intval, err := strconv.Atoi(processor.Replacement)
 			key.Value = intval
 			if err != nil {
-				logrus.Error("Invalid replacement value: number can be replaced only with number and not: " + processor.Replacement)
+				return errors.Wrap(err, "Invalid replacement value: number can be replaced only with number and not: "+processor.Replacement)
 			}
 		case string:
 			key.Value = re.ReplaceAllString(key.Value.(string), processor.Replacement)
 
 		default:
-			logrus.Error("Invalid replacement only string or int can be replaced: " + result.Path.ToString())
+			return errors.New("Invalid replacement only string or int can be replaced: " + result.Path.ToString())
 		}
 
 	}
+	return nil
 }
 
 func init() {

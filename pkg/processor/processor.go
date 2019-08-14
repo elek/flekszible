@@ -1,18 +1,17 @@
 package processor
 
 import (
-	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
 )
 
 type Processor interface {
 	data.Visitor
-	Before(ctx *RenderContext, resources []*data.Resource)
-	After(ctx *RenderContext, resources []*data.Resource)
+	Before(ctx *RenderContext, resources []*data.Resource) error
+	After(ctx *RenderContext, resources []*data.Resource) error
 
-	BeforeResource(*data.Resource)
-	AfterResource(*data.Resource)
+	BeforeResource(*data.Resource) error
+	AfterResource(*data.Resource) error
 	GetScope() string
 	SetScope(scope string)
 }
@@ -25,25 +24,30 @@ type DefaultProcessor struct {
 	CurrentResource *data.Resource
 }
 
-func (processor *DefaultProcessor) Before(ctx *RenderContext, resources []*data.Resource) {}
-func (processor *DefaultProcessor) After(ctx *RenderContext, resources []*data.Resource)  {}
+func (processor *DefaultProcessor) Before(ctx *RenderContext, resources []*data.Resource) error {
+	return nil
+}
+func (processor *DefaultProcessor) After(ctx *RenderContext, resources []*data.Resource) error {
+	return nil
+}
 func (processor *DefaultProcessor) GetScope() string {
 	return processor.Scope
 }
 func (processor *DefaultProcessor) SetScope(scope string) {
 	processor.Scope = scope
 }
-func (p *DefaultProcessor) BeforeResource(resource *data.Resource) {
+func (p *DefaultProcessor) BeforeResource(resource *data.Resource) error {
 	p.CurrentResource = resource
+	return nil
 }
 
-func (p *DefaultProcessor) AfterResource(*data.Resource) {
+func (p *DefaultProcessor) AfterResource(*data.Resource) error {
 	p.CurrentResource = nil
+	return nil
 }
 
 func configureProcessorFromYamlFragment(processor Processor, config *yaml.MapSlice) (Processor, error) {
 	processorConfigYaml, err := yaml.Marshal(config)
-	fmt.Println(string(processorConfigYaml))
 	if err != nil {
 		return nil, err
 	}

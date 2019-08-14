@@ -11,10 +11,11 @@ type Image struct {
 	Trigger Trigger
 }
 
-func (imageSet *Image) BeforeResource(resource *data.Resource) {
+func (imageSet *Image) BeforeResource(resource *data.Resource) error {
 	if imageSet.Trigger.active(resource) {
 		resource.Content.Accept(&data.Set{Path: data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*", "image"), NewValue: imageSet.Image})
 	}
+	return nil
 }
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{

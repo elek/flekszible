@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"errors"
 	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
@@ -13,9 +14,9 @@ type Replace struct {
 	Value   interface{}
 }
 
-func (processor *Replace) BeforeResource(resource *data.Resource) {
+func (processor *Replace) BeforeResource(resource *data.Resource) error {
 	if !processor.Trigger.active(resource) {
-		return
+		return nil
 	}
 
 	target := data.SmartGetAll{Path: processor.Path.Parent()}
@@ -29,9 +30,10 @@ func (processor *Replace) BeforeResource(resource *data.Resource) {
 			}
 			typedTarget.Put(processor.Path.Last(), node)
 		default:
-			panic(fmt.Errorf("Unsupported value adding %T to %T", processor.Value, match.Value))
+			return errors.New(fmt.Sprintf("Unsupported value adding %T to %T", processor.Value, match.Value))
 		}
 	}
+	return nil
 }
 
 func init() {

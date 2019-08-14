@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
+	"github.com/pkg/errors"
 )
 
 type Remove struct {
@@ -13,9 +14,9 @@ type Remove struct {
 	Yamlize bool
 }
 
-func (processor *Remove) BeforeResource(resource *data.Resource) {
+func (processor *Remove) BeforeResource(resource *data.Resource) error {
 	if !processor.Trigger.active(resource) {
-		return
+		return nil
 	}
 
 	forceYaml := data.Yamlize{Path: processor.Path}
@@ -33,7 +34,7 @@ func (processor *Remove) BeforeResource(resource *data.Resource) {
 			typedTarget.Remove(processor.Path.Last())
 
 		default:
-			panic(fmt.Errorf("Unsupported value %T should point to a map element", processor.Path))
+			return errors.New(fmt.Sprintf("Unsupported value %T should point to a map element", processor.Path))
 		}
 	}
 
@@ -41,7 +42,7 @@ func (processor *Remove) BeforeResource(resource *data.Resource) {
 		forceYaml.Serialize = true
 		resource.Content.Accept(&forceYaml)
 	}
-
+	return nil
 }
 
 func init() {

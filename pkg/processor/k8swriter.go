@@ -3,6 +3,7 @@ package processor
 import (
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
+	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -21,8 +22,9 @@ type K8sWriter struct {
 	header            string
 }
 
-func (writer *K8sWriter) Before(ctx *RenderContext, resources []*data.Resource) {
+func (writer *K8sWriter) Before(ctx *RenderContext, resources []*data.Resource) error {
 	writer.resourceOutputDir = ctx.OutputDir
+	return nil
 }
 
 func CreateOutputFileName(name string, kind string) string {
@@ -36,7 +38,7 @@ func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destinat
 	}
 }
 
-func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
+func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
 	writer.started = false
 	outputDir := writer.resourceOutputDir
 	if outputDir == "-" {
@@ -51,19 +53,20 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) {
 		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination, resource.DestinationFileName)
 		err := os.MkdirAll(path.Dir(outputFile), os.ModePerm)
 		if err != nil {
-			panic(err)
+			return errors.Wrap(err, "Can't create the output directory "+path.Dir(outputFile))
 		}
 
 		content, err := resource.Content.ToString()
 		if err != nil {
-			panic(err);
+			return errors.Wrap(err, "Can't render the content of a transformed resource file")
 		}
 
 		err = ioutil.WriteFile(outputFile, []byte(licenceHeader+content), 0655)
 		if err != nil {
-			panic(err);
+			return errors.Wrap(err, "Can't write the k8s file out "+outputFile)
 		}
 	}
+	return nil
 }
 
 func CreateStdK8sWriter() *K8sWriter {

@@ -12,7 +12,7 @@ type PublishService struct {
 	NodePorts   map[string]int `json:"nodePorts"`
 }
 
-func (processor *PublishService) Before(ctx *RenderContext, resources []*data.Resource) {
+func (processor *PublishService) Before(ctx *RenderContext, resources []*data.Resource) error {
 	newResources := make([]*data.Resource, 0)
 	for _, resource := range resources {
 		if processor.Trigger.active(resource) && resource.Kind() == "Service" && hasNoneClusterIp(resource.Content) {
@@ -44,6 +44,7 @@ func (processor *PublishService) Before(ctx *RenderContext, resources []*data.Re
 
 	}
 	ctx.AddResources(newResources...)
+	return nil
 }
 
 func init() {

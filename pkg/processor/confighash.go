@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/yaml"
+	"github.com/pkg/errors"
 )
 
 import "crypto/md5"
@@ -14,23 +15,24 @@ type ConfigHash struct {
 	nameToHash map[string]string
 }
 
-func (processor *ConfigHash) Before(ctx *RenderContext, resources []*data.Resource) {
+func (processor *ConfigHash) Before(ctx *RenderContext, resources []*data.Resource) error {
 	processor.nameToHash = make(map[string]string)
 
 	for _, resource := range resources {
 		if resource.Kind() == "ConfigMap" && processor.Trigger.active(resource) {
 			str, err := resource.Content.ToString()
 			if err != nil {
-				panic(err)
+				return errors.Wrap(err, "Resource can't rendered to string: "+resource.Filename)
 			}
 			hash := md5.Sum([]byte(str))
 			processor.nameToHash[resource.Name()] = hex.EncodeToString(hash[:md5.Size])
 		}
 	}
+	return nil
 
 }
 
-func (p *ConfigHash) BeforeResource(resource *data.Resource) {
+func (p *ConfigHash) BeforeResource(resource *data.Resource) error {
 
 	content := resource.Content
 	getAll := data.GetAll{
@@ -47,9 +49,10 @@ func (p *ConfigHash) BeforeResource(resource *data.Resource) {
 			for _, annotation := range annotations.Result {
 				annotation.Value.(*data.MapNode).PutValue("flekszible/config-hash", val)
 			}
-			return
+			return nil
 		}
 	}
+	return nil
 
 }
 func init() {

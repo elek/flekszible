@@ -26,7 +26,8 @@ func init() {
 	}
 	sourceDestFlags(k8sCmd, &inputDir, &outputDir)
 	k8sCmd.Flags().StringVarP(&imageOverride, "image", "i", "", "docker image name override")
-	k8sCmd.Flags().StringVarP(&namespaceOverride, "namespace", "n", "", "kubernetes namespace override")
+	k8sCmd.Flags().StringVarP(&namespaceOverride, "namespace", "n", "<none>", "kubernetes namespace override. With empty value (\"\") the current namespace will "+
+		"be used. With exact value the namespace will be forced (set even if the namespace is not added to the to the k8s resources")
 	k8sCmd.Flags().BoolVarP(&minikube, "minikube", "m", false, "Enable minikube specific defaults (eg. daemonset to statefulset conversion)")
 	rootCmd.AddCommand(k8sCmd)
 }

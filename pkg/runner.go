@@ -302,10 +302,25 @@ func AddInternalTransformations(context *processor.RenderContext, minikube bool)
 			Image: context.ImageOverride,
 		})
 	}
-	if len(context.Namespace) > 0 {
-		context.RootResource.ProcessorRepository.Append(&processor.Namespace{
-			Namespace: context.Namespace,
-		})
+	if context.Namespace != "<none>" {
+		if len(context.Namespace) > 0 {
+			context.RootResource.ProcessorRepository.Append(&processor.Namespace{
+				Namespace: context.Namespace,
+				Force:     true,
+			})
+		} else {
+			conf := data.CreateKubeConfig()
+			currentNamespace, err := conf.ReadCurrentNamespace()
+			if err != nil {
+				logrus.Warn("Namespace can't be identified")
+			} else {
+				context.RootResource.ProcessorRepository.Append(&processor.Namespace{
+					Namespace: currentNamespace,
+				})
+			}
+		}
+	} else {
+		context.Namespace = ""
 	}
 	if (minikube) {
 		context.RootResource.ProcessorRepository.Append(&processor.DaemonToStatefulSet{})

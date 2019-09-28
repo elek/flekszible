@@ -25,6 +25,13 @@ func NewPath(segs ...string) Path {
 	}
 }
 
+func RootPath() Path {
+	empty := make([]string, 0)
+	return Path{
+		segments: empty,
+	}
+}
+
 func (path Path) Extend(segment string) Path {
 	newSegments := make([]string, len(path.segments)+1)
 	if path.segments != nil {

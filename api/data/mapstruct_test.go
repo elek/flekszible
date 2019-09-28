@@ -111,3 +111,14 @@ func TestFixPath(t *testing.T) {
 	n.Accept(&fp)
 	n.Accept(PrintVisitor{})
 }
+
+func TestNodeFromPathValue(t *testing.T) {
+	path := NewPath("metadata", "interface")
+	node := NodeFromPathValue(path, "something")
+
+	g := Get{Path: path}
+	node.Accept(&g)
+
+	assert.True(t, g.Found)
+	assert.Equal(t, "something", g.ValueAsString())
+}

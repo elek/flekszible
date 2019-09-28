@@ -490,3 +490,13 @@ func (visitor *FixPath) BeforeListItem(node *ListNode, item Node, index int) {
 func (visitor *FixPath) AfterListItem(node *ListNode, item Node, index int) {
 	visitor.CurrentPath = visitor.CurrentPath.Parent()
 }
+
+func NodeFromPathValue(path Path, value interface{}) Node {
+	root := NewMapNode(RootPath())
+	current := &root
+	for _, segment := range path.Parent().segments {
+		current = current.CreateMap(segment)
+	}
+	current.PutValue(path.Last(), value)
+	return &root
+}

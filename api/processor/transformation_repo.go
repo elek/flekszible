@@ -37,7 +37,11 @@ func ReadProcessorDefinitionFile(filename string) ([]Processor, error) {
 	return ReadProcessorDefinition(data)
 }
 
-func CreateTransformation(processorTypeName string, config *yaml.MapSlice) (Processor, error) {
+func CreateTransformation(processorTypeName string) (Processor, error) {
+	return CreateTransformationWithConfig(processorTypeName, &yaml.MapSlice{})
+}
+
+func CreateTransformationWithConfig(processorTypeName string, config *yaml.MapSlice) (Processor, error) {
 	if definition, ok := ProcessorTypeRegistry.TypeMap[strings.ToLower(processorTypeName)]; ok {
 		processor, err := definition.Factory(config)
 		if err != nil {

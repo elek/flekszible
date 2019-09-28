@@ -41,7 +41,7 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 	for _, processorConfig := range processorsConfigs {
 		typeName, ok := processorConfig.Get("type")
 		if ok {
-			proc, err := CreateTransformation(typeName.(string), &processorConfig)
+			proc, err := CreateTransformationWithConfig(typeName.(string), &processorConfig)
 			if err != nil {
 				logrus.Error("Transformation can't be instantiated: " + typeName.(string) + " " + err.Error())
 			} else {

@@ -122,3 +122,14 @@ func TestNodeFromPathValue(t *testing.T) {
 	assert.True(t, g.Found)
 	assert.Equal(t, "something", g.ValueAsString())
 }
+
+func TestToMap(t *testing.T) {
+	n := NewMapNode(NewPath())
+	childMap := n.CreateMap("child1")
+	childMap.PutValue("key", "value")
+
+	toMap := n.ToMap()
+
+	value := toMap["child1"].(map[string]interface{})["key"]
+	assert.Equal(t, "value", value)
+}

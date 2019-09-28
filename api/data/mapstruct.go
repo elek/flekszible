@@ -500,3 +500,27 @@ func NodeFromPathValue(path Path, value interface{}) Node {
 	current.PutValue(path.Last(), value)
 	return &root
 }
+
+func (m *MapNode) ToMap() map[string]interface{} {
+	return ToMap(m).(map[string]interface{})
+}
+
+func ToMap(node Node) interface{} {
+	switch object := node.(type) {
+	case *MapNode:
+		result := make(map[string]interface{})
+		for key, value := range object.children {
+			result[key] = ToMap(value)
+		}
+		return result
+	case *ListNode:
+		result := make([]interface{}, 0)
+		for _, item := range object.Children {
+			result = append(result, ToMap(item))
+		}
+		return result
+	case *KeyNode:
+		return object.Value
+	}
+	return nil
+}

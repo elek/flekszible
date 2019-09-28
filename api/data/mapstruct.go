@@ -335,7 +335,7 @@ func (visitor *Yamlize) BeforeMapItem(node *MapNode, key string, index int) {
 		if node.Path.Extend(key).Equal(visitor.parsedPath) {
 			content, err := node.Get(key).(*MapNode).ToString()
 			if err != nil {
-				panic(err);
+				panic(err)
 			}
 			node.Put(key, &KeyNode{content, node.Path.Extend(key)})
 		}

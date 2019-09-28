@@ -5,7 +5,6 @@ import (
 	"github.com/elek/flekszible/api/yaml"
 )
 
-
 func init() {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
@@ -20,13 +19,13 @@ func init() {
 			},
 		},
 		Factory: func(slice *yaml.MapSlice) (Processor, error) {
-			return configureProcessorFromYamlFragment(&PublishService{NodePorts: make(map[string]int), ServiceType: "NodePort"}, slice);
+			return configureProcessorFromYamlFragment(&PublishService{NodePorts: make(map[string]int), ServiceType: "NodePort"}, slice)
 		},
 	})
 }
 
 func DeepCopy(src *data.MapNode) *data.MapNode {
-	content, err := src.ToString();
+	content, err := src.ToString()
 	if err != nil {
 		panic(err)
 	}

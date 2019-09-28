@@ -1,9 +1,9 @@
 package processor
 
 import (
-	"github.com/pkg/errors"
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/yaml"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
@@ -184,14 +184,14 @@ func (ctx *RenderContext) Render() error {
 	before := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
 		err := processor.Before(context, resources)
 		if err != nil {
-			return errors.Wrap(err, "Before execution phase is failed");
+			return errors.Wrap(err, "Before execution phase is failed")
 		}
 		return nil
 	}
 	after := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
 		err := processor.After(context, resources)
 		if err != nil {
-			return errors.Wrap(err, "After execution phase is failed");
+			return errors.Wrap(err, "After execution phase is failed")
 		}
 		return nil
 	}

@@ -10,7 +10,6 @@ type Namespace struct {
 	Namespace          string
 	Force              bool
 	ClusterRoleSupport bool
-
 }
 
 func (processor *Namespace) BeforeResource(resource *data.Resource) error {
@@ -26,19 +25,19 @@ func (processor *Namespace) BeforeResource(resource *data.Resource) error {
 	}
 	if processor.ClusterRoleSupport {
 		if resource.Kind() == "ClusterRole" {
-			namePath := data.NewPath("metadata", "name");
+			namePath := data.NewPath("metadata", "name")
 			name := resource.Name()
 			resource.DestinationFileName = CreateOutputFileName(name, "ClusterRole")
 			resource.Content.Accept(&data.Set{Path: namePath, NewValue: name + "-" + processor.Namespace})
 		}
 		if resource.Kind() == "ClusterRoleBinding" {
-			namePath := data.NewPath("metadata", "name");
+			namePath := data.NewPath("metadata", "name")
 			name := resource.Name()
 			resource.DestinationFileName = CreateOutputFileName(name, "ClusterRoleBinding")
 			resource.Content.Accept(&data.Set{Path: namePath, NewValue: name + "-" + processor.Namespace})
 		}
 		if resource.Kind() == "ClusterRoleBinding" {
-			namePath := data.NewPath("roleRef", "name");
+			namePath := data.NewPath("roleRef", "name")
 			get := &data.Get{Path: namePath}
 			resource.Content.Accept(get)
 			resource.Content.Accept(&data.Set{Path: namePath, NewValue: get.ValueAsString() + "-" + processor.Namespace})
@@ -100,4 +99,3 @@ Example):
 		},
 	})
 }
-

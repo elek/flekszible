@@ -27,7 +27,7 @@ type ImportConfiguration struct {
 
 //read flekszible.yaml/Flekszible configuration from one file
 func readFromFile(file string, conf *Configuration) (bool, error) {
-	if _, err := os.Stat(file); ! os.IsNotExist(err) {
+	if _, err := os.Stat(file); !os.IsNotExist(err) {
 		bytes, err := ioutil.ReadFile(file)
 		if err != nil {
 			return false, err
@@ -41,7 +41,6 @@ func readFromFile(file string, conf *Configuration) (bool, error) {
 	} else {
 		return false, nil
 	}
-
 
 }
 

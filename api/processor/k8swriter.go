@@ -28,13 +28,13 @@ func (writer *K8sWriter) Before(ctx *RenderContext, resources []*data.Resource) 
 }
 
 func CreateOutputFileName(name string, kind string) string {
-	return strings.ToLower(name) + "-" + strings.ToLower(kind) + ".yaml";
+	return strings.ToLower(name) + "-" + strings.ToLower(kind) + ".yaml"
 }
 func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destination string, destinationFile string) string {
 	if destinationFile != "" {
 		return path.Join(outputDir, destination, destinationFile)
 	} else {
-		return path.Join(outputDir, destination, CreateOutputFileName(name, kind));
+		return path.Join(outputDir, destination, CreateOutputFileName(name, kind))
 	}
 }
 

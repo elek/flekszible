@@ -1,9 +1,9 @@
 package processor
 
 import (
-	"github.com/pkg/errors"
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/yaml"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
@@ -40,7 +40,7 @@ func (p *Pipe) BeforeResource(resource *data.Resource) error {
 	}
 	output := builder.String()
 	logrus.Infof("Command is executed with the following output %s", output)
-	node, err := data.ReadManifestString([]byte(output ))
+	node, err := data.ReadManifestString([]byte(output))
 	if err != nil {
 		return errors.Wrap(err, "Can't parse the result of the piped command for "+resource.Path)
 	}

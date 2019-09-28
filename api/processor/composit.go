@@ -8,6 +8,7 @@ import (
 	"strings"
 	"text/template"
 )
+
 type Composit struct {
 	DefaultProcessor
 	ProcessorMetadata
@@ -16,7 +17,6 @@ type Composit struct {
 	Template   string
 	Parameters map[string]string
 }
-
 
 func (c *Composit) OnKey(node *data.KeyNode) {
 	for _, p := range c.Processors {
@@ -100,7 +100,7 @@ func compositFactory(config *yaml.MapSlice, templateBytes []byte) (Processor, er
 }
 
 func addDefaultParameters(parameters map[string]interface{}) {
-	kubeConfig := data.CreateKubeConfig();
+	kubeConfig := data.CreateKubeConfig()
 	ns, err := kubeConfig.ReadCurrentNamespace()
 	if err != nil {
 		ns = "default"
@@ -123,9 +123,8 @@ func parseDefintion(path string) error {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: metadata,
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			return compositFactory(config, body);
+			return compositFactory(config, body)
 		},
 	})
 	return nil
 }
-

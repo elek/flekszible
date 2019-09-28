@@ -60,7 +60,7 @@ func (config *Kubeconfig) ReadCurrentNamespace() (string, error) {
 	}
 	if current, ok := parsedConfig["current-context"]; ok {
 		if contexts, ok := parsedConfig["contexts"]; ok {
-			for _, context := range (contexts.([]interface{})) {
+			for _, context := range contexts.([]interface{}) {
 				if name, ok := (context.(yaml.MapSlice)).Get("name"); ok {
 					if name != current {
 						continue
@@ -70,7 +70,7 @@ func (config *Kubeconfig) ReadCurrentNamespace() (string, error) {
 				}
 				if contexMetadata, ok := context.(yaml.MapSlice).Get("context"); ok {
 					if namespace, ok := contexMetadata.(yaml.MapSlice).Get("namespace"); ok {
-						return namespace.(string), nil;
+						return namespace.(string), nil
 					}
 				}
 			}

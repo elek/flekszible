@@ -38,5 +38,3 @@ func (pt *ProcessorTypes) Add(definition ProcessorDefinition) {
 	}
 	pt.TypeMap[strings.ToLower(definition.Metadata.Name)] = definition
 }
-
-

@@ -94,8 +94,7 @@ func listUniqSources(context *processor.RenderContext) []data.Source {
 	sourceSet[id] = true
 
 	for _, node := range nodes {
-		for
-		_, source := range node.Source {
+		for _, source := range node.Source {
 			id, _ := source.GetPath(&cacheManager, "")
 			if _, hasKey := sourceSet[id]; !hasKey {
 				sources = append(sources, source)
@@ -323,7 +322,7 @@ func AddInternalTransformations(context *processor.RenderContext, minikube bool)
 	} else {
 		context.Namespace = ""
 	}
-	if (minikube) {
+	if minikube {
 		context.RootResource.ProcessorRepository.Append(&processor.DaemonToStatefulSet{})
 		context.RootResource.ProcessorRepository.Append(&processor.PublishService{})
 	}
@@ -336,7 +335,7 @@ type GoGetterDownloader struct {
 }
 
 func (GoGetterDownloader) Download(url string, destinationDir string, rootPath string) error {
-	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil; }
+	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil }
 	return getter.Get(destinationDir, url, setPwd)
 }
 

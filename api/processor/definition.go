@@ -18,9 +18,9 @@ func splitDefinitionFile(data []byte) ([]byte, []byte) {
 		if line == "---" && headerPart {
 			headerPart = false
 		} else if headerPart {
-			head += line + "\n";
+			head += line + "\n"
 		} else {
-			body += line + "\n";
+			body += line + "\n"
 		}
 	}
 	return []byte(head), []byte(body)

@@ -1,7 +1,7 @@
 package examples
 
 import (
-	"github.com/elek/flekszible/pkg/processor"
+	"github.com/elek/flekszible/public/processor"
 	"testing"
 )
 

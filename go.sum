@@ -9,6 +9,8 @@ github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020/go.mod h1:m
 github.com/cheggaaa/pb v1.0.27/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXHm81s=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/elek/flekszible/public v0.0.0-20190928090338-d1d34ef1bc1f h1:sHw4A5rpF9fWqTvxiZdD9M7jIk9grGUSUNlFjTNgdPo=
+github.com/elek/flekszible/public v0.0.0-20190928090338-d1d34ef1bc1f/go.mod h1:Y4m53Kl4WYkREvfPK6ElJ+rS3t+Ch4fAx4Mltob5Of8=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/hashicorp/go-cleanhttp v0.5.0 h1:wvCrVc9TjDls6+YGAF2hAifE1E5U1+b4tH6KdvN3Gig=
 github.com/hashicorp/go-cleanhttp v0.5.0/go.mod h1:JpRdi6/HCYpAwUzNwuwqhbovhLtngrth3wmdIIUrZ80=

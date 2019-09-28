@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/elek/flekszible/pkg"
-	"github.com/elek/flekszible/pkg/processor"
+	"github.com/elek/flekszible/public/processor"
 	"github.com/spf13/cobra"
 )
 

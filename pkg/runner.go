@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/apcera/termtables"
+	"github.com/brettski/go-termtables"
 	"github.com/elek/flekszible/pkg/data"
 	"github.com/elek/flekszible/pkg/processor"
 	"github.com/elek/flekszible/pkg/yaml"

@@ -8,6 +8,7 @@ import (
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/processor"
 	"github.com/elek/flekszible/api/yaml"
+	"github.com/hashicorp/go-getter"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -329,4 +330,16 @@ func AddInternalTransformations(context *processor.RenderContext, minikube bool)
 	if context.Mode == "k8s" {
 		context.RootResource.ProcessorRepository.Append(&processor.K8sWriter{})
 	}
+}
+
+type GoGetterDownloader struct {
+}
+
+func (GoGetterDownloader) Download(url string, destinationDir string, rootPath string) error {
+	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil; }
+	return getter.Get(destinationDir, url, setPwd)
+}
+
+func init() {
+	data.DownloaderPlugin = GoGetterDownloader{}
 }

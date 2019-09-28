@@ -241,11 +241,11 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	}
 	node.Source = make([]data.Source, 0)
 	for _, definedSource := range conf.Source {
-		//if definedSource.Url != "" {
-		//	node.Source = append(node.Source, &data.GoGetter{Url: definedSource.Url})
-		//} else if definedSource.Path != "" {
-		node.Source = append(node.Source, &data.LocalSource{BaseDir: node.Dir, RelativeDir: definedSource.Path})
-		//}
+		if definedSource.Url != "" {
+			node.Source = append(node.Source, &data.RemoteSource{Url: definedSource.Url})
+		} else if definedSource.Path != "" {
+			node.Source = append(node.Source, &data.LocalSource{BaseDir: node.Dir, RelativeDir: definedSource.Path})
+		}
 	}
 	//update destinations of the direct k8s resources
 	for ix, _ := range node.Resources {

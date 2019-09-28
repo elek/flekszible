@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/sirupsen/logrus"
 	"os"
 	"path"
 	"regexp"
@@ -67,4 +68,40 @@ func (source *EnvSource) GetPath(manager *SourceCacheManager, relativeDir string
 
 func (source *EnvSource) ToString() (string, string) {
 	return "$FLEKSZIBLE_PATH", os.Getenv("FLEKSZIBLE_PATH")
+}
+
+type RemoteSource struct {
+	Url      string
+	CacheDir string
+}
+
+func (source *RemoteSource) ToString() (string, string) {
+	return "remote dir", source.Url
+}
+
+type Downloader interface {
+	Download(url string, destinationDir string, rootPath string) error
+}
+
+var DownloaderPlugin Downloader = NodeDownloader{}
+
+type NodeDownloader struct {
+}
+
+func (NodeDownloader) Download(url string, destinationDir string, rootPath string) error {
+	logrus.Warn("Downloader component has not been registered. Downloading remote resources are disabled.")
+	return nil
+}
+
+func (source *RemoteSource) EnsureDownloaded(manager *SourceCacheManager) error {
+	destinationDir := manager.GetCacheDir(cleanUrl(source.Url))
+	return DownloaderPlugin.Download(source.Url, destinationDir, manager.RootPath)
+}
+
+func (source *RemoteSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+	err := source.EnsureDownloaded(manager)
+	if err != nil {
+		return "", err
+	}
+	return path.Join(manager.GetCacheDir(cleanUrl(source.Url)), relativeDir), nil
 }

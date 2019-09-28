@@ -2,7 +2,7 @@ module github.com/elek/flekszible
 
 require (
 	github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020
-	github.com/elek/flekszible/public v0.0.0-20190928090338-d1d34ef1bc1f
+	github.com/elek/flekszible/api v0.0.0-20190928090338-d1d34ef1bc1f
 	github.com/hashicorp/go-getter v1.1.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magefile/mage v1.8.0
@@ -17,4 +17,4 @@ require (
 	gopkg.in/yaml.v2 v2.2.1
 )
 
-replace github.com/elek/flekszible/public => ./public
+replace github.com/elek/flekszible/api => ./api

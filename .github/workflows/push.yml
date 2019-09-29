@@ -6,10 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: go1.12  linters
-      uses: shoukoo/golang-pipeline/go1.12/linter@master
-      with:
-          STATICCHECK: off
-          ERRCHECK: off
-    - name: go1.12 test
-      uses: shoukoo/golang-pipeline/go1.12/test@master
+    - name: build
+      run: |
+          ./build build
+    - name: unit tests
+      run: |
+          ./build test

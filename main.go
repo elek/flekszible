@@ -152,8 +152,7 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 				Usage: "Register source to your Flekszible descriptor file",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
-					pkg.AddSource(context, findInputDir(inputDir), c.Args().First())
-					return nil
+					return pkg.AddSource(context, findInputDir(inputDir), c.Args().First())
 				},
 			},
 		},

@@ -2,14 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/brettski/go-termtables"
-	"github.com/elek/flekszible/api/data"
-	"github.com/elek/flekszible/api/processor"
-	"github.com/elek/flekszible/api/yaml"
-	"github.com/hashicorp/go-getter"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -17,6 +10,14 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/brettski/go-termtables"
+	"github.com/elek/flekszible/api/data"
+	"github.com/elek/flekszible/api/processor"
+	"github.com/elek/flekszible/api/yaml"
+	"github.com/hashicorp/go-getter"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 func ListResources(context *processor.RenderContext) {
@@ -152,21 +153,25 @@ func SearchSource() {
 	fmt.Println()
 
 }
-func AddSource(context *processor.RenderContext, inputDir string, source string) {
+func AddSource(context *processor.RenderContext, inputDir string, source string) error {
 	var conf data.Configuration
 	conf, configFile, err := data.ReadConfiguration(inputDir)
 	if err != nil {
-		panic(err)
+		return errors.Wrap(err, "Can't read existing conf from dir "+inputDir)
+	}
+	if configFile == "" {
+		configFile = path.Join(inputDir, "Flekszible")
 	}
 	conf.Source = append(conf.Source, data.ConfigSource{Url: source})
 	out, err := yaml.Marshal(conf)
 	if err != nil {
-		panic(err)
+		return errors.Wrap(err, "Can't write marshall config to yaml "+configFile)
 	}
 	err = ioutil.WriteFile(configFile, out, 0755)
 	if err != nil {
-		panic(err)
+		return errors.Wrap(err, "Can't write out file "+configFile)
 	}
+	return nil
 }
 
 func AddApp(context *processor.RenderContext, inputDir string, app string) {
@@ -174,6 +179,9 @@ func AddApp(context *processor.RenderContext, inputDir string, app string) {
 	conf, configFile, err := data.ReadConfiguration(inputDir)
 	if err != nil {
 		panic(err)
+	}
+	if configFile == "" {
+		configFile = path.Join(inputDir, "Flekszible")
 	}
 	conf.Import = append(conf.Import, data.ImportConfiguration{Path: app})
 	out, err := yaml.Marshal(conf)

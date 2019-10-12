@@ -1,10 +1,11 @@
 package data
 
 import (
-	"github.com/elek/flekszible/api/yaml"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/elek/flekszible/api/yaml"
 )
 
 type Configuration struct {

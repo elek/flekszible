@@ -45,10 +45,6 @@ func findInputDir(argument string) string {
 	if err != nil {
 		panic(err)
 	}
-	subdir := path.Join(pwd, "flekszible")
-	if stat, err := os.Stat(subdir); !os.IsNotExist(err) && stat.Mode().IsDir(){
-		return subdir
-	}
 	return pwd
 }
 

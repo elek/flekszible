@@ -2,7 +2,7 @@ builds:
   - env:
       - CGO_ENABLED=0
     ldflags:
-      - -X github.com/elek/flekszible/cmd.commit={{.Commit}} -X github.com/elek/flekszible/cmd.version={{.Version}} -X github.com/elek/flekszible/cmd.date={{.Date}}
+      - -X main.commit={{.Commit}} -X main.version={{.Version}} -X main.date={{.Date}}
 archive:
   replacements:
     darwin: Darwin

@@ -19,6 +19,7 @@ func main() {
 
 	var inputDir, outputDir, imageOverride, namespaceOverride string
 	var minikube bool
+
 	app := cli.NewApp()
 	app.Name = "Flekszible"
 	app.Usage = "Generate kubernetes sources files"
@@ -56,6 +57,16 @@ func main() {
 					Usage:       "docker image name override",
 					Destination: &imageOverride,
 				},
+
+				cli.StringSliceFlag{
+					Name:  "transformations, t",
+					Usage: "manually defined transformations",
+				},
+
+				cli.StringSliceFlag{
+					Name:  "import, p",
+					Usage: "Define additional import paths",
+				},
 				cli.BoolFlag{
 					Name:        "minikube",
 					Usage:       "Enable minikube specific defaults (eg. daemonset to statefulset conversion)",
@@ -66,7 +77,7 @@ func main() {
 				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), findOutputDir(&outputDir))
 				context.ImageOverride = imageOverride
 				context.Namespace = namespaceOverride
-				pkg.Run(context, minikube)
+				pkg.Run(context, minikube, c.StringSlice("import"), c.StringSlice("transformations"))
 				return nil
 			},
 		},

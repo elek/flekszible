@@ -1,8 +1,11 @@
 package processor
 
 import (
-	"github.com/elek/flekszible/api/yaml"
+	"errors"
+	"fmt"
 	"strings"
+
+	"github.com/elek/flekszible/api/yaml"
 )
 
 var ProcessorTypeRegistry ProcessorTypes
@@ -37,4 +40,18 @@ func (pt *ProcessorTypes) Add(definition ProcessorDefinition) {
 		pt.TypeMap = make(map[string]ProcessorDefinition)
 	}
 	pt.TypeMap[strings.ToLower(definition.Metadata.Name)] = definition
+}
+
+func (pt *ProcessorTypes) Create(name string, parameters map[string]string) (Processor, error) {
+	if factory, ok := pt.TypeMap[name]; ok {
+		param := yaml.MapSlice{}
+		for key, value := range parameters {
+			param = param.Put(key, value)
+		}
+		fmt.Println(param)
+		return factory.Factory(&param)
+	} else {
+		return nil, errors.New("No such registered transformation definition: " + name)
+	}
+
 }

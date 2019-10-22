@@ -302,14 +302,15 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 		name := parts[0]
 
 		parameterMap := make(map[string]string)
-		for _, parameter := range strings.Split(parts[1], ",") {
-			paramParts := strings.Split(parameter, "=")
-			if len(paramParts) != 2 {
-				panic("Parameters should be defined in the form key=value and not " + parameter)
+		if len(parts) > 1 {
+			for _, parameter := range strings.Split(parts[1], ",") {
+				paramParts := strings.Split(parameter, "=")
+				if len(paramParts) != 2 {
+					panic("Parameters should be defined in the form key=value and not " + parameter)
+				}
+				parameterMap[paramParts[0]] = paramParts[1]
 			}
-			parameterMap[paramParts[0]] = paramParts[1]
 		}
-
 		processor, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
 		if err != nil {
 			panic(err)

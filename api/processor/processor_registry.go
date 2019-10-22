@@ -2,7 +2,6 @@ package processor
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/elek/flekszible/api/yaml"
@@ -48,7 +47,6 @@ func (pt *ProcessorTypes) Create(name string, parameters map[string]string) (Pro
 		for key, value := range parameters {
 			param = param.Put(key, value)
 		}
-		fmt.Println(param)
 		return factory.Factory(&param)
 	} else {
 		return nil, errors.New("No such registered transformation definition: " + name)

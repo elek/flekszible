@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"fmt"
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/yaml"
 	"github.com/pkg/errors"
@@ -42,7 +43,12 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
 	writer.started = false
 	outputDir := writer.resourceOutputDir
 	if outputDir == "-" {
-		writer.output = os.Stderr
+		content, err := resource.Content.ToString()
+		if err != nil {
+			return errors.Wrap(err, "Can't render the content of a transformed resource file")
+		}
+		fmt.Println(content)
+		fmt.Println("---")
 	} else {
 		licenceHeader := ""
 		licenceHeaderFile := path.Join(outputDir, "LICENSE.header")

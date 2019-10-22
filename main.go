@@ -146,7 +146,7 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 				Usage: "List registered sources (directories / repositories where other directories are imported from)",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
-					pkg.ListApp(context)
+					pkg.ListSources(context)
 					return nil
 				},
 			},

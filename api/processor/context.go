@@ -199,12 +199,12 @@ func (ctx *RenderContext) Render() error {
 		for _, resource := range resources {
 			err := processor.BeforeResource(resource)
 			if err != nil {
-				return errors.Wrap(err, "Applyinig transformation BeforeResource "+resource.Filename+" is failed")
+				return errors.Wrap(err, "Applying transformation BeforeResource "+resource.Filename+" is failed")
 			}
 			resource.Content.Accept(processor)
 			err = processor.AfterResource(resource)
 			if err != nil {
-				return errors.Wrap(err, "Applyinig transformation AfterResource "+resource.Filename+" is failed")
+				return errors.Wrap(err, "Applying transformation AfterResource "+resource.Filename+" is failed")
 			}
 
 		}

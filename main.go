@@ -68,13 +68,21 @@ func main() {
 					Usage: "Define additional import paths",
 				},
 				cli.BoolFlag{
+					Name:  "print",
+					Usage: "Print out the result to the standard output (same as to use - as the destination'-d -')",
+				},
+				cli.BoolFlag{
 					Name:        "minikube",
 					Usage:       "Enable minikube specific defaults (eg. daemonset to statefulset conversion)",
 					Destination: &minikube,
 				},
 			},
 			Action: func(c *cli.Context) error {
-				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), findOutputDir(&outputDir))
+				outputDir := findOutputDir(&outputDir)
+				if c.Bool("print") {
+					outputDir = "-"
+				}
+				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), outputDir)
 				context.ImageOverride = imageOverride
 				context.Namespace = namespaceOverride
 				pkg.Run(context, minikube, c.StringSlice("import"), c.StringSlice("transformations"))

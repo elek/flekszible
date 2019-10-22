@@ -9,21 +9,21 @@ import (
 )
 
 type Configuration struct {
-	Source          []ConfigSource
-	Import          []ImportConfiguration
-	Transformations []yaml.MapSlice
-	Standalone      bool
+	Source          []ConfigSource        `yaml:",omitempty"`
+	Import          []ImportConfiguration `yaml:",omitempty"`
+	Transformations []yaml.MapSlice       `yaml:",omitempty"`
+	Standalone      bool                  `yaml:"-"`
 }
 
 type ConfigSource struct {
-	Url  string
-	Path string
+	Url  string `yaml:",omitempty"`
+	Path string `yaml:",omitempty"`
 }
 
 type ImportConfiguration struct {
 	Path            string
-	Destination     string
-	Transformations []yaml.MapSlice
+	Destination     string          `yaml:",omitempty"`
+	Transformations []yaml.MapSlice `yaml:",omitempty"`
 }
 
 //read flekszible.yaml/Flekszible configuration from one file

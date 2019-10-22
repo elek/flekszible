@@ -139,7 +139,7 @@ func appCommands(inputDir *string, outputDir *string) cli.Command {
 func sourceCommands(inputDir, outputDir *string) cli.Command {
 	return cli.Command{
 		Name:  "source",
-		Usage: "Manage importable dirs/applications.",
+		Usage: "Manage sources of the importable applications.",
 		Subcommands: []cli.Command{
 			{
 				Name:  "list",
@@ -172,11 +172,12 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 
 func transformationCommands(inputDir, outputDir *string) cli.Command {
 	return cli.Command{
-		Name:  "type",
-		Usage: "Show available transformation types/definitions",
+		Name:    "transformation",
+		Aliases: []string{"trafo", "definitions"},
+		Usage:   "Show available transformation types/definitions",
 		Subcommands: []cli.Command{
 			{
-				Name:  "list",
+				Name:  "search",
 				Usage: "List available transformation types.",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))

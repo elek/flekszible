@@ -3,8 +3,10 @@ package main
 // import "github.com/elek/flekszible/cmd"
 import (
 	"fmt"
+	"github.com/hashicorp/go-getter"
 	"log"
 	"os"
+	"path"
 
 	"github.com/elek/flekszible/api/processor"
 	"github.com/elek/flekszible/pkg"
@@ -207,13 +209,27 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 }
 
 func findInputDir(argument *string) string {
-	if *argument != "" {
-		return *argument
-	}
 	pwd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
+
+	if *argument != "" {
+		//input dir is specificed
+		if _, err := os.Stat(*argument); err == nil {
+			return *argument
+		} else {
+			//no such file, assuming it's an url
+			workDir := path.Join(pwd, ".flekszible-source")
+			err := getter.Get(workDir, *argument)
+			if err != nil {
+				panic(err)
+			}
+			return workDir
+		}
+		return *argument
+	}
+
 	return pwd
 }
 

@@ -104,3 +104,4 @@ dist
 .cache
 
 docs/public
+.flekszible-source

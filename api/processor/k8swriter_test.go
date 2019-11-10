@@ -11,11 +11,14 @@ func TestK8sWriter(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, node)
 
-	resource := data.Resource{}
+	resource := data.Resource{
+		Content: node,
+	}
 
 	writer := CreateStdK8sWriter()
 
-	writer.BeforeResource(&resource)
+	err = writer.BeforeResource(&resource)
+	assert.Nil(t, err)
 	node.Accept(writer)
 
 }

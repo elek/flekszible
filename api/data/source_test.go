@@ -8,8 +8,7 @@ import (
 func TestLocalPath(t *testing.T) {
 
 	source := LocalSource{
-		Dir:         "/tmp/test/sub",
-		RelativeDir: "../../",
+		Dir:         "/tmp/test/sub/../..",
 	}
 	mgr := SourceCacheManager{}
 	result, err := source.GetPath(&mgr, "dir")

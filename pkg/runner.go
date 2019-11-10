@@ -298,25 +298,11 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 		panic(err)
 	}
 	for _, trafoDef := range transformations {
-		parts := strings.Split(trafoDef, ":")
-		name := parts[0]
-
-		parameterMap := make(map[string]string)
-		if len(parts) > 1 {
-			for _, parameter := range strings.Split(parts[1], ",") {
-				paramParts := strings.Split(parameter, "=")
-				if len(paramParts) != 2 {
-					panic("Parameters should be defined in the form key=value and not " + parameter)
-				}
-				parameterMap[paramParts[0]] = paramParts[1]
-			}
-		}
-		processor, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
+		proc, err := createTransformation(trafoDef)
 		if err != nil {
 			panic(err)
 		}
-		context.RootResource.ProcessorRepository.Append(processor)
-
+		context.RootResource.ProcessorRepository.Append(proc)
 	}
 
 	AddInternalTransformations(context, minikube)
@@ -324,6 +310,26 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 	if err != nil {
 		panic(err)
 	}
+}
+
+func createTransformation(trafoDef string) (processor.Processor, error) {
+	parts := strings.SplitN(trafoDef, ":", 2)
+	name := parts[0]
+	parameterMap := make(map[string]string)
+	if len(parts) > 1 {
+		for _, parameter := range strings.Split(parts[1], ",") {
+			paramParts := strings.Split(parameter, "=")
+			if len(paramParts) != 2 {
+				return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
+			}
+			parameterMap[paramParts[0]] = paramParts[1]
+		}
+	}
+	proc, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
+	}
+	return proc, nil
 }
 
 func AddInternalTransformations(context *processor.RenderContext, minikube bool) {

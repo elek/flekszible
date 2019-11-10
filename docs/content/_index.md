@@ -8,7 +8,7 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
 
  * Flekszible generates the final k8s yaml files based on source yaml file + easy to use transformation rules
  * Everything can be versioned as the final files are generated and saved (GitOps)
- * Transformation rules can be reused and shared (It has a powerful but extremly simple package management)
+ * Transformation rules can be reused and shared (It has a powerful but extremely simple package management)
  * It combines the best part of the composition based and template based approach (it's composition based but in reusable transformation rule definition you can use templates)
 
 ## Features:
@@ -27,16 +27,17 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
 
 ## Comparison
 
- * Flekszible vs Helm: 
-   * Flekszible is based on composition instead of templates
+ * **Flekszible vs Helm**: 
+   * Flekszible is based on composition instead of templates (it's more like Kustomize)
    * No server side component the final deployment will be handled by kubectl
    * But it's more flexible: you can modify any part of the source kubernetes resources
    * You don't need to add a lot of golang template conditions to customize all the parts of k8s resources
    * The package management is simpified (No other repository formats just plain git repositories. Registry is based on github tags and stars)
- * Flekszible vs Kustomize:
-   * It has less [limitations](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/eschewedFeatures.md). Flekszible is designed to be as flexible as possible with keeping the complexity on minimal.
+ * **Flekszible vs Kustomize**:
+   * It has less limitations. Flekszible is designed to be as flexible as possible with keeping the complexity on minimal.
    * It's more generic design (generic Yaml tree + transformations instead of k8s resource merging)
+   * It has one generic patching style, which can be used to define high level transformations.
    * It tries to be more user friendly (easier syntax, flexible composition, it can work without registering any resource file)
-   * It has a simple but powerful package management.
+   * It has a simple but powerful package management (base on git repos)
    * The transformations are *reusable*
    * Service-mesh friendly, any external command can be invoked.

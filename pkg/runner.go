@@ -85,8 +85,8 @@ func listUniqSources(context *processor.RenderContext) []data.Source {
 	sources := make([]data.Source, 0)
 	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
 
-	sources = append(sources, &data.EnvSource{})
-	sources = append(sources, &data.CurrentDir{CurrentDir: context.RootResource.Dir})
+	sources = append(sources, data.LocalSourcesFromEnv()...)
+	sources = append(sources, &data.LocalSource{Dir: context.RootResource.Dir})
 
 	nodes := context.ListResourceNodes()
 

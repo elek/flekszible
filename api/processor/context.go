@@ -37,7 +37,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	return &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
-		RootResource: CreateResourceNode(inputDir, "", &data.CurrentDir{CurrentDir: inputDir}),
+		RootResource: CreateResourceNode(inputDir, "", &data.LocalSource{Dir: inputDir}),
 	}
 }
 
@@ -244,7 +244,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		if definedSource.Url != "" {
 			node.Source = append(node.Source, &data.RemoteSource{Url: definedSource.Url})
 		} else if definedSource.Path != "" {
-			node.Source = append(node.Source, &data.LocalSource{BaseDir: node.Dir, RelativeDir: definedSource.Path})
+			node.Source = append(node.Source, &data.LocalSource{Dir: path.Join(node.Dir, definedSource.Path)})
 		}
 	}
 	//update destinations of the direct k8s resources
@@ -319,8 +319,8 @@ func (node *ResourceNode) LoadDefinitions() {
 //try to find the first Source which contains the file
 func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (data.Source, error) {
 	allSources := make([]data.Source, 0)
-	allSources = append(allSources, &data.EnvSource{})
-	allSources = append(allSources, &data.CurrentDir{CurrentDir: basedir})
+	allSources = append(allSources, data.LocalSourcesFromEnv()...)
+	allSources = append(allSources, &data.LocalSource{Dir: basedir})
 	allSources = append(allSources, sources...)
 
 	for _, source := range allSources {

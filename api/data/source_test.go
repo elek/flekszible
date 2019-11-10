@@ -8,7 +8,7 @@ import (
 func TestLocalPath(t *testing.T) {
 
 	source := LocalSource{
-		BaseDir:     "/tmp/test/sub",
+		Dir:         "/tmp/test/sub",
 		RelativeDir: "../../",
 	}
 	mgr := SourceCacheManager{}

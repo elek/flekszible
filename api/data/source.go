@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strings"
 )
 
 type SourceCacheManager struct {
@@ -31,43 +32,27 @@ type Source interface {
 	ToString() (string, string)
 }
 
-type CurrentDir struct {
-	CurrentDir string
-}
-
-func (source *CurrentDir) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
-	return path.Join(source.CurrentDir, relativeDir), nil
-
-}
-func (source *CurrentDir) ToString() (string, string) {
-	return "current dir", "."
-}
 
 type LocalSource struct {
-	BaseDir     string
-	RelativeDir string
+	Dir string
 }
 
 func (source *LocalSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
-	return path.Join(source.BaseDir, source.RelativeDir, relativeDir), nil
+	return path.Join(source.Dir, relativeDir), nil
 
 }
 func (source *LocalSource) ToString() (string, string) {
-	return "local dir", source.RelativeDir
+	return "local dir", source.Dir
 }
 
-type EnvSource struct {
-}
-
-func (source *EnvSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+func LocalSourcesFromEnv() []Source {
+	sources := make([]Source, 0)
 	if os.Getenv("FLEKSZIBLE_PATH") != "" {
-		return path.Join(os.Getenv("FLEKSZIBLE_PATH"), relativeDir), nil
+		for _, path := range strings.Split(os.Getenv("FLEKSZIBLE_PATH"), ",") {
+			sources = append(sources, &LocalSource{Dir: path})
+		}
 	}
-	return "", nil
-}
-
-func (source *EnvSource) ToString() (string, string) {
-	return "$FLEKSZIBLE_PATH", os.Getenv("FLEKSZIBLE_PATH")
+	return sources
 }
 
 type RemoteSource struct {

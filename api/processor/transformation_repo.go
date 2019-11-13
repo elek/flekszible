@@ -49,6 +49,9 @@ func CreateTransformationWithConfig(processorTypeName string, config *yaml.MapSl
 		}
 		return processor, nil
 	} else {
+		if optional, found := config.Get("optional"); found && optional.(bool) {
+			return nil, nil
+		}
 		logrus.Error("Unknown processor type: " + processorTypeName)
 		logrus.Info("Available processor types:")
 		for k := range ProcessorTypeRegistry.TypeMap {

@@ -474,7 +474,7 @@ import:
 This `flekszible.yaml` imports all the resources (and pre created definitions) from the `k8s` git repository and will use the previous definition (which is defined in the imported repository).
 
 
-# Package managent
+# Package management
 
 Import path is transitive. If you import a directory you will see all the imported kubernetes resources and definitions. To make it easier to follow what can be used you can list the available directories (Directories which contain `flekszible.yaml` with valid metadata).
 

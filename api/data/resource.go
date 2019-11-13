@@ -76,12 +76,16 @@ func LoadFrom(dir string, file string) ([]*Resource, error) {
 func ReadResourcesFromDir(dir string) []*Resource {
 	logrus.Infof("Reading resources from %s", dir)
 	resources := make([]*Resource, 0)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return resources
+	}
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}
 	for _, file := range files {
-		if !file.IsDir() && file.Name() != "flekszible.yaml" && filepath.Ext(file.Name()) == ".yaml" {
+		if !file.IsDir() && file.Name() != "flekszible.yaml" && (
+			filepath.Ext(file.Name()) == ".yaml" || filepath.Ext(file.Name()) == ".yml") {
 			resource, err := LoadFromFileInfo(dir, file)
 			if err != nil {
 				panic(err)

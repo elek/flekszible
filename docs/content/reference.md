@@ -88,48 +88,21 @@ Flekszible directories can contain:
 
 A simple OS dir can work as a source directory for flekszible __without any descriptor__. In this case all the kubernetes resource files will be imported and used from the dir.
 
-## Simplified descriptor (Flekszible)
+## `Flekszible` descriptor
 
-In case of a `Flekszible` file does exist, it will be parsed and all the imports/sources/transformations will be used based on the Flekszible file. In this case __none__ of the other files in the directory will be used. Best to use this structure to generate the final k8s resources.
+In case of a `Flekszible` file does exist, it will be parsed and all the imports/sources/transformations will be used frpm the Flekszible file and from the directories relative to the Flekszible file (eg `./transformations`, `./configmaps`, ...). In this case __none__ of the other files in the directory will be used as source. Best to use this structure to generate the final k8s resources.
 
-## Fully featured descriptor (flekszible.yaml)
+The structure of a flekszible directory is the following:
 
-If `flekszible.yaml` does exist in the directory it's handled as a full flekszible definition and all the resources/transformations/configs will be used from the directory based on the following naming convention:
-
- * `*.yaml`: used as k8s resources
+ * `Flekszible`: configuration file. Could include other directories (all the resources + transformations + definitions will be added from that directory.)
  * `transformations/*.yaml`: will be applied to all the resources according to the specified rules
- * `definitions/*.yaml`: composit definitions which could be used in `transformations.yaml`. Won't be applied by default.
+ * `definitions/*.yaml`: composite definitions which could be used in `transformations.yaml`. Won't be applied by default.
  * `configmaps/*_*.*`: all the files from here will be imported as configmaps. The first part of the filename (before the first `_`) will be used as the name of the configmap, the remaining part is the key inside the configmap.
- * `flekszible.yaml`: configuration file. Could include other directories (all the resources + transformations + definitions will be added from that directory.)
+ * `resources/*.yaml`: used as k8s resources
+ 
+##  `flekszible.yaml` (DEPRECTATED)
 
-In the output directory all the `yaml` files (except the `flekszible.yaml` configuration file) are considered to be a k8s resource. One file could contain multiple resources.
-
-All the yaml files from the `transformations` subdirectory are parsed as transformation definitions. Each file should contain an array of objects. The object should have a `type` definition (see the available transformations below) 
-
-Example: `./transformations/label.yaml`
-
-```
-- type: Add
-  path: 
-    - metadata
-    - annotations
-  value: 
-    felkszible: generated
-```
-
-All the yaml files from the `definitions` directory will be parsed as composit transformation type. You can define multiple transformation and name it. It may be used form other transformation files.
-
-## Summary
-
-You have the following options to read a directory.
-
-| descriptor file   | k8s resource files to load      | transformations               | definitions    | configs  
-|-------------------|---------------------------------|-------------------------------|----------------|-------------
-| None              | all the yaml files              | None                          | None           | None
-| `Flekszible`      | None                            | desc(1)                       | None           | None            
-| `flekszible.yaml` | *.yaml                          | ./transformations/* + desc(1) | ./definitions  | ./configmaps/*
-
-(1) Only from the descriptor file
+You can also use `flekszible.yaml` instead of `Flekszible` descriptor. The only difference is that in this case the kubernetes resource files will be imported from the same directory and not from the `./resources`. Usually it's used by reusable apps/components where the current directory is not used as output.
 
 # Imports
 
@@ -219,7 +192,7 @@ For example:
     value: VALUE2
 ```
 
-It's very important that the transformation is activated only the subtree ver it's used.
+It's very important that the transformation is activated only in the subtree where it's used.
 
 Imagine the following structure (hdfs-ha _imports_ zookeeper and hdfs resources).
 
@@ -237,13 +210,13 @@ Imagine the following structure (hdfs-ha _imports_ zookeeper and hdfs resources)
 
 ```
 
-In this case a transformation which is defined in the zookeeper directory is applied only the zookeeper resources.
+In this case a transformation which is defined in the `zookeeper/transformations` directory or in the `zookeeper/Flekszible` file are applied only to the zookeeper resources.
 
 To use global transformations you have two options.
 
-  1.) You can define a composite transformation definition which may or may not be activated.
+  1.) You can define a composite transformation (`./definitions`) definition which may or may not be activated.
   
-  2.) You can set the `scope` of the transformation to true.
+  2.) You can set the `scope` of the transformation to `global`.
   
  Let's check examples for both of these cases:
   
@@ -283,7 +256,7 @@ The second option is more simple. Imagine that you have a grafana dashboard defi
 
 You would like to define the grafana statefulset to add your configmap, but the grafana configmap imported from a different location.
 
-With using `scope: globale` parameters, you can ask flekszible to apply the transformations to _all_ the resources files not just the current subtree:
+With using `scope: global` parameters, you can ask flekszible to apply the transformations to _all_ the resources files not just the current subtree:
 
 ```yaml
 name: prometheus
@@ -303,3 +276,18 @@ parameters:
     replicas: {{.replicas}}
 
 ```
+
+## Using optional transformation
+
+In some cases the transformation should be optional. For example `grafana` app itself may provide a `grafana/install-dashboard` transformation type. If you would like to create a transformation which is executed only if the used transformation type is used, use the `optional: true ` flag.
+
+For example in the `transformations/grafana-dashboard.yaml` you can define a transformation:
+
+```yaml
+- type: grafana/install-dashboard
+  scope: global
+  optional: true
+  configmap: ozone-dashboard
+```
+
+If the `grafana/install-dashboard` transformation type is available (which means you used an import to import grafana flekszible definition) this transformation will modify the grafana configmap and register all the dashboards in the `ozone-dashboard` configmap to be available. If grafana is not imported the transformation will be ignored without error.

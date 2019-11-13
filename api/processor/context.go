@@ -29,7 +29,7 @@ type ResourceNode struct {
 	Origin                   data.Source
 	Source                   []data.Source
 	ProcessorRepository      *TransformationRepository
-	Standalone               bool
+	ResourcesDir             string
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
@@ -113,8 +113,8 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 		}
 		node.ProcessorRepository.AppendAll(processors)
 	}
-	if !node.Standalone {
-		processors, e := ParseTransformations(node.Dir)
+
+	processors, e := ParseTransformations(node.Dir)
 		if e != nil {
 			logrus.Error("Can't read transformations from " + node.Dir + " " + e.Error())
 		} else {
@@ -126,7 +126,7 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 				}
 			}
 		}
-	}
+
 	for _, child := range node.Children {
 		err := child.InitializeTransformations(context)
 		if err != nil {
@@ -227,18 +227,13 @@ func (ctx *RenderContext) Render() error {
 
 //parse the directory structure and the flekszible configs from the dirs
 func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
-	conf, configFilePath, err := data.ReadConfiguration(node.Dir)
+	conf, _, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
 		return errors.Wrap(err, "Can't parse flekszible.yaml/Flekszible descriptor from  "+node.Dir)
 	}
-	if path.Base(configFilePath) != "Flekszible" {
-		node.Standalone = false
-	} else {
-		node.Standalone = true
-	}
-	if !node.Standalone {
-		node.Resources = data.ReadResourcesFromDir(node.Dir)
-	}
+
+	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, conf.ResourcesDir))
+
 	node.Source = make([]data.Source, 0)
 	for _, definedSource := range conf.Source {
 		if definedSource.Url != "" {
@@ -294,8 +289,8 @@ func (ctx *RenderContext) LoadDefinitions() {
 }
 
 func (node *ResourceNode) LoadDefinitions() {
-	if !node.Standalone {
-		defDir := path.Join(node.Dir, "definitions")
+
+	defDir := path.Join(node.Dir, "definitions")
 		if _, err := os.Stat(defDir); !os.IsNotExist(err) {
 			files, err := ioutil.ReadDir(defDir)
 			if err != nil {
@@ -309,7 +304,7 @@ func (node *ResourceNode) LoadDefinitions() {
 				}
 			}
 		}
-	}
+
 	for _, child := range node.Children {
 		child.LoadDefinitions()
 	}

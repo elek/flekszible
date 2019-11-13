@@ -1,0 +1,2 @@
+- type: xxxgrafana/xinstall-dashboard
+  configmap: dashboard1

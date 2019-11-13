@@ -1,0 +1,13 @@
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: prometheus-ns-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-ns-read
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: default

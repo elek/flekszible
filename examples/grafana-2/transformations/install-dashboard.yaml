@@ -1,0 +1,46 @@
+- type: Add
+  scope: global
+  trigger:
+    metadata:
+      name: grafana
+  path:
+    - spec
+    - template
+    - spec
+    - volumes
+  value:
+    - name: dashboard1
+      configMap:
+        name: dashboard1
+- type: Add
+  trigger:
+    metadata:
+      name: grafana
+  path:
+    - spec
+    - template
+    - spec
+    - containers
+    - ".*"
+    - volumeMounts
+  value:
+    - name: dashboard1
+      mountPath: /etc/dashboard1
+- type: Add
+  yamlize: true
+  trigger:
+    metadata:
+      name: grafana-dashboards
+  path:
+    - data
+    - dashboards.yaml
+    - providers
+  value:
+    name: dashboard1
+    orgId: 1
+    folder: "dashboard1"
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 3
+    options:
+      path: /etc/dashboard1

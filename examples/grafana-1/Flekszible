@@ -1,0 +1,5 @@
+
+import:
+- path: grafana
+  transformations:
+  - type: PublishService

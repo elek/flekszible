@@ -1,0 +1,10 @@
+
+apiVersion: v1
+metadata:
+  name: grafana-dashboards
+  labels: null
+data:
+  dashboards.yaml: |-
+    apiVersion: 1
+    providers: []
+kind: ConfigMap

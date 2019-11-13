@@ -1,0 +1,6 @@
+
+import:
+- path: prometheus
+- path: grafana
+  transformations:
+  - type: PublishService

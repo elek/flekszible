@@ -1,0 +1,18 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-public
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: grafana
+spec:
+  ports:
+  - name: grafana
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: grafana
+  type: NodePort

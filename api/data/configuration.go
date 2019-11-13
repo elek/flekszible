@@ -69,6 +69,7 @@ func ReadConfiguration(dir string) (Configuration, string, error) {
 	if loaded {
 		return conf, configFilePath, nil
 	}
+	conf.ResourcesDir = ""
 	return conf, "", nil
 
 }

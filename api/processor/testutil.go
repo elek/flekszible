@@ -39,7 +39,8 @@ func TestDirAndCompare(t *testing.T, inputDir string, outputDir string, expected
 	assert.Nil(t, err)
 
 	context.AppendProcessor(&K8sWriter{})
-	context.Render()
+	err = context.Render()
+	assert.Nil(t, err)
 	compareDir(t, expectedDir, outputDir)
 	return context
 }

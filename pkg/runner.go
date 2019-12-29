@@ -194,6 +194,22 @@ func AddApp(context *processor.RenderContext, inputDir string, app string) {
 	}
 }
 
+func Cleanup(context *processor.RenderContext, all bool) error {
+	err := context.Init()
+	if err != nil {
+		return err
+	}
+
+	AddInternalTransformations(context, false)
+	cleanup := processor.CreateCleanup(context.OutputDir, all)
+	context.RootResource.ProcessorRepository.Append(cleanup)
+	err = context.Render()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ListSources(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {

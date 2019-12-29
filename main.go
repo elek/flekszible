@@ -45,7 +45,7 @@ func main() {
 		{
 			Name:    "generate",
 			Aliases: []string{"g"},
-			Usage:   "Genrate kubernetes resources files",
+			Usage:   "Generate kubernetes resources files",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "namespace, n",
@@ -98,6 +98,20 @@ func main() {
 				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), findOutputDir(&outputDir))
 				pkg.ListResources(context)
 				return nil
+			},
+		},
+		{
+			Name:  "clean",
+			Usage: "Delete yaml files from the destination directories",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "all, a",
+					Usage:       "Delete all yaml files from destination directories",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), findOutputDir(&outputDir))
+				return pkg.Cleanup(context, c.Bool("all"))
 			},
 		},
 		appCommands(&inputDir, &outputDir),

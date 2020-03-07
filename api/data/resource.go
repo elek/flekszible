@@ -94,12 +94,6 @@ func ReadResourcesFromDir(dir string) []*Resource {
 		}
 	}
 
-	configMaps, err := ReadConfigMaps(dir)
-	if err == nil {
-		resources = append(resources, configMaps...)
-	} else {
-		panic(err)
-	}
 	return resources
 }
 

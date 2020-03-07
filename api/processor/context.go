@@ -234,6 +234,12 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 
 	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, conf.ResourcesDir))
 
+	configMaps, err := data.ReadConfigMaps(node.Dir)
+	if err != nil {
+		return nil
+	}
+	node.Resources = append(node.Resources, configMaps...)
+
 	node.Source = make([]data.Source, 0)
 	for _, definedSource := range conf.Source {
 		if definedSource.Url != "" {

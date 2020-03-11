@@ -40,6 +40,11 @@ func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destinat
 }
 
 func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
+	if exclude, ok := resource.Metadata["exclude"]; ok {
+		if exclude == "true" {
+			return nil
+		}
+	}
 	writer.started = false
 	outputDir := writer.resourceOutputDir
 	if outputDir == "-" {

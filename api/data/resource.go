@@ -18,6 +18,13 @@ type Resource struct {
 	Content             *MapNode
 	Destination         string
 	DestinationFileName string
+	Metadata            map[string]string
+}
+
+func NewResource() Resource {
+	return Resource{
+		Metadata: make(map[string]string),
+	}
 }
 
 func (r *Resource) Name() string {
@@ -60,7 +67,7 @@ func LoadFrom(dir string, file string) ([]*Resource, error) {
 
 			parsedFragment, err := ReadManifestString([]byte(fragmentContent))
 			if err == nil {
-				r := Resource{}
+				r := NewResource()
 				r.Content = parsedFragment
 				r.Filename = file
 				results = append(results, &r)

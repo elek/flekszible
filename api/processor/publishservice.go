@@ -23,10 +23,10 @@ func (processor *PublishService) Before(ctx *RenderContext, resources []*data.Re
 			spec := newContent.Get("spec").(*data.MapNode)
 			spec.Remove("clusterIP")
 			spec.PutValue("type", processor.ServiceType)
-			r := data.Resource{
-				Content:     newContent,
-				Destination: resource.Destination,
-			}
+			r := data.NewResource()
+			r.Content = newContent
+			r.Destination = resource.Destination
+
 			newResources = append(newResources, &r)
 			if processor.ServiceType == "NodePort" && len(processor.NodePorts) > 0 {
 				ports := spec.Get("ports").(*data.ListNode)

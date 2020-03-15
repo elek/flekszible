@@ -236,7 +236,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 
 	configMaps, err := data.ReadConfigMaps(node.Dir)
 	if err != nil {
-		return nil
+		return err
 	}
 	node.Resources = append(node.Resources, configMaps...)
 

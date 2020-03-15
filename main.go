@@ -92,6 +92,28 @@ func main() {
 			},
 		},
 		{
+			Name:      "import",
+			Usage:     "Import multiple kubernetes resource from file or stdin and output to the current dir.",
+			ArgsUsage: "[file]",
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name:  "transformations, t",
+					Usage: "manually defined transformations",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				dir, err := os.Getwd()
+				if err != nil {
+					return err
+				}
+				err = pkg.Import(c.Args().Get(0), c.StringSlice("transformations"), dir)
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+		},
+		{
 			Name:  "list",
 			Usage: "List managed kubernetes resources files.",
 			Action: func(c *cli.Context) error {

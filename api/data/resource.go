@@ -1,8 +1,8 @@
 package data
 
 import (
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
@@ -46,20 +46,13 @@ func (r *Resource) Get(path Path) string {
 		return ""
 	}
 }
-func LoadFromFileInfo(dir string, file os.FileInfo) ([]*Resource, error) {
-	return LoadFrom(dir, file.Name())
+func LoadResourceFromFileInfo(dir string, file os.FileInfo) ([]*Resource, error) {
+	return LoadResourceFromFile(dir, file.Name())
 }
 
-//Load k8s resources from one yaml file
-func LoadFrom(dir string, file string) ([]*Resource, error) {
+func LoadResourceFromByte(data []byte) ([]*Resource, error) {
 	results := make([]*Resource, 0)
-	fullPath := path.Join(dir, file)
-	content, err := ioutil.ReadFile(fullPath)
-	if err != nil {
-		return results, err
-	}
-
-	fragments := regexp.MustCompile("---\n").Split(string(content), -1)
+	fragments := regexp.MustCompile("---\n").Split(string(data), -1)
 
 	for _, fragment := range fragments {
 		fragmentContent := strings.TrimSpace(fragment)
@@ -69,14 +62,31 @@ func LoadFrom(dir string, file string) ([]*Resource, error) {
 			if err == nil {
 				r := NewResource()
 				r.Content = parsedFragment
-				r.Filename = file
 				results = append(results, &r)
 			} else {
-				return results, fmt.Errorf("Can't parse the resource file %s: %s", fullPath, err)
+				return results, fmt.Errorf("Can't parse the resource ", err)
 			}
 		}
 	}
 	return results, nil
+}
+
+//Load k8s resources from one yaml file
+func LoadResourceFromFile(dir string, file string) ([]*Resource, error) {
+
+	fullPath := path.Join(dir, file)
+	content, err := ioutil.ReadFile(fullPath)
+	if err != nil {
+		return nil, err
+	}
+	resources, err := LoadResourceFromByte(content)
+	if err != nil {
+		return nil, errors.Wrap(err, "Can't load resource from file "+fullPath)
+	}
+	for _, resource := range resources {
+		resource.Filename = file
+	}
+	return resources, nil
 }
 
 //read all the resources from a directory
@@ -93,7 +103,7 @@ func ReadResourcesFromDir(dir string) []*Resource {
 	for _, file := range files {
 		if !file.IsDir() && file.Name() != "flekszible.yaml" && (
 			filepath.Ext(file.Name()) == ".yaml" || filepath.Ext(file.Name()) == ".yml") {
-			resource, err := LoadFromFileInfo(dir, file)
+			resource, err := LoadResourceFromFileInfo(dir, file)
 			if err != nil {
 				panic(err)
 			}

@@ -4,7 +4,7 @@ require (
 	github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020
 	github.com/elek/flekszible/api v0.0.0-20190928090338-d1d34ef1bc1f
 	github.com/hashicorp/go-getter v1.1.0
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.2.0
 	github.com/stretchr/testify v1.2.2
 	github.com/urfave/cli v1.22.1

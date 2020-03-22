@@ -30,11 +30,27 @@ func (processor *Remove) BeforeResource(resource *data.Resource) error {
 	for _, match := range target.Result {
 		switch typedTarget := match.Value.(type) {
 		case *data.MapNode:
-
 			typedTarget.Remove(processor.Path.Last())
+		case *data.ListNode:
+			indexToRemove := -1
+			for ix, child := range typedTarget.Children {
+				switch typedChild := child.(type) {
+				case *data.MapNode:
+					if typedChild.GetStringValue("name") == processor.Path.Last() {
+						indexToRemove = ix
+					}
+				}
+			}
+			if indexToRemove >= 0 {
+				copy(typedTarget.Children[indexToRemove:], typedTarget.Children[indexToRemove+1:])
+				typedTarget.Children[len(typedTarget.Children)-1] = nil
+				typedTarget.Children = typedTarget.Children[:len(typedTarget.Children)-1]
+			} else {
+				return errors.New(fmt.Sprintf("Path %s points a list to remove an element, but no map element with name=%s", processor.Path.ToString(), processor.Path.Last()))
+			}
 
 		default:
-			return errors.New(fmt.Sprintf("Unsupported value %T should point to a map element", processor.Path))
+			return errors.New(fmt.Sprintf("Unsupported path to remove: %s should point to a map type element but %T", processor.Path.ToString(), typedTarget))
 		}
 	}
 

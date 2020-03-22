@@ -9,7 +9,7 @@ type Processor interface {
 	data.Visitor
 	Before(ctx *RenderContext, resources []*data.Resource) error
 	After(ctx *RenderContext, resources []*data.Resource) error
-
+	GetType() string
 	BeforeResource(*data.Resource) error
 	AfterResource(*data.Resource) error
 	GetScope() string
@@ -24,6 +24,9 @@ type DefaultProcessor struct {
 	CurrentResource *data.Resource
 }
 
+func (processor *DefaultProcessor) GetType() string {
+	return processor.Type
+}
 func (processor *DefaultProcessor) Before(ctx *RenderContext, resources []*data.Resource) error {
 	return nil
 }

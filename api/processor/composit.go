@@ -16,6 +16,8 @@ type Composit struct {
 	File       string
 	Template   string
 	Parameters map[string]string
+	Trigger    Trigger
+
 }
 
 func (c *Composit) OnKey(node *data.KeyNode) {
@@ -40,6 +42,9 @@ func (c *Composit) Before(ctx *RenderContext, resources []*data.Resource) error 
 func (c *Composit) After(ctx *RenderContext, resources []*data.Resource) error  { return nil }
 
 func (c *Composit) BeforeResource(resource *data.Resource) error {
+	if !c.Trigger.active(resource) {
+		return nil
+	}
 	for _, p := range c.Processors {
 		err := p.BeforeResource(resource)
 		if err != nil {
@@ -50,6 +55,9 @@ func (c *Composit) BeforeResource(resource *data.Resource) error {
 }
 
 func (c *Composit) AfterResource(resource *data.Resource) error {
+	if !c.Trigger.active(resource) {
+		return nil
+	}
 	for _, p := range c.Processors {
 		err := p.AfterResource(resource)
 		if err != nil {
@@ -67,7 +75,7 @@ func parseTransformationParameters(config *yaml.MapSlice) map[string]interface{}
 	return result
 
 }
-func compositFactory(config *yaml.MapSlice, templateBytes []byte) (Processor, error) {
+func compositFactory(config *yaml.MapSlice, templateBytes []byte) (*Composit, error) {
 	funcmap := template.FuncMap{
 		"Iterate": func(count int) []int {
 			var i int
@@ -123,7 +131,19 @@ func parseDefintion(path string) error {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: metadata,
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			return compositFactory(config, body)
+			comp, err := compositFactory(config, body)
+			if err != nil {
+				return nil, err
+			}
+			trigger, found := config.Get("trigger")
+			if found {
+				node, err := data.ConvertToNode(trigger, data.NewPath())
+				if err != nil {
+					return nil, err
+				}
+				comp.Trigger = Trigger{Definition: node}
+			}
+			return comp, nil
 		},
 	})
 	return nil

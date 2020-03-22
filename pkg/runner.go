@@ -387,6 +387,9 @@ type GoGetterDownloader struct {
 }
 
 func (GoGetterDownloader) Download(url string, destinationDir string, rootPath string) error {
+	if os.Getenv("FLEKSZIBLE_OFFLINEcd ..") == "true" {
+		return nil
+	}
 	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil }
 	return getter.Get(destinationDir, url, setPwd)
 }

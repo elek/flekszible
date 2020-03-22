@@ -1,0 +1,65 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ozone-datanode
+  labels:
+    app: ozone
+    component: datanode
+spec:
+  selector:
+    matchLabels:
+      app: ozone
+      component: datanode
+  serviceName: ozone-datanode
+  replicas: 6
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: datanode
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9882"
+        prometheus.io/path: /prom
+        linkerd.io/inject: enabled
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: component
+                operator: In
+                values:
+                - datanode
+              - key: app
+                operator: In
+                values:
+                - ozone
+            topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: datanode
+        image: 127.0.0.1:31961/elek/ozone-dev:783a38b
+        args:
+        - ozone
+        - datanode
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        envFrom:
+        - configMapRef:
+            name: ozone-config
+        env:
+        - name: JAEGER_SAMPLER_TYPE
+          value: probabilistic
+        - name: JAEGER_SAMPLER_PARAM
+          value: "0.01"
+        - name: JAEGER_AGENT_HOST
+          value: jaeger-0.jaeger
+      volumes:
+      - name: data
+        emptyDir:
+          medium: Memory

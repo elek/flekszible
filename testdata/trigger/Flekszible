@@ -1,0 +1,7 @@
+transformations:
+- type: pv
+  trigger:
+      kind: StatefulSet
+      metadata:
+        name:
+          ozone-datanode

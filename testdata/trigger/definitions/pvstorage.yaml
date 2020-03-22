@@ -1,0 +1,28 @@
+name: pv
+---
+- type: Add
+  path:
+    - spec
+    - template
+    - spec
+    - (initC|c)ontainers
+    - .*
+    - volumeMounts
+  value:
+    - name: storage
+      mountPath: /data/storage
+- type: Add
+  path:
+    - spec
+  value:
+    volumeClaimTemplates:
+      - metadata:
+          name: storage
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: local-path
+          resources:
+            requests:
+              storage: 2Gi
+

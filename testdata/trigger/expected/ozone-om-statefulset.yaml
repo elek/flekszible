@@ -1,0 +1,69 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ozone-om
+  labels:
+    app: ozone
+    component: om
+spec:
+  selector:
+    matchLabels:
+      app: ozone
+      component: om
+  serviceName: ozone-om
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: om
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9874"
+        prometheus.io/path: /prom
+        linkerd.io/inject: enabled
+    spec:
+      initContainers:
+      - name: init
+        image: 127.0.0.1:31961/elek/ozone-dev:783a38b
+        args:
+        - ozone
+        - om
+        - --init
+        env:
+        - name: WAITFOR
+          value: ozone-scm-0.ozone-scm:9876
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: storage
+          mountPath: /data/storage
+        envFrom:
+        - configMapRef:
+            name: ozone-config
+      containers:
+      - name: om
+        image: 127.0.0.1:31961/elek/ozone-dev:783a38b
+        args:
+        - ozone
+        - om
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: storage
+          mountPath: /data/storage
+        envFrom:
+        - configMapRef:
+            name: ozone-config
+        env:
+        - name: JAEGER_SAMPLER_TYPE
+          value: probabilistic
+        - name: JAEGER_SAMPLER_PARAM
+          value: "0.01"
+        - name: JAEGER_AGENT_HOST
+          value: jaeger-0.jaeger
+      volumes:
+      - name: data
+        emptyDir:
+          medium: Memory

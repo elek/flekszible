@@ -360,16 +360,6 @@ func AddInternalTransformations(context *processor.RenderContext, minikube bool)
 				Namespace: context.Namespace,
 				Force:     true,
 			})
-		} else {
-			conf := data.CreateKubeConfig()
-			currentNamespace, err := conf.ReadCurrentNamespace()
-			if err != nil {
-				logrus.Warn("Namespace can't be identified")
-			} else {
-				context.RootResource.ProcessorRepository.Append(&processor.Namespace{
-					Namespace: currentNamespace,
-				})
-			}
 		}
 	} else {
 		context.Namespace = ""
@@ -387,7 +377,7 @@ type GoGetterDownloader struct {
 }
 
 func (GoGetterDownloader) Download(url string, destinationDir string, rootPath string) error {
-	if os.Getenv("FLEKSZIBLE_OFFLINEcd ..") == "true" {
+	if os.Getenv("FLEKSZIBLE_OFFLINE") == "true" {
 		return nil
 	}
 	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil }

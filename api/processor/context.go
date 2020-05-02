@@ -55,6 +55,7 @@ func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
 }
 
 func (context *RenderContext) LoadResourceTree() error {
+	data.Generators = append(data.Generators, &data.ConfigGenerator{})
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	return context.RootResource.LoadResourceConfig(&cacheManager)
 }
@@ -234,11 +235,18 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 
 	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, conf.ResourcesDir))
 
-	configMaps, err := data.ReadConfigMaps(node.Dir)
-	if err != nil {
-		return err
+	for _, generator := range data.Generators {
+		dirName := generator.DirName()
+		generatorSourceDir := path.Join(node.Dir, dirName)
+		if _, err := os.Stat(generatorSourceDir); !os.IsNotExist(err) {
+			resources, err := generator.Generate(generatorSourceDir)
+			if err != nil {
+				return errors.Wrap(err, "Can't generate resources from the dir "+generatorSourceDir)
+			}
+			node.Resources = append(node.Resources, resources...)
+
+		}
 	}
-	node.Resources = append(node.Resources, configMaps...)
 
 	node.Source = make([]data.Source, 0)
 	for _, definedSource := range conf.Source {

@@ -5,7 +5,7 @@ import "testing"
 
 func TestReadConfigMaps(t *testing.T) {
 	generator := &ConfigGenerator{}
-	resources, err := generator.Generate("../../testdata/configmaps")
+	resources, err := generator.Generate("../../testdata/configmaps", "/tmp")
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(resources))
 

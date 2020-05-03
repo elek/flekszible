@@ -14,7 +14,7 @@ func (*ConfigGenerator) DirName() string {
 	return "configmaps"
 }
 
-func (*ConfigGenerator) Generate(sourceDir string) ([]*Resource, error) {
+func (*ConfigGenerator) Generate(sourceDir string, destinationDir string) ([]*Resource, error) {
 	resources := make([]*Resource, 0)
 	files, err := ioutil.ReadDir(sourceDir)
 	if err != nil {

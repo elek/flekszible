@@ -56,8 +56,9 @@ func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
 
 func (context *RenderContext) LoadResourceTree() error {
 	data.Generators = append(data.Generators, &data.ConfigGenerator{})
+	data.Generators = append(data.Generators, &data.KeytabGenerator{})
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
-	return context.RootResource.LoadResourceConfig(&cacheManager)
+	return context.RootResource.LoadResourceConfig(&cacheManager, context.OutputDir)
 }
 
 //List all the resources from the resource tree.
@@ -227,7 +228,7 @@ func (ctx *RenderContext) Render() error {
 }
 
 //parse the directory structure and the flekszible configs from the dirs
-func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager) error {
+func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager, outputDir string) error {
 	conf, _, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
 		return errors.Wrap(err, "Can't parse flekszible.yaml/Flekszible descriptor from  "+node.Dir)
@@ -239,7 +240,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		dirName := generator.DirName()
 		generatorSourceDir := path.Join(node.Dir, dirName)
 		if _, err := os.Stat(generatorSourceDir); !os.IsNotExist(err) {
-			resources, err := generator.Generate(generatorSourceDir)
+			resources, err := generator.Generate(generatorSourceDir, outputDir)
 			if err != nil {
 				return errors.Wrap(err, "Can't generate resources from the dir "+generatorSourceDir)
 			}
@@ -281,7 +282,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		if node.Dir == childNode.Dir {
 			panic("Recursive directory parser " + node.Dir + " loads" + childNode.Dir)
 		}
-		err = childNode.LoadResourceConfig(sourceCache)
+		err = childNode.LoadResourceConfig(sourceCache, outputDir)
 		if err != nil {
 			return err
 		}

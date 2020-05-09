@@ -2,6 +2,7 @@ package processor
 
 import (
 	"bufio"
+	"errors"
 	"github.com/elek/flekszible/api/yaml"
 	"github.com/sirupsen/logrus"
 	"strings"
@@ -54,7 +55,7 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 				processors = append(processors, proc)
 			}
 		} else {
-			panic("Type is missing from the config")
+			return processors, errors.New("Type tag is missing from a processor definition")
 		}
 	}
 	return processors, nil

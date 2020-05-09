@@ -57,6 +57,7 @@ func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
 func (context *RenderContext) LoadResourceTree() error {
 	data.Generators = append(data.Generators, &data.ConfigGenerator{})
 	data.Generators = append(data.Generators, &data.KeytabGenerator{})
+	data.Generators = append(data.Generators, &data.SecretGenerator{})
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	return context.RootResource.LoadResourceConfig(&cacheManager, context.OutputDir)
 }
@@ -111,7 +112,7 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 	if node.PreImportTransformations != nil {
 		processors, err := ReadProcessorDefinition(node.PreImportTransformations)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "Couldn't parse transformations from the dir "+node.Dir)
 		}
 		node.ProcessorRepository.AppendAll(processors)
 	}
@@ -237,15 +238,20 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, conf.ResourcesDir))
 
 	for _, generator := range data.Generators {
-		dirName := generator.DirName()
-		generatorSourceDir := path.Join(node.Dir, dirName)
-		if _, err := os.Stat(generatorSourceDir); !os.IsNotExist(err) {
-			resources, err := generator.Generate(generatorSourceDir, outputDir)
-			if err != nil {
-				return errors.Wrap(err, "Can't generate resources from the dir "+generatorSourceDir)
-			}
-			node.Resources = append(node.Resources, resources...)
 
+		dirs, err := ioutil.ReadDir(node.Dir)
+		if err == nil {
+			for _, dir := range dirs {
+				managedDir := path.Join(node.Dir, dir.Name())
+				if dir.IsDir() && generator.IsManagedDir(managedDir) {
+					resources, err := generator.Generate(managedDir, outputDir)
+					if err != nil {
+						return errors.Wrap(err, "Can't generate resources from the dir "+managedDir)
+					}
+					node.Resources = append(node.Resources, resources...)
+
+				}
+			}
 		}
 	}
 

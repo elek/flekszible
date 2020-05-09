@@ -3,6 +3,7 @@ package data
 import (
 	"github.com/elek/flekszible/api/yaml"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -23,10 +24,9 @@ type Keytab struct {
 type KeytabGenerator struct {
 }
 
-func (*KeytabGenerator) DirName() string {
-	return "keytabs"
+func (*KeytabGenerator) IsManagedDir(dir string) bool {
+	return path.Base(dir) == "keytabs"
 }
-
 func (kt *KeytabGenerator) Generate(sourceDir string, destinationDir string) ([]*Resource, error) {
 	resources := make([]*Resource, 0)
 	files, err := ioutil.ReadDir(sourceDir)
@@ -106,8 +106,10 @@ func createKeytab(dir string, principals []string) (string, error) {
 	if _, err := os.Stat(keytabGenScript); os.IsNotExist(err) {
 		return "", errors.New("Keytab generator bash script must exist at " + keytabGenScript)
 	}
+	logrus.Info("Executing " + keytabGenScript + " " + principals[0])
 	cmd := exec.Command(keytabGenScript, principals[0])
 	cmd.Env = os.Environ()
+	cmd.Dir = dir
 	output, err := cmd.Output()
 	if err != nil {
 		return "", errors.Wrap(err, "Keytab generation is failed for principals "+strings.Join(principals, " "))

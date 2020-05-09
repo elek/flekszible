@@ -55,6 +55,7 @@ func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
 }
 
 func (context *RenderContext) LoadResourceTree() error {
+	data.Generators = append(data.Generators, &data.OutputGenerator{})
 	data.Generators = append(data.Generators, &data.ConfigGenerator{})
 	data.Generators = append(data.Generators, &data.KeytabGenerator{})
 	data.Generators = append(data.Generators, &data.SecretGenerator{})
@@ -238,7 +239,6 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, conf.ResourcesDir))
 
 	for _, generator := range data.Generators {
-
 		dirs, err := ioutil.ReadDir(node.Dir)
 		if err == nil {
 			for _, dir := range dirs {

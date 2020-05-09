@@ -2,6 +2,8 @@ package data
 
 import (
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -9,9 +11,25 @@ import (
 	"strings"
 )
 
+type SecretGetConfig struct {
+	Script string
+}
+
 type SecretGenerator struct {
 }
 
+func ReadConfig(file string) (SecretGetConfig, error) {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		errors.Wrap(err, "Couldn't load secret generator file "+file)
+	}
+	config := SecretGetConfig{}
+	err = yaml.Unmarshal(content, &config)
+	if err != nil {
+		errors.Wrap(err, "Couldn't parse secret generator file "+file)
+	}
+	return config, nil
+}
 func (*SecretGenerator) IsManagedDir(dir string) bool {
 	descriptorFile := path.Join(dir, ".secretgen")
 	if _, err := os.Stat(descriptorFile); !os.IsNotExist(err) {
@@ -22,6 +40,10 @@ func (*SecretGenerator) IsManagedDir(dir string) bool {
 
 func (kt *SecretGenerator) Generate(sourceDir string, destinationDir string) ([]*Resource, error) {
 	resources := make([]*Resource, 0)
+	config, err := ReadConfig(path.Join(sourceDir, ".secretgen"))
+	if err != nil {
+		return resources, err
+	}
 	files, err := ioutil.ReadDir(sourceDir)
 	if err != nil {
 		return resources, err
@@ -32,7 +54,7 @@ func (kt *SecretGenerator) Generate(sourceDir string, destinationDir string) ([]
 				descriptor := path.Join(sourceDir, file.Name())
 				ext := path.Ext(file.Name())
 				name := file.Name()[0 : len(file.Name())-len(ext)]
-				descriptors, err := GetEncodedSecrets("getkeystore.sh", destinationDir, name, descriptor)
+				descriptors, err := GetEncodedSecrets(config.Script, destinationDir, name, descriptor)
 				if err != nil {
 					return resources, errors.Wrap(err, "Can't generate encoded secret for "+descriptor)
 				}
@@ -54,6 +76,7 @@ func GetEncodedSecrets(scriptName string, destinationDir string, name string, de
 	if _, err := os.Stat(script); os.IsNotExist(err) {
 		return result, errors.New("Secret generator bash script must exist at " + script)
 	}
+	logrus.Info("Generating secret " + name + " with executiong '" + script + " " + name + " " + descriptorPath + ";")
 	cmd := exec.Command(script, name, descriptorPath)
 	cmd.Env = os.Environ()
 	cmd.Dir = destinationDir

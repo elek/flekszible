@@ -88,5 +88,11 @@ func (source *RemoteSource) GetPath(manager *SourceCacheManager, relativeDir str
 	if err != nil {
 		return "", err
 	}
-	return path.Join(manager.GetCacheDir(cleanUrl(source.Url)), relativeDir), nil
+	baseDir := path.Join(manager.GetCacheDir(cleanUrl(source.Url)), relativeDir)
+	subDir := path.Join(baseDir, "flekszible")
+	if _, err := os.Stat(subDir); !os.IsNotExist(err) {
+		return subDir, nil
+	}
+
+	return baseDir, nil
 }

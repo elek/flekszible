@@ -311,7 +311,8 @@ func ListApp(context *processor.RenderContext) {
 func Run(context *processor.RenderContext, minikube bool, imports []string, transformations []string) {
 	err := context.Init()
 	if err != nil {
-		panic(err)
+		logrus.Errorf("%+v", err)
+		//panic(err)
 	}
 	for _, trafoDef := range transformations {
 		proc, err := createTransformation(trafoDef)

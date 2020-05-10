@@ -57,7 +57,6 @@ func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
 func (context *RenderContext) LoadResourceTree() error {
 	data.Generators = append(data.Generators, &data.OutputGenerator{})
 	data.Generators = append(data.Generators, &data.ConfigGenerator{})
-	data.Generators = append(data.Generators, &data.KeytabGenerator{})
 	data.Generators = append(data.Generators, &data.SecretGenerator{})
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	return context.RootResource.LoadResourceConfig(&cacheManager, context.OutputDir)

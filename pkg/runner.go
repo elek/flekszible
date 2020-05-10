@@ -91,12 +91,12 @@ func listUniqSources(context *processor.RenderContext) []data.Source {
 	nodes := context.ListResourceNodes()
 
 	sourceSet := make(map[string]bool)
-	id, _ := context.RootResource.Origin.GetPath(&cacheManager, "")
+	id, _ := context.RootResource.Origin.GetPath(&cacheManager)
 	sourceSet[id] = true
 
 	for _, node := range nodes {
 		for _, source := range node.Source {
-			id, _ := source.GetPath(&cacheManager, "")
+			id, _ := source.GetPath(&cacheManager)
 			if _, hasKey := sourceSet[id]; !hasKey {
 				sources = append(sources, source)
 				sourceSet[id] = true
@@ -223,7 +223,7 @@ func ListSources(context *processor.RenderContext) {
 
 	for _, source := range listUniqSources(context) {
 		typ, value := source.ToString()
-		path, _ := source.GetPath(&cacheManager, "")
+		path, _ := source.GetPath(&cacheManager)
 		table.AddRow(typ, value, path)
 	}
 	fmt.Println("Detected sources:")
@@ -248,7 +248,7 @@ func SearchComponent(context *processor.RenderContext) {
 
 func findApps(source data.Source, manager *data.SourceCacheManager, table *termtables.Table) {
 
-	dir, err := source.GetPath(manager, "")
+	dir, err := source.GetPath(manager)
 	if dir == "" {
 		return
 	}
@@ -308,11 +308,10 @@ func ListApp(context *processor.RenderContext) {
 	fmt.Println(table.Render())
 }
 
-func Run(context *processor.RenderContext, minikube bool, imports []string, transformations []string) {
+func Run(context *processor.RenderContext, minikube bool, imports []string, transformations []string) error {
 	err := context.Init()
 	if err != nil {
-		logrus.Errorf("%+v", err)
-		//panic(err)
+		return err
 	}
 	for _, trafoDef := range transformations {
 		proc, err := createTransformation(trafoDef)
@@ -323,10 +322,7 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 	}
 
 	AddInternalTransformations(context, minikube)
-	err = context.Render()
-	if err != nil {
-		panic(err)
-	}
+	return context.Render()
 }
 
 func createTransformation(trafoDef string) (processor.Processor, error) {

@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"github.com/hashicorp/go-getter"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"path"
@@ -18,7 +19,7 @@ var commit string
 var date string
 
 func main() {
-
+	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true, ForceQuote: false})
 	var inputDir, outputDir, imageOverride, namespaceOverride string
 	var minikube bool
 
@@ -87,8 +88,7 @@ func main() {
 				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), outputDir)
 				context.ImageOverride = imageOverride
 				context.Namespace = namespaceOverride
-				pkg.Run(context, minikube, c.StringSlice("import"), c.StringSlice("transformations"))
-				return nil
+				return pkg.Run(context, minikube, c.StringSlice("import"), c.StringSlice("transformations"))
 			},
 		},
 		{

@@ -279,8 +279,11 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		if err != nil {
 			return err
 		}
-		dir, _ := source.GetPath(sourceCache, importDefinition.Path)
-		childNode := CreateResourceNode(dir, importDefinition.Destination, source)
+		if source == nil {
+			return errors.New("Directory dependency `" + importDefinition.Path + "` defined in " + node.Dir + " can't be found")
+		}
+		sourceDir, _ := source.GetPath(sourceCache)
+		childNode := CreateResourceNode(checkPath(sourceDir, importDefinition.Path), importDefinition.Destination, source)
 		if importDefinition.Destination == "" {
 			childNode.Destination = node.Destination
 		}
@@ -332,7 +335,7 @@ func (node *ResourceNode) LoadDefinitions() {
 
 }
 
-//try to find the first Source which contains the file
+//try to find the first Source which contains the dir
 func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (data.Source, error) {
 	allSources := make([]data.Source, 0)
 	allSources = append(allSources, data.LocalSourcesFromEnv()...)
@@ -340,15 +343,28 @@ func locate(basedir string, dir string, sources []data.Source, cacheManager *dat
 	allSources = append(allSources, sources...)
 
 	for _, source := range allSources {
-		resourcePath, err := source.GetPath(cacheManager, dir)
+		resourcePath, err := source.GetPath(cacheManager)
 		if err != nil {
 			tpe, value := source.ToString()
 			logrus.Error("Can't check dir from the source " + tpe + "/" + value + err.Error())
 		} else if resourcePath != "" {
-			if _, err := os.Stat(resourcePath); !os.IsNotExist(err) {
+			path := checkPath(resourcePath, dir)
+			if path != "" {
 				return source, nil
 			}
 		}
 	}
 	return nil, errors.New("Couldn't find dir: " + dir)
+}
+
+func checkPath(baseDir string, subdir string) string {
+	result := path.Join(baseDir, "flekszible", subdir)
+	if _, err := os.Stat(result); !os.IsNotExist(err) {
+		return result
+	}
+	result = path.Join(baseDir, subdir)
+	if _, err := os.Stat(result); !os.IsNotExist(err) {
+		return result
+	}
+	return ""
 }

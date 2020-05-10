@@ -28,7 +28,7 @@ func cleanUrl(s string) string {
 }
 
 type Source interface {
-	GetPath(manager *SourceCacheManager, relativeDir string) (string, error)
+	GetPath(manager *SourceCacheManager) (string, error)
 	ToString() (string, string)
 }
 
@@ -37,8 +37,8 @@ type LocalSource struct {
 	Dir string
 }
 
-func (source *LocalSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
-	return path.Join(source.Dir, relativeDir), nil
+func (source *LocalSource) GetPath(manager *SourceCacheManager) (string, error) {
+	return source.Dir, nil
 
 }
 func (source *LocalSource) ToString() (string, string) {
@@ -83,16 +83,10 @@ func (source *RemoteSource) EnsureDownloaded(manager *SourceCacheManager) error 
 	return DownloaderPlugin.Download(source.Url, destinationDir, manager.RootPath)
 }
 
-func (source *RemoteSource) GetPath(manager *SourceCacheManager, relativeDir string) (string, error) {
+func (source *RemoteSource) GetPath(manager *SourceCacheManager) (string, error) {
 	err := source.EnsureDownloaded(manager)
 	if err != nil {
 		return "", err
 	}
-	baseDir := path.Join(manager.GetCacheDir(cleanUrl(source.Url)), relativeDir)
-	subDir := path.Join(baseDir, "flekszible")
-	if _, err := os.Stat(subDir); !os.IsNotExist(err) {
-		return subDir, nil
-	}
-
-	return baseDir, nil
+	return manager.GetCacheDir(cleanUrl(source.Url)), nil
 }

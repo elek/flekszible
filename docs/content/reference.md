@@ -3,77 +3,14 @@ title: Reference
 menu: main
 ---
 
-# Path
+# The main concept
 
-Many transformations requires a `Path` definition to address a specific node in the yaml tree.
 
-Path is a string array where each element represents a new level. Array elements are indexed from zero (eg ["foo","barr",0]) __except_ if the elements in the array are maps with _name_ key. In this case the index is this name.
+ * **Import and source** Every directory (which contains Kubernetes resource files) can be used as the source of can be used as a base of the flekszible transformations. With using the optional `Flekszible` descriptor you can *import* resources from multiple directories (with optional transformations) to the destination dir. *Source* path also can be defined: dirs can be reported from local dir or remote git repositories.   
 
-For example:
+ * **Transformations and definitions**: Transformations can be applied to any Kubernetes resources to modify them. Transformations has a type (like `add`, `replace`, `image`,...). New composite transformations can be created with the help of existing transformation types.
 
-```
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deployment
-  labels:
-    felkszible: generated
-spec:
-  selector:
-    matchLabels:
-      app: nginx
-  replicas: 2
-  template:
-    metadata:
-      labels:
-        app: nginx
-      annotations: {}
-    spec:
-      containers:
-        - name: nginx
-          image: nginx:1.7.9
-          ports:
-            - containerPort: 80
-          env: 
-            - name:  KEY
-              value: XXX
-```
-
-Here the path of the environment variable is `[spec, template, spec, containers, nginx, env, KEY ]` and not `[ spec, template, spec, containers, 0, env, 0]`
-
-For matching, path segments are used as regular expressions. Therefore the following path matches for both the init and main containers:
-
-```yaml
-path:
-  - spec
-  - template
-  - spec
-  - (initC|c)ontainers
-  - .*
-```
-
-# Trigger
-
-Most of the processors also use a `trigger` parameter. With trigger you can specify any k8s fragments and only the matched resources will be transformed.
-
-For example:
-
-```yaml
-- type: Add
-  trigger:
-     metadata:
-        name: datanode
-  path:
-    - metadata
-    - labels
-  value:
-     flokkr.github.io/monitoring: false
-```
-
-This definition will apply only to the k8s resources where the value of `metadata.name` is `datanode`.
-
-You can use multiple values in the trigger. All the key nodes will be collected and should be the same in the target resource.
-
+ * **Generators**: arbitrary files (like shell scripts, keytab / keystore definitions) can be converted to Kubernetes resources files (eg. configmap can be generated from simple config files, secrets can be generated with shell scripts)
 
 # Directory structure
 
@@ -102,7 +39,7 @@ The structure of a flekszible directory is the following:
  
 ##  `flekszible.yaml` (DEPRECTATED)
 
-You can also use `flekszible.yaml` instead of `Flekszible` descriptor. The only difference is that in this case the kubernetes resource files will be imported from the same directory and not from the `./resources`. Usually it's used by reusable apps/components where the current directory is not used as output.
+You can also use `flekszible.yaml` instead of `Flekszible` descriptor. The only difference is that in this case the Kubernetes resource files will be imported from the same directory and not from the `./resources`. Usually it's used by reusable apps/components where the current directory is not used as output.
 
 # Imports
 
@@ -170,7 +107,8 @@ The remote repositories are downloaded with [go-getter](https://github.com/hashi
 
 # Definitions and Transformations
 
-The heart of flekszible is modifying kubernetes resources files. There are multiple way to modify existing YAML files and they are defined with different types of transformation definitions. (For example you can `Add` additional fragments or `Replace` existing one).
+
+The heart of flekszible is modifying Kubernetes resources files. There are multiple way to modify existing YAML files and they are defined with different types of transformation definitions. (For example you can `Add` additional fragments or `Replace` existing one).
 
 With the help of the transformation definitions you can instantiate a transformations in the `Flekszible` file (under `transformations` key) or in the `transformation` subdirectory.
 
@@ -219,8 +157,82 @@ To use global transformations you have two options.
   2.) You can set the `scope` of the transformation to `global`.
   
  Let's check examples for both of these cases:
-  
- ## Definition example
+
+
+
+## Path
+
+Many transformations requires a `Path` definition to address a specific node in the yaml tree.
+
+Path is a string array where each element represents a new level. Array elements are indexed from zero (eg ["foo","barr",0]) __except_ if the elements in the array are maps with _name_ key. In this case the index is this name.
+
+For example:
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    felkszible: generated
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+      annotations: {}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.7.9
+          ports:
+            - containerPort: 80
+          env: 
+            - name:  KEY
+              value: XXX
+```
+
+Here the path of the environment variable is `[spec, template, spec, containers, nginx, env, KEY ]` and not `[ spec, template, spec, containers, 0, env, 0]`
+
+For matching, path segments are used as regular expressions. Therefore the following path matches for both the init and main containers:
+
+```yaml
+path:
+  - spec
+  - template
+  - spec
+  - (initC|c)ontainers
+  - .*
+```
+
+## Trigger
+
+Most of the processors also use a `trigger` parameter. With trigger you can specify any k8s fragments and only the matched resources will be transformed.
+
+For example:
+
+```yaml
+- type: Add
+  trigger:
+     metadata:
+        name: datanode
+  path:
+    - metadata
+    - labels
+  value:
+     flokkr.github.io/monitoring: false
+```
+
+This definition will apply only to the k8s resources where the value of `metadata.name` is `datanode`.
+
+You can use multiple values in the trigger. All the key nodes will be collected and should be the same in the target resource.
+
+
+## Definition example
  
  From the previous examples you can create a `defintions` directory in the hdfs directory and put a transformation definitions:
  
@@ -291,3 +303,32 @@ For example in the `transformations/grafana-dashboard.yaml` you can define a tra
 ```
 
 If the `grafana/install-dashboard` transformation type is available (which means you used an import to import grafana flekszible definition) this transformation will modify the grafana configmap and register all the dashboards in the `ozone-dashboard` configmap to be available. If grafana is not imported the transformation will be ignored without error.
+
+# Generators
+
+Generators are simple plugins which can 
+
+ * create additional Kubernetes resource files during the import (eg. convert shell scripts / config files to configmaps)
+ * can write the destination directory directly (eg. generate helper shell scripts)
+ * They are activated for a specific type of subdirectory (eg. to a subdirectory with the name of `configmaps`)
+
+As of now we have three type of generators and will be described here in more details
+
+ ## Configmaps
+
+Configmap generator is wrapping any file to real Kubernetes configmaps. Generator is activated for the `configmaps` subdirectories.
+
+To create a configmap: 
+
+ 1. Create a `configmaps` subdirectory
+ 2. Put any file with the nameconvention: *configmapname*_*keyname*
+
+ ## Output
+
+Output generator copies resources to the output directories. Create a `output` directory and all the resources will be copied to the destination during the import. Can be used to manage helper shell scripts.
+
+ ## Secrets
+
+Secret generator is activated for any subdirectory which contains the file `.secretgen`. This file should contain a line `secret: <script>` where `<script>` is the name of a shell script which exists in the output directory. 
+
+Generator will iterate over all the other files in the directory and execute `<script> <file>`. The shell script should output with multiple lines in the format `<key> <secret>` Where `<key>` is the name of the secret inside the Kubernetes secret resource, and `<secret>` is a `base64` encoded link.

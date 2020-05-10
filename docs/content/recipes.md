@@ -137,7 +137,7 @@ Setting the namespace or an image are very typical task. Therefore they could be
 
 ```
 
-### Deploy dev build (the skaffold use case)
+# Deploy dev build (the skaffold use case)
 
 Skaffold is a tool which could be used to deploy a specific dev build to the kubernetes cluster. While skaffold has many functionality (automatic redeploy, coud build) the basic functionality (local build, simple deploy) could be replaced with the following 4 lines:
 
@@ -228,7 +228,7 @@ import:
 
 This `flekszible.yaml` works out of the box: It downloads the `k8s` repository to a cache folder and imports `ozone` and `prometheus` subfolders from there. 
 
-## FLEKSZIBLE_PATH
+# FLEKSZIBLE_PATH
 
 The source directory also can be defined with the `FLEKSZIBLE_PATH` environment variable.
 

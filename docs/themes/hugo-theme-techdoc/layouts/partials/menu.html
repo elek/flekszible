@@ -20,7 +20,7 @@
 
 {{define "section" }}
 {{with .page}}
-   <li><a href="{{.URL}}">{{.Title}}</a></li>
+   <li><b><a href="{{.URL}}">{{.Title}}</a></b></li>
    {{ $url := printf "%s#" .URL }}
    <li>{{replace .TableOfContents "#" $url | safeHTML}}</li>
 {{end}}

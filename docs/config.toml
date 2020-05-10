@@ -2,3 +2,10 @@ baseURL = "https://flekszible.netlify.com/"
 languageCode = "en-us"
 title = "Fle[ksz]ible"
 theme = "hugo-theme-techdoc"
+
+
+[markup]
+  [markup.tableOfContents]
+    endLevel = 3
+    ordered = false
+    startLevel = 1

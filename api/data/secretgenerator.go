@@ -76,13 +76,13 @@ func GetEncodedSecrets(scriptName string, destinationDir string, name string, de
 	if _, err := os.Stat(script); os.IsNotExist(err) {
 		return result, errors.New("Secret generator bash script must exist at " + script)
 	}
-	logrus.Info("Generating secret " + name + " with executiong '" + script + " " + name + " " + descriptorPath + ";")
+	logrus.Info("Generating secret " + name + " with executing '" + script + " " + descriptorPath + ";")
 	cmd := exec.Command(script, name, descriptorPath)
 	cmd.Env = os.Environ()
 	cmd.Dir = destinationDir
 	output, err := cmd.Output()
 	if err != nil {
-		return result, errors.Wrap(err, "Secret generation is failed for  "+path.Join(destinationDir, scriptName)+" "+name+" "+descriptorPath)
+		return result, errors.Wrap(err, "Secret generation is failed for  "+path.Join(destinationDir, scriptName)+" "+descriptorPath)
 	}
 	for _, line := range strings.Split(string(output), "\n") {
 		kv := strings.SplitN(line, " ", 2)

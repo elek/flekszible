@@ -323,11 +323,11 @@ To create a configmap:
  1. Create a `configmaps` subdirectory
  2. Put any file with the nameconvention: *configmapname*_*keyname*
 
- ## Output
+## Output
 
 Output generator copies resources to the output directories. Create a `output` directory and all the resources will be copied to the destination during the import. Can be used to manage helper shell scripts.
 
- ## Secrets
+## Secrets
 
 Secret generator is activated for any subdirectory which contains the file `.secretgen`. This file should contain a line `secret: <script>` where `<script>` is the name of a shell script which exists in the output directory. 
 

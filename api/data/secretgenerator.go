@@ -1,6 +1,7 @@
 package data
 
 import (
+	"bytes"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
@@ -76,15 +77,22 @@ func GetEncodedSecrets(scriptName string, destinationDir string, name string, de
 	if _, err := os.Stat(script); os.IsNotExist(err) {
 		return result, errors.New("Secret generator bash script must exist at " + script)
 	}
-	logrus.Info("Generating secret " + name + " with executing '" + script + " " + descriptorPath + ";")
-	cmd := exec.Command(script, name, descriptorPath)
+	logrus.Info("Generating secret " + name + " with executing '" + script + " " + descriptorPath + "'")
+	cmd := exec.Command(script, descriptorPath)
+	var stdout, stderr bytes.Buffer
 	cmd.Env = os.Environ()
 	cmd.Dir = destinationDir
-	output, err := cmd.Output()
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
 	if err != nil {
-		return result, errors.Wrap(err, "Secret generation is failed for  "+path.Join(destinationDir, scriptName)+" "+descriptorPath)
+		command := path.Join(destinationDir, scriptName) + " " + descriptorPath
+		logrus.Error("Command is failed " + command)
+		logrus.Error("Stdout: " + string(stdout.Bytes()))
+		logrus.Error("Stderr: " + string(stderr.Bytes()))
+		return result, errors.Wrap(err, "Secret generation is failed for  cd '"+destinationDir+" && "+command+"'")
 	}
-	for _, line := range strings.Split(string(output), "\n") {
+	for _, line := range strings.Split(string(string(stdout.Bytes())), "\n") {
 		kv := strings.SplitN(line, " ", 2)
 		if len(kv) == 2 {
 			result[kv[0]] = kv[1]

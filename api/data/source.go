@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -38,7 +39,7 @@ type LocalSource struct {
 }
 
 func (source *LocalSource) GetPath(manager *SourceCacheManager) (string, error) {
-	return source.Dir, nil
+	return filepath.Abs(source.Dir)
 
 }
 func (source *LocalSource) ToString() (string, string) {

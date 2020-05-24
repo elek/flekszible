@@ -8,10 +8,10 @@ import (
 func TestLocalPath(t *testing.T) {
 
 	source := LocalSource{
-		Dir:         "/tmp/test/sub/../..",
+		Dir: "/tmp/test/sub/../..",
 	}
 	mgr := SourceCacheManager{}
-	result, err := source.GetPath(&mgr, "dir")
+	result, err := source.GetPath(&mgr)
 	assert.Nil(t, err)
-	assert.Equal(t, "/tmp/dir", result)
+	assert.Equal(t, "/tmp", result)
 }

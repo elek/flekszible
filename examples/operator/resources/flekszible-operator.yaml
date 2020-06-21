@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flekszible-operator
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+    name: http
+  selector:
+    app: flekszible
+    component: operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flekszible-operator
+  labels:
+    app: flekszible
+    component: operator
+spec:
+  selector:
+    matchLabels:
+      app: flekszible
+      component: operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: flekszible
+        component: operator
+    spec:
+      containers:
+      - name: flekszible
+        image: elek/flekszible
+        imagePullPolicy: Never
+        args:
+        - flekszible
+        - operator
+        - /tmp
+        workingDir: /tmp/tls
+        volumeMounts:
+          - mountPath: /tmp/workdir
+            name: flekszible
+          - mountPath: /tmp/tls
+            name: tls
+      volumes:
+        - name: tls
+          configMap:
+            name: flekszible-operator-tls
+        - name: flekszible
+          configMap:
+             name: flekszible-operator

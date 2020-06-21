@@ -1,9 +1,12 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/elek/flekszible/api/yaml"
 	"strconv"
+	"strings"
+
+	"github.com/elek/flekszible/api/yaml"
 )
 
 type Visitor interface {
@@ -523,4 +526,59 @@ func ToMap(node Node) interface{} {
 		return object.Value
 	}
 	return nil
+}
+
+func (keyNode *KeyNode) MarshalJSON() ([]byte, error) {
+	if keyNode.Value == nil {
+		return []byte("null"), nil
+	}
+
+	switch value := keyNode.Value.(type) {
+	case string:
+		safeValue := strings.ReplaceAll(value, "\"", "\\\"")
+		safeValue = strings.Trim(safeValue, "\n")
+		return []byte("\"" + safeValue + "\""), nil
+	case int:
+		return []byte(strconv.Itoa(value)), nil
+	case bool:
+		if value {
+			return []byte("true"), nil
+		} else {
+			return []byte("false"), nil
+		}
+	default:
+		return []byte("\"" + fmt.Sprintf("%T", keyNode.Value) + "\""), nil
+	}
+}
+
+func (listNode *ListNode) MarshalJSON() ([]byte, error) {
+	res := "["
+	for i, childNode := range listNode.Children {
+		child, err := json.Marshal(childNode)
+		if err != nil {
+			return []byte{}, err
+		}
+		if i > 0 {
+			res += ","
+		}
+		res += string(child)
+	}
+	res += "]"
+	return []byte(res), nil
+}
+
+func (mapNode *MapNode) MarshalJSON() ([]byte, error) {
+	res := "{"
+	for i, key := range mapNode.Keys() {
+		child, err := json.Marshal(mapNode.children[key])
+		if err != nil {
+			return []byte{}, err
+		}
+		if i > 0 {
+			res += ","
+		}
+		res += "\"" + key + "\":" + string(child)
+	}
+	res += "}"
+	return []byte(res), nil
 }

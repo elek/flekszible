@@ -105,3 +105,6 @@ dist
 
 docs/public
 .flekszible-source
+
+#go build
+flekszible

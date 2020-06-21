@@ -1,0 +1,8 @@
+transformations:
+  - type: Add
+    path:
+      - metadata
+      - labels
+    value:
+      generated: true
+

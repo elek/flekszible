@@ -3,14 +3,16 @@ package main
 // import "github.com/elek/flekszible/cmd"
 import (
 	"fmt"
-	"github.com/hashicorp/go-getter"
-	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"path"
 
+	"github.com/hashicorp/go-getter"
+	"github.com/sirupsen/logrus"
+
 	"github.com/elek/flekszible/api/processor"
 	"github.com/elek/flekszible/pkg"
+	"github.com/elek/flekszible/pkg/operator"
 	"github.com/urfave/cli"
 )
 
@@ -127,8 +129,8 @@ func main() {
 			Usage: "Delete yaml files from the destination directories",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
-					Name:        "all, a",
-					Usage:       "Delete all yaml files from destination directories",
+					Name:  "all, a",
+					Usage: "Delete all yaml files from destination directories",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -139,6 +141,7 @@ func main() {
 		appCommands(&inputDir, &outputDir),
 		sourceCommands(&inputDir, &outputDir),
 		transformationCommands(&inputDir, &outputDir),
+		admissionCommands(),
 	}
 	err := app.Run(os.Args)
 	if err != nil {
@@ -146,6 +149,16 @@ func main() {
 	}
 }
 
+func admissionCommands() cli.Command {
+	return cli.Command{
+		Name:      "operator",
+		Usage:     "Start Kubernetes operator (Mutating webhook endpoint)",
+		ArgsUsage: "Directory of the Flekszible definition",
+		Action: func(c *cli.Context) error {
+			return operator.StartServer(c.Args().First())
+		},
+	}
+}
 func appCommands(inputDir *string, outputDir *string) cli.Command {
 	return cli.Command{
 		Name:  "app",

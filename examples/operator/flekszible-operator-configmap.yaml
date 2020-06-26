@@ -5,11 +5,20 @@ metadata:
   name: flekszible-operator
 data:
   Flekszible: |+
+    source:
+    - url: github.com/flokkr/docker-ozone
+    import:
+    - path: ozone-client
     transformations:
-      - type: Add
-        path:
-          - metadata
-          - labels
-        value:
-          generated: "true"
+      - type: ozone/ozonefs
+        image: elek/ozone-dev:1326aaa45
+        trigger:
+           metadata:
+              annotations:
+                 ozonefs: enable
+      - type: ozone/client-config
+        trigger:
+           metadata:
+              annotations:
+                 ozonefs: enable
 

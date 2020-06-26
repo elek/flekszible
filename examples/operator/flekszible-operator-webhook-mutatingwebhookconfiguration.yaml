@@ -25,6 +25,7 @@ webhooks:
     resources:
     - deployments
     - services
+    - pods
   namespaceSelector:
     matchLabels:
-      mutateme: enabled
+      flekszible-operator: enable

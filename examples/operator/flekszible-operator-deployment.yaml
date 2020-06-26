@@ -25,11 +25,12 @@ spec:
         args:
         - flekszible
         - operator
-        - /tmp
+        - /tmp/workdir
         workingDir: /tmp/tls
         volumeMounts:
-        - mountPath: /tmp/workdir
+        - mountPath: /tmp/workdir/Flekszible
           name: flekszible
+          subPath: Flekszible
         - mountPath: /tmp/tls
           name: tls
       volumes:

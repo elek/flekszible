@@ -1,9 +1,20 @@
 on: push
 name: build
 jobs:
-  go-test:
-    name: Go Test
+  build-linux:
+    name: Go Test Linux
     runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: build
+      run: |
+          ./build build
+    - name: unit tests
+      run: |
+          ./build test
+  build-osx:
+    name: Go Test OSX
+    runs-on: macos-10.15
     steps:
     - uses: actions/checkout@master
     - name: build

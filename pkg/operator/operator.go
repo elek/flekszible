@@ -48,8 +48,12 @@ func StartServer(workingDir string) error {
 	r.POST("/", func(c *gin.Context) {
 		content, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
-			print(err)
+			c.JSON(500, gin.H{
+				"error": err.Error(),
+			})
+			return
 		}
+
 		result, err := handleRequest(workingDir, content)
 		if err != nil {
 			c.JSON(500, gin.H{
@@ -90,8 +94,12 @@ func handleRequest(dir string, request []byte) (AdmissionReviewResult, error) {
 }
 
 func processResource(dir string, resource map[string]interface{}) (string, error) {
-	delete(resource["metadata"].(map[string]interface{}), "managedFields")
-	delete(resource["metadata"].(map[string]interface{})["annotations"].(map[string]interface{}), "kubectl.kubernetes.io/last-applied-configuration")
+	if resource["metadata"] != nil {
+		delete(resource["metadata"].(map[string]interface{}), "managedFields")
+		if resource["metadata"].(map[string]interface{})["annotations"] != nil {
+			delete(resource["metadata"].(map[string]interface{})["annotations"].(map[string]interface{}), "kubectl.kubernetes.io/last-applied-configuration")
+		}
+	}
 	jsonOrigin, err := json.Marshal(resource)
 	if err != nil {
 		return "", errors.Wrap(err, "Can't write parsed json resource to json")

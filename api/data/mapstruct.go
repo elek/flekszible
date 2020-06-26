@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/elek/flekszible/api/yaml"
+	"github.com/pkg/errors"
 )
 
 type Visitor interface {
@@ -25,6 +26,7 @@ type Visitor interface {
 
 type Node interface {
 	Accept(Visitor)
+	GetPath() Path
 }
 
 // ----------------- KEY NODE --------------
@@ -38,6 +40,10 @@ func NewKeyNode(path Path, value interface{}) KeyNode {
 		Value: value,
 		Path:  path,
 	}
+}
+
+func (node *KeyNode) GetPath() Path {
+	return node.Path
 }
 
 func (node *KeyNode) Accept(v Visitor) {
@@ -58,6 +64,11 @@ func NewMapNode(path Path) MapNode {
 	}
 	return m
 }
+
+func (node *MapNode) GetPath() Path {
+	return node.Path
+}
+
 func (node *MapNode) Put(key string, value Node) {
 	node.children[key] = value
 	for _, indexedKey := range node.keys {
@@ -154,6 +165,10 @@ func NewListNode(path Path) ListNode {
 		Path:     path,
 	}
 	return l
+}
+
+func (node *ListNode) GetPath() Path {
+	return node.Path
 }
 
 func (node *ListNode) Append(value Node) {
@@ -381,6 +396,12 @@ var listChildren = []Path{
 	NewPath("spec", "template", "spec", ".*ontainers", ".*", "env"),
 	NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom"),
 	NewPath("spec", "template", "spec", ".*ontainers", ".*", "volumeMounts"),
+	NewPath("spec", "containers"),
+	NewPath("spec", "initContainers"),
+	NewPath("spec", "volumes"),
+	NewPath("spec", ".*ontainers", ".*", "env"),
+	NewPath("spec", ".*ontainers", ".*", "envFrom"),
+	NewPath("spec", F".*ontainers", ".*", "volumeMounts"),
 }
 
 func (visitor *SmartGetAll) BeforeMap(node *MapNode) {
@@ -532,7 +553,6 @@ func (keyNode *KeyNode) MarshalJSON() ([]byte, error) {
 	if keyNode.Value == nil {
 		return []byte("null"), nil
 	}
-
 	switch value := keyNode.Value.(type) {
 	case string:
 		safeValue := strings.ReplaceAll(value, "\"", "\\\"")
@@ -556,7 +576,7 @@ func (listNode *ListNode) MarshalJSON() ([]byte, error) {
 	for i, childNode := range listNode.Children {
 		child, err := json.Marshal(childNode)
 		if err != nil {
-			return []byte{}, err
+			return []byte{}, errors.Wrap(err, "Can't marshall "+childNode.GetPath().ToString())
 		}
 		if i > 0 {
 			res += ","
@@ -572,7 +592,7 @@ func (mapNode *MapNode) MarshalJSON() ([]byte, error) {
 	for i, key := range mapNode.Keys() {
 		child, err := json.Marshal(mapNode.children[key])
 		if err != nil {
-			return []byte{}, err
+			return []byte{}, errors.Wrap(err, "Can't marshall "+mapNode.children[key].GetPath().ToString())
 		}
 		if i > 0 {
 			res += ","

@@ -357,11 +357,14 @@ func locate(basedir string, dir string, sources []data.Source, cacheManager *dat
 }
 
 func checkPath(baseDir string, subdir string) string {
-	result := path.Join(baseDir, "flekszible", subdir)
-	if _, err := os.Stat(result); !os.IsNotExist(err) {
-		return result
+	optionalSubDir := path.Join(baseDir, "flekszible")
+	if stat, err := os.Stat(optionalSubDir); !os.IsNotExist(err) && stat.IsDir() {
+		result := path.Join(baseDir, "flekszible", subdir)
+		if _, err := os.Stat(result); !os.IsNotExist(err) {
+			return result
+		}
 	}
-	result = path.Join(baseDir, subdir)
+	result := path.Join(baseDir, subdir)
 	if _, err := os.Stat(result); !os.IsNotExist(err) {
 		return result
 	}

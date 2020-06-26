@@ -401,7 +401,7 @@ var listChildren = []Path{
 	NewPath("spec", "volumes"),
 	NewPath("spec", ".*ontainers", ".*", "env"),
 	NewPath("spec", ".*ontainers", ".*", "envFrom"),
-	NewPath("spec", F".*ontainers", ".*", "volumeMounts"),
+	NewPath("spec", ".*ontainers", ".*", "volumeMounts"),
 }
 
 func (visitor *SmartGetAll) BeforeMap(node *MapNode) {

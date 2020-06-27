@@ -1,0 +1,4 @@
+transformations:
+- type: mount
+  hostPath: /tmp
+  path: /host/tmp

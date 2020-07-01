@@ -48,7 +48,7 @@ func (*ConfigGenerator) Generate(sourceDir string, destinationDir string) ([]*Re
 		for keyName, rawData := range dataMap {
 			data.PutValue(keyName, rawData)
 		}
-		r := Resource{}
+		r := NewResource()
 		r.Content = &rootNode
 		//r.Filename = filename
 		resources = append(resources, &r)

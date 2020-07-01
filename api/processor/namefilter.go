@@ -12,20 +12,26 @@ type NameFilter struct {
 }
 
 func (nf *NameFilter) BeforeResource(resource *data.Resource) error {
+	exclude := true
 	if len(nf.Include) > 0 {
 		for _, include := range nf.Include {
-			if resource.Name() != include {
-				resource.Metadata["exclude"] = "true"
+			if resource.Name() == include {
+				exclude = false
 			}
 		}
+	} else {
+		exclude = false
 	}
 
 	if len(nf.Exclude) > 0 {
-		for _, exclude := range nf.Exclude {
-			if resource.Name() == exclude {
-				resource.Metadata["exclude"] = "true"
+		for _, excludeRule := range nf.Exclude {
+			if resource.Name() == excludeRule {
+				exclude = true
 			}
 		}
+	}
+	if exclude {
+		resource.Metadata["exclude"] = "true"
 	}
 	return nil
 }

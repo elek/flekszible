@@ -7,8 +7,9 @@ import (
 
 type Processor interface {
 	data.Visitor
-	Before(ctx *RenderContext, resources []*data.Resource) error
-	After(ctx *RenderContext, resources []*data.Resource) error
+	RegisterResources(ctx *RenderContext, node *ResourceNode) error
+	Before(ctx *RenderContext, node *ResourceNode) error
+	After(ctx *RenderContext, node *ResourceNode) error
 	GetType() string
 	BeforeResource(*data.Resource) error
 	AfterResource(*data.Resource) error
@@ -24,13 +25,17 @@ type DefaultProcessor struct {
 	CurrentResource *data.Resource
 }
 
+func (processor *DefaultProcessor) RegisterResources(ctx *RenderContext, node *ResourceNode) error {
+	return nil
+}
+
 func (processor *DefaultProcessor) GetType() string {
 	return processor.Type
 }
-func (processor *DefaultProcessor) Before(ctx *RenderContext, resources []*data.Resource) error {
+func (processor *DefaultProcessor) Before(ctx *RenderContext, node *ResourceNode) error {
 	return nil
 }
-func (processor *DefaultProcessor) After(ctx *RenderContext, resources []*data.Resource) error {
+func (processor *DefaultProcessor) After(ctx *RenderContext, node *ResourceNode) error {
 	return nil
 }
 func (processor *DefaultProcessor) GetScope() string {

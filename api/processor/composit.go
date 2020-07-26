@@ -5,6 +5,8 @@ import (
 	"github.com/elek/flekszible/api/yaml"
 	"github.com/pkg/errors"
 	"io/ioutil"
+	gopath "path"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
@@ -12,12 +14,12 @@ import (
 type Composit struct {
 	DefaultProcessor
 	ProcessorMetadata
-	Processors []Processor
-	File       string
-	Template   string
-	Parameters map[string]string
-	Trigger    Trigger
-
+	AdditionalResourcesDir string
+	Processors             []Processor
+	File                   string
+	Template               string
+	Parameters             map[string]string
+	Trigger                Trigger
 }
 
 func (c *Composit) OnKey(node *data.KeyNode) {
@@ -38,8 +40,16 @@ func (c *Composit) AfterList(node *data.ListNode)                               
 func (c *Composit) BeforeListItem(node *data.ListNode, item data.Node, index int) {}
 func (c *Composit) AfterListItem(node *data.ListNode, item data.Node, index int)  {}
 
-func (c *Composit) Before(ctx *RenderContext, resources []*data.Resource) error { return nil }
-func (c *Composit) After(ctx *RenderContext, resources []*data.Resource) error  { return nil }
+func (c *Composit) Before(ctx *RenderContext, node *ResourceNode) error { return nil }
+func (c *Composit) After(ctx *RenderContext, node *ResourceNode) error  { return nil }
+
+func (c *Composit) RegisterResources(ctx *RenderContext, node *ResourceNode) error {
+	if c.AdditionalResourcesDir != "" {
+		resources := data.ReadResourcesFromDir(c.AdditionalResourcesDir)
+		node.Resources = append(node.Resources, resources...)
+	}
+	return nil
+}
 
 func (c *Composit) BeforeResource(resource *data.Resource) error {
 	if !c.Trigger.active(resource) {
@@ -75,7 +85,9 @@ func parseTransformationParameters(config *yaml.MapSlice) map[string]interface{}
 	return result
 
 }
-func compositFactory(config *yaml.MapSlice, templateBytes []byte) (*Composit, error) {
+
+//instantiate composite transformation based on instance config, generic definition metadata and template
+func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composit, error) {
 	funcmap := template.FuncMap{
 		"Iterate": func(count int) []int {
 			var i int
@@ -100,10 +112,15 @@ func compositFactory(config *yaml.MapSlice, templateBytes []byte) (*Composit, er
 	}
 	processors, err := ReadProcessorDefinition([]byte(output.String()))
 	if err != nil {
-		panic("The composit factory can't be parsed" + err.Error())
+		panic("The definition can't be parsed" + err.Error())
+	}
+	resourcesDir := metadata.Resources
+	if resourcesDir != "" && !filepath.IsAbs(resourcesDir) {
+		resourcesDir = filepath.Clean(gopath.Join(gopath.Dir(path), resourcesDir))
 	}
 	return &Composit{
-		Processors: processors,
+		Processors:             processors,
+		AdditionalResourcesDir: resourcesDir,
 	}, nil
 }
 
@@ -120,18 +137,18 @@ func addDefaultParameters(parameters map[string]interface{}) {
 func parseDefintion(path string) error {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Can't load transformation definition from "+path)
 	}
 	head, body := splitDefinitionFile(content)
 	metadata := ProcessorMetadata{}
 	err = yaml.Unmarshal(head, &metadata)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Can't parse transformation metadata from "+path)
 	}
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: metadata,
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			comp, err := compositFactory(config, body)
+			comp, err := compositFactory(path, &metadata, config, body)
 			if err != nil {
 				return nil, err
 			}

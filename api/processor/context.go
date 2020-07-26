@@ -71,10 +71,10 @@ func (context *RenderContext) Resources() []*data.Resource {
 
 func (node *ResourceNode) AllResources() []*data.Resource {
 	result := make([]*data.Resource, 0)
-	result = append(result, node.Resources...)
 	for _, child := range node.Children {
 		result = append(result, child.AllResources()...)
 	}
+	result = append(result, node.Resources...)
 	return result
 }
 
@@ -162,44 +162,47 @@ func (context *RenderContext) AppendProcessor(processor Processor) {
 	repo.Append(processor)
 }
 
-type execute func(transformation Processor, context *RenderContext, resources []*data.Resource) error
+type execute func(transformation Processor, context *RenderContext, node *ResourceNode) error
 
-func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) ([]*data.Resource, error) {
-	resources := make([]*data.Resource, 0)
+func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) error {
+	//execute on child
 	for _, child := range node.Children {
-		childResults, err := child.Execute(context, functionCall)
+		err := child.Execute(context, functionCall)
 		if err != nil {
-			return nil, errors.Wrap(err, "The function can't be executed on one of the childResources")
+			return errors.Wrap(err, "The function can't be executed on one of the childResources")
 		}
-		resources = append(resources, childResults...)
 	}
-	resources = append(resources, node.Resources...)
+
+	//execute on this resource
 	for _, transformation := range node.ProcessorRepository.Processors {
-		err := functionCall(transformation, context, resources)
+		err := functionCall(transformation, context, node)
 		if err != nil {
-			return nil, errors.Wrap(err, "The function can't be executed on all the resources. Transformation: ")
+			return errors.Wrap(err, "The function can't be executed on all the resources. Transformation: ")
 		}
 	}
-	return resources, nil
+	return nil
 
 }
+
+//execute all the transformations in the rendercontext.
 func (ctx *RenderContext) Render() error {
-	before := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
-		err := processor.Before(context, resources)
+
+	before := func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		err := processor.Before(context, node)
 		if err != nil {
 			return errors.Wrap(err, "Before execution phase is failed")
 		}
 		return nil
 	}
-	after := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
-		err := processor.After(context, resources)
+	after := func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		err := processor.After(context, node)
 		if err != nil {
 			return errors.Wrap(err, "After execution phase is failed")
 		}
 		return nil
 	}
-	process := func(processor Processor, context *RenderContext, resources []*data.Resource) error {
-		for _, resource := range resources {
+	process := func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		for _, resource := range node.AllResources() {
 			err := processor.BeforeResource(resource)
 			if err != nil {
 				return errors.Wrap(err, "Applying transformation BeforeResource "+resource.Filename+" is failed")
@@ -213,15 +216,25 @@ func (ctx *RenderContext) Render() error {
 		}
 		return nil
 	}
-	_, err := ctx.RootResource.Execute(ctx, before)
+	err := ctx.RootResource.Execute(ctx, func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		err := processor.RegisterResources(context, node)
+		if err != nil {
+			return errors.Wrap(err, "RegisterResource execution phase is failed")
+		}
+		return nil
+	})
 	if err != nil {
 		return err
 	}
-	_, err = ctx.RootResource.Execute(ctx, process)
+	err = ctx.RootResource.Execute(ctx, before)
 	if err != nil {
 		return err
 	}
-	_, err = ctx.RootResource.Execute(ctx, after)
+	err = ctx.RootResource.Execute(ctx, process)
+	if err != nil {
+		return err
+	}
+	err = ctx.RootResource.Execute(ctx, after)
 	if err != nil {
 		return err
 	}

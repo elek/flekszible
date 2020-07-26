@@ -1,0 +1,4 @@
+import:
+  - path: source1
+    transformations: 
+      - type: addon

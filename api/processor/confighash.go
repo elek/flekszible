@@ -15,10 +15,10 @@ type ConfigHash struct {
 	nameToHash map[string]string
 }
 
-func (processor *ConfigHash) Before(ctx *RenderContext, resources []*data.Resource) error {
+func (processor *ConfigHash) Before(ctx *RenderContext, node *ResourceNode) error {
 	processor.nameToHash = make(map[string]string)
 
-	for _, resource := range resources {
+	for _, resource := range node.AllResources() {
 		if resource.Kind() == "ConfigMap" && processor.Trigger.active(resource) {
 			str, err := resource.Content.ToString()
 			if err != nil {

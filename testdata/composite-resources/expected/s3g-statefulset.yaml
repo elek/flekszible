@@ -1,0 +1,24 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: s3g
+spec:
+  selector:
+    matchLabels:
+      app: ozone
+      component: s3g
+  serviceName: s3g
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ozone
+        component: s3g
+    spec:
+      containers:
+      - name: s3g
+        image: eeee
+        args:
+        - ozone
+        - s3g

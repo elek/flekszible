@@ -5,13 +5,17 @@ import (
 )
 
 func TestComposit(t *testing.T) {
-	TestFromDir(t, "composit")
+	TestFromDir(t, "composite")
 }
 
 func TestCompositInherited(t *testing.T) {
-	TestFromDir(t, "composit-inherited")
+	TestFromDir(t, "composite-inherited")
 }
 
 func TestCompositWithParam(t *testing.T) {
-	TestFromDir(t, "composit-param")
+	TestFromDir(t, "composite-param")
+}
+
+func TestCompositWithAdditionalResources(t *testing.T) {
+	TestFromDir(t, "composite-resources")
 }

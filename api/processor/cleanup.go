@@ -18,7 +18,7 @@ type Cleanup struct {
 	cleanedDirs       map[string]bool
 }
 
-func (cleanup *Cleanup) Before(ctx *RenderContext, resources []*data.Resource) error {
+func (cleanup *Cleanup) Before(ctx *RenderContext, node *ResourceNode) error {
 	cleanup.ResourceOutputDir = ctx.OutputDir
 	return nil
 }
@@ -34,7 +34,7 @@ func (cleanup *Cleanup) createOutputPath(outputDir, name, kind string, destinati
 	}
 }
 
-func (processor *Cleanup) After(ctx *RenderContext, resources []*data.Resource) error {
+func (processor *Cleanup) After(ctx *RenderContext, node *ResourceNode) error {
 	if processor.All {
 		for dir, _ := range processor.cleanedDirs {
 			logrus.Info("Deleting all YAML files from the directory ", dir)

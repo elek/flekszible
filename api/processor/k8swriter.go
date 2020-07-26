@@ -23,7 +23,7 @@ type K8sWriter struct {
 	header            string
 }
 
-func (writer *K8sWriter) Before(ctx *RenderContext, resources []*data.Resource) error {
+func (writer *K8sWriter) Before(ctx *RenderContext, node *ResourceNode) error {
 	writer.resourceOutputDir = ctx.OutputDir
 	return nil
 }

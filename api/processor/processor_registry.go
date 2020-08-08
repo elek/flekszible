@@ -25,7 +25,7 @@ type ProcessorParameter struct {
 
 type ProcessorDefinition struct {
 	Metadata ProcessorMetadata //metadata to define the name and available parameters
-	Factory  ProcessorFactory  //the factory the create the stryct
+	Factory  ProcessorFactory  //the factory the create the struct
 }
 
 type ProcessorFactory = func(slice *yaml.MapSlice) (Processor, error)

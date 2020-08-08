@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -44,8 +45,15 @@ func ListProcessor(context *processor.RenderContext) {
 	}
 	table := termtables.CreateTable()
 	table.AddHeaders("name", "description")
-	for _, definition := range processor.ProcessorTypeRegistry.TypeMap {
-		table.AddRow(definition.Metadata.Name, definition.Metadata.Description)
+	definitionNames := make([]string, 0)
+	for definition := range processor.ProcessorTypeRegistry.TypeMap {
+		definitionNames = append(definitionNames, definition)
+	}
+	sort.Strings(definitionNames)
+
+	for _, definitionName := range definitionNames {
+		definition := processor.ProcessorTypeRegistry.TypeMap[definitionName]
+		table.AddRow(definitionName, definition.Metadata.Description)
 	}
 	fmt.Println(table.Render())
 

@@ -236,8 +236,9 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 		Usage:   "Show available transformation types/definitions",
 		Subcommands: []cli.Command{
 			{
-				Name:  "search",
-				Usage: "List available transformation types.",
+				Name:    "list",
+				Aliases: []string{"search"},
+				Usage:   "List available transformation types.",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
 					pkg.ListProcessor(context)
@@ -245,8 +246,9 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 				},
 			},
 			{
-				Name:  "show",
-				Usage: "Show details information / help about a specific transformation type",
+				Name:    "info",
+				Aliases: []string{"show"},
+				Usage:   "Show details information / help about a specific transformation type",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir), findOutputDir(outputDir))
 					pkg.ShowProcessor(context, c.Args().First())

@@ -326,31 +326,36 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 		if err != nil {
 			panic(err)
 		}
-		context.RootResource.ProcessorRepository.Append(proc)
+		context.RootResource.ProcessorRepository.AppendAll(proc)
 	}
 
 	AddInternalTransformations(context, minikube)
 	return context.Render()
 }
 
-func createTransformation(trafoDef string) (processor.Processor, error) {
-	parts := strings.SplitN(trafoDef, ":", 2)
-	name := parts[0]
-	parameterMap := make(map[string]string)
-	if len(parts) > 1 {
-		for _, parameter := range strings.Split(parts[1], ",") {
-			paramParts := strings.Split(parameter, "=")
-			if len(paramParts) != 2 {
-				return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
+//parase one-liner transformation definition
+func createTransformation(transformationsDefinition string) ([]processor.Processor, error) {
+	result := make([]processor.Processor, 0)
+	for _, trafoDef := range strings.Split(transformationsDefinition, ";") {
+		parts := strings.SplitN(trafoDef, ":", 2)
+		name := parts[0]
+		parameterMap := make(map[string]string)
+		if len(parts) > 1 {
+			for _, parameter := range strings.Split(parts[1], ",") {
+				paramParts := strings.Split(parameter, "=")
+				if len(paramParts) != 2 {
+					return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
+				}
+				parameterMap[paramParts[0]] = paramParts[1]
 			}
-			parameterMap[paramParts[0]] = paramParts[1]
 		}
+		proc, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
+		if err != nil {
+			return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
+		}
+		result = append(result, proc)
 	}
-	proc, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
-	if err != nil {
-		return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
-	}
-	return proc, nil
+	return result, nil
 }
 
 func AddInternalTransformations(context *processor.RenderContext, minikube bool) {

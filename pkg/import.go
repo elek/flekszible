@@ -29,7 +29,7 @@ func Import(resourceFile string, transformations []string, outputDir string) err
 		if err != nil {
 			panic(err)
 		}
-		context.RootResource.ProcessorRepository.Append(proc)
+		context.RootResource.ProcessorRepository.AppendAll(proc)
 	}
 
 	var bytesOfResources []byte

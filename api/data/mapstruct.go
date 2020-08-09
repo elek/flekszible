@@ -441,7 +441,7 @@ func (visitor *Set) OnKey(node *KeyNode) {
 }
 
 func (visitor *Set) BeforeMap(node *MapNode) {
-	if visitor.Path.Parent().Match(node.Path) {
+	if visitor.Path.Parent().Equal(node.Path) {
 		if node.Get(visitor.Path.Last()) == nil {
 			node.PutValue(visitor.Path.Last(), visitor.NewValue)
 		}

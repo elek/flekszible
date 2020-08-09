@@ -58,7 +58,7 @@ func (c *Composit) BeforeResource(resource *data.Resource) error {
 	for _, p := range c.Processors {
 		err := p.BeforeResource(resource)
 		if err != nil {
-			return errors.Wrap(err, "One of the child processors of the composite resource is failed")
+			return errors.Wrap(err, "Resource transformation is failed " + p.GetType() +" on " + resource.Name())
 		}
 	}
 	return nil

@@ -71,7 +71,7 @@ func (processor *Add) BeforeResource(resource *data.Resource) error {
 					typedTarget.Append(childNode)
 				}
 			default:
-				return errors.New(fmt.Sprintf("Unsupported value adding %T to %T %s", processor.Value, match.Value, resource.Filename))
+				return errors.New(fmt.Sprintf("Unsupported value adding %T to %T (%s) %s", processor.Value, match.Value, target.Path.ToString(), resource.Filename))
 			}
 		}
 	default:

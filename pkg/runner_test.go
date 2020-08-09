@@ -8,7 +8,7 @@ import (
 
 func TestCreateTransformation(t *testing.T) {
 
-	proc, err := createTransformation("image:image=asd")
+	proc, err := parseTransformation("image:image=asd")
 	assert.Nil(t, err)
 
 	image := proc[0].(*processor.Image)
@@ -18,7 +18,7 @@ func TestCreateTransformation(t *testing.T) {
 
 func TestCreateTransformationImageWithColon(t *testing.T) {
 
-	proc, err := createTransformation("image:image=localhost:5000/image/name:tag")
+	proc, err := parseTransformation("image:image=localhost:5000/image/name:tag")
 	assert.Nil(t, err)
 
 	image := proc[0].(*processor.Image)
@@ -28,7 +28,7 @@ func TestCreateTransformationImageWithColon(t *testing.T) {
 
 func TestCreateTransformationMultiple(t *testing.T) {
 
-	proc, err := createTransformation("image:image=localhost:5000/image/name:tag;mount:path=/tmp,nhostPath=/tmp/test")
+	proc, err := parseTransformation("image:image=localhost:5000/image/name:tag;mount:path=/tmp,nhostPath=/tmp/test")
 	assert.Nil(t, err)
 
 	image := proc[0].(*processor.Image)

@@ -333,28 +333,43 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 	return context.Render()
 }
 
-//parase one-liner transformation definition
+func parseTransformation(trafoDef string) (processor.Processor, error) {
+	parts := strings.SplitN(trafoDef, ":", 2)
+	name := parts[0]
+	parameterMap := make(map[string]string)
+	if len(parts) > 1 {
+		for _, parameter := range strings.Split(parts[1], ",") {
+			paramParts := strings.SplitN(parameter, "=", 2)
+			if len(paramParts) < 2 {
+				return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
+			}
+			parameterMap[paramParts[0]] = paramParts[1]
+		}
+	}
+	proc, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
+	}
+	return proc, nil
+}
+
+//parse one-liner transformation definition
 func createTransformation(transformationsDefinition string) ([]processor.Processor, error) {
 	result := make([]processor.Processor, 0)
-	for _, trafoDef := range strings.Split(transformationsDefinition, ";") {
-		parts := strings.SplitN(trafoDef, ":", 2)
-		name := parts[0]
-		parameterMap := make(map[string]string)
-		if len(parts) > 1 {
-			for _, parameter := range strings.Split(parts[1], ",") {
-				paramParts := strings.SplitN(parameter, "=", 2)
-				if len(paramParts) < 2 {
-					return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
-				}
-				parameterMap[paramParts[0]] = paramParts[1]
+	for _, trafoDef := range strings.Split(os.Getenv("FLEKSZIBLE_TRANSFORMATION"), ";") {
+		if len(strings.TrimSpace(trafoDef)) > 0 {
+			transformation, err := parseTransformation(trafoDef)
+			if err != nil {
+				return result, errors.Wrap(err, "Can't parse transformation defined by FLEKSZIBLE_TRANSFORMATIONS: "+trafoDef)
 			}
+			result = append(result, transformation)
 		}
-		proc, err := processor.ProcessorTypeRegistry.Create(name, parameterMap)
-		if err != nil {
-			return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
-		}
-		result = append(result, proc)
 	}
+	transformation, err := parseTransformation(transformationsDefinition)
+	if err != nil {
+		return result, errors.Wrap(err, "Can't parse transformation defined by cli arg: "+transformationsDefinition)
+	}
+	result = append(result, transformation)
 	return result, nil
 }
 

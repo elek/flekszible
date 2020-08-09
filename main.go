@@ -56,7 +56,6 @@ func main() {
 					Usage: "kubernetes namespace override. With empty value (\"\") the current namespace will " +
 						"be used. With exact value the namespace will be forced (set even if the namespace is not added to the to the k8s resources",
 					Destination: &namespaceOverride,
-					EnvVar:      "FLEKSZIBLE_NAMESPACE",
 				},
 				cli.StringFlag{
 					Name:        "image, i",
@@ -67,7 +66,6 @@ func main() {
 				cli.StringSliceFlag{
 					Name:   "transformations, t",
 					Usage:  "manually defined transformations",
-					EnvVar: "FLEKSZIBLE_TRANSFORMATIONS,FLEKSZIBLE_TRANSFORMATION",
 				},
 
 				cli.StringSliceFlag{

@@ -1,0 +1,3 @@
+transformations:
+  - type: run
+    args: ls -lah

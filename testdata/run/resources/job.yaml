@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: test-runner
+spec:
+  template:
+    metadata:
+      name: test-runner
+    spec:
+      containers:
+        - image: flokkr/ozone
+          name: test
+          args:
+            - ozone
+            - freon
+            - dfsg
+            - -n
+            - "10"
+      restartPolicy: Never

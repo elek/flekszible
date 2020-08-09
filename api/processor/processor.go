@@ -131,7 +131,7 @@ func anyToString(value interface{}) string {
 		}
 		return string(jsonData)
 	default:
-		return fmt.Sprintf("?%+T?", typedValue)
+		return fmt.Sprintf("?%T?", typedValue)
 	}
 }
 

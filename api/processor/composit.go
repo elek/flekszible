@@ -22,6 +22,10 @@ type Composit struct {
 	Trigger                Trigger
 }
 
+func (processor *Composit) ToString() string {
+	return processor.ProcessorMetadata.Name + " (composite)"
+}
+
 func (c *Composit) OnKey(node *data.KeyNode) {
 	for _, p := range c.Processors {
 		p.OnKey(node)
@@ -119,6 +123,7 @@ func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapS
 		resourcesDir = filepath.Clean(gopath.Join(gopath.Dir(path), resourcesDir))
 	}
 	return &Composit{
+		ProcessorMetadata:      *metadata,
 		Processors:             processors,
 		AdditionalResourcesDir: resourcesDir,
 	}, nil
@@ -134,16 +139,16 @@ func addDefaultParameters(parameters map[string]interface{}) {
 }
 
 //pase definition yaml file and register definitions to the global registry.
-func parseDefintion(path string) error {
+func parseDefintion(path string) (string, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return errors.Wrap(err, "Can't load transformation definition from "+path)
+		return "", errors.Wrap(err, "Can't load transformation definition from "+path)
 	}
 	head, body := splitDefinitionFile(content)
 	metadata := ProcessorMetadata{}
 	err = yaml.Unmarshal(head, &metadata)
 	if err != nil {
-		return errors.Wrap(err, "Can't parse transformation metadata from "+path)
+		return "", errors.Wrap(err, "Can't parse transformation metadata from "+path)
 	}
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: metadata,
@@ -163,5 +168,5 @@ func parseDefintion(path string) error {
 			return comp, nil
 		},
 	})
-	return nil
+	return metadata.Name, nil
 }

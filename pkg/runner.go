@@ -38,6 +38,43 @@ func ListResources(context *processor.RenderContext) {
 	fmt.Println(table.Render())
 }
 
+func PrintTree(node *processor.ResourceNode, prefix string) {
+	fmt.Println(prefix + ">>> " + node.Dir)
+	if len(node.Resources) > 0 {
+		fmt.Println(prefix + "  RESOURCES:")
+		for _, resource := range node.Resources {
+			fmt.Println(prefix + "    " + resource.Name() + "/" + resource.Kind())
+		}
+	}
+	if len(node.ProcessorRepository.Processors) > 0 {
+
+		fmt.Println(prefix + "  TRANSFORMATIONS:")
+		for _, trafo := range node.ProcessorRepository.Processors {
+			fmt.Println(prefix + "    " + trafo.ToString())
+		}
+	}
+
+	if len(node.Definitions) > 0 {
+		fmt.Println(prefix + "  DEFINITIONS:")
+		for _, def := range node.Definitions {
+			fmt.Println(prefix + "    " + def)
+		}
+	}
+
+	for _, child := range node.Children {
+		PrintTree(child, "      ")
+	}
+	node.LoadDefinitions()
+
+}
+func Tree(context *processor.RenderContext) {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+	PrintTree(context.RootResource, "")
+}
+
 func ListProcessor(context *processor.RenderContext) {
 	err := context.Init()
 	if err != nil {

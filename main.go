@@ -125,6 +125,15 @@ func main() {
 			},
 		},
 		{
+			Name:  "tree",
+			Usage: "List managed resources files and registered transformations.",
+			Action: func(c *cli.Context) error {
+				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir), findOutputDir(&outputDir))
+				pkg.Tree(context)
+				return nil
+			},
+		},
+		{
 			Name:  "clean",
 			Usage: "Delete yaml files from the destination directories",
 			Flags: []cli.Flag{

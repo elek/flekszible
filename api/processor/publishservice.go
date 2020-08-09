@@ -12,6 +12,12 @@ type PublishService struct {
 	NodePorts   map[string]int `json:"nodePorts"`
 }
 
+func (processor *PublishService) ToString() string {
+	return CreateToString("publishService").
+		Add("serviceType", processor.ServiceType).
+		Build()
+}
+
 func (processor *PublishService) Before(ctx *RenderContext, node *ResourceNode) error {
 	newResources := make([]*data.Resource, 0)
 	for _, resource := range node.AllResources() {

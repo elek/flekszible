@@ -12,6 +12,14 @@ type Namespace struct {
 	ClusterRoleSupport bool
 }
 
+func (processor *Namespace) ToString() string {
+	return CreateToString("namespace").
+		Add("namespace", processor.Namespace).
+		AddBool("cluserRoleSupport", processor.ClusterRoleSupport).
+		AddBool("force", processor.Force).
+		Build()
+}
+
 func (processor *Namespace) BeforeResource(resource *data.Resource) error {
 	pathList := []data.Path{data.NewPath("metadata", "namespace"), data.NewPath("subjects", ".*", "namespace")}
 	for _, path := range pathList {

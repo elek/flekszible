@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/elek/flekszible/api/data"
@@ -18,8 +17,11 @@ type Add struct {
 }
 
 func (add *Add) ToString() string {
-	val, _ := json.Marshal(add.Value)
-	return "add:path=" + add.Path.ToString() + ",value=" + string(val)
+
+	return CreateToString("add").
+		Add("path", add.Path.ToString()).
+		AddValue("value",add.Value).
+		Build()
 }
 
 func (processor *Add) BeforeResource(resource *data.Resource) error {

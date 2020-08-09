@@ -30,6 +30,7 @@ type ResourceNode struct {
 	Source                   []data.Source
 	ProcessorRepository      *TransformationRepository
 	ResourcesDir             string
+	Definitions              []string //definitions loaded from this dir
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
@@ -334,10 +335,14 @@ func (node *ResourceNode) LoadDefinitions() {
 			}
 			for _, file := range files {
 				definitionFile := path.Join(defDir, file.Name())
-				err := parseDefintion(definitionFile)
+				name, err := parseDefintion(definitionFile)
 				if err != nil {
 					logrus.Errorf("Can't parse the definition file %s: %s", definitionFile, err.Error())
 				}
+				if node.Definitions == nil {
+					node.Definitions = make([]string, 0)
+				}
+				node.Definitions = append(node.Definitions, name)
 			}
 		}
 

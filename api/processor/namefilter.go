@@ -3,12 +3,20 @@ package processor
 import (
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/yaml"
+	"strings"
 )
 
 type NameFilter struct {
 	DefaultProcessor
 	Include []string
 	Exclude []string
+}
+
+func (nf *NameFilter) ToString() string {
+	return CreateToString("namefilter").
+		Add("include", strings.Join(nf.Include, ",")).
+		Add("exclude", strings.Join(nf.Exclude, ",")).
+		Build()
 }
 
 func (nf *NameFilter) BeforeResource(resource *data.Resource) error {

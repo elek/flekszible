@@ -11,6 +11,12 @@ type Image struct {
 	Trigger Trigger
 }
 
+func (processor *Image) ToString() string {
+	return CreateToString("image").
+		Add("image", processor.Image).
+		Build()
+}
+
 func (imageSet *Image) BeforeResource(resource *data.Resource) error {
 	if imageSet.Trigger.active(resource) {
 		resource.Content.Accept(&data.Set{Path: data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*", "image"), NewValue: imageSet.Image})

@@ -14,6 +14,14 @@ type Replace struct {
 	Value   interface{}
 }
 
+
+func (add *Replace) ToString() string {
+	return CreateToString("replace").
+		Add("path", add.Path.ToString()).
+		AddValue("value",add.Value).
+		Build()
+}
+
 func (processor *Replace) BeforeResource(resource *data.Resource) error {
 	if !processor.Trigger.active(resource) {
 		return nil

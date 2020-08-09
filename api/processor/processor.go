@@ -1,8 +1,11 @@
 package processor
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/yaml"
+	"strconv"
 )
 
 type Processor interface {
@@ -27,11 +30,7 @@ type DefaultProcessor struct {
 }
 
 func (processor *DefaultProcessor) ToString() string {
-	yaml, err := yaml.Marshal(processor)
-	if err != nil {
-		return "ERROR on serializing processor"
-	}
-	return string(yaml)
+	return "___"
 }
 func (processor *DefaultProcessor) RegisterResources(ctx *RenderContext, node *ResourceNode) error {
 	return nil
@@ -83,13 +82,61 @@ func CreateToString(name string) *ToStringBuilder {
 	return &ToStringBuilder{content: name}
 }
 
+func (builder *ToStringBuilder) AddBool(key string, value bool) *ToStringBuilder {
+	if value {
+		return builder.Add(key, "true")
+	} else {
+		return builder.Add(key, "false")
+	}
+}
 func (builder *ToStringBuilder) Add(key string, value string) *ToStringBuilder {
 	if !builder.parameters {
 		builder.content += ":"
 		builder.parameters = true
+	} else {
+		builder.content += ","
 	}
 	builder.content = builder.content + key + "=" + value
 	return builder
+}
+
+func anyToString(value interface{}) string {
+	switch typedValue := value.(type) {
+	case []interface{}:
+		valueString := ""
+		for _, elem := range typedValue {
+			if len(valueString) > 0 {
+				valueString += ","
+			}
+			valueString += anyToString(elem)
+		}
+		return valueString
+	case string:
+		return typedValue
+	case int:
+		return strconv.Itoa(typedValue)
+	case yaml.MapSlice:
+		rawYaml, err := yaml.Marshal(typedValue)
+		if err != nil {
+			return "unparesable"
+		}
+		rawData := make(map[string]interface{})
+		err = yaml.Unmarshal(rawYaml, &rawData)
+		if err != nil {
+			return "unparesable"
+		}
+		jsonData, err := json.Marshal(rawData)
+		if err != nil {
+			return "unparesable"
+		}
+		return string(jsonData)
+	default:
+		return fmt.Sprintf("?%+T?", typedValue)
+	}
+}
+
+func (builder *ToStringBuilder) AddValue(key string, value interface{}) *ToStringBuilder {
+	return builder.Add(key, anyToString(value))
 }
 
 func (builder *ToStringBuilder) Build() string {

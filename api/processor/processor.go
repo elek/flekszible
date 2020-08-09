@@ -15,6 +15,7 @@ type Processor interface {
 	AfterResource(*data.Resource) error
 	GetScope() string
 	SetScope(scope string)
+	ToString() string
 }
 
 type DefaultProcessor struct {
@@ -25,6 +26,13 @@ type DefaultProcessor struct {
 	CurrentResource *data.Resource
 }
 
+func (processor *DefaultProcessor) ToString() string {
+	yaml, err := yaml.Marshal(processor)
+	if err != nil {
+		return "ERROR on serializing processor"
+	}
+	return string(yaml)
+}
 func (processor *DefaultProcessor) RegisterResources(ctx *RenderContext, node *ResourceNode) error {
 	return nil
 }
@@ -64,4 +72,26 @@ func configureProcessorFromYamlFragment(processor Processor, config *yaml.MapSli
 		return nil, err
 	}
 	return processor, nil
+}
+
+type ToStringBuilder struct {
+	content    string
+	parameters bool
+}
+
+func CreateToString(name string) *ToStringBuilder {
+	return &ToStringBuilder{content: name}
+}
+
+func (builder *ToStringBuilder) Add(key string, value string) *ToStringBuilder {
+	if !builder.parameters {
+		builder.content += ":"
+		builder.parameters = true
+	}
+	builder.content = builder.content + key + "=" + value
+	return builder
+}
+
+func (builder *ToStringBuilder) Build() string {
+	return builder.content
 }

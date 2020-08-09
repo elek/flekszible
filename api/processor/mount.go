@@ -13,6 +13,14 @@ type Mount struct {
 	Name     string
 }
 
+func (mount *Mount) ToString() string {
+	return CreateToString("mount").
+		Add("path", mount.Path).
+		Add("hostPath", mount.HostPath).
+		Add("name", mount.Name).
+		Build()
+}
+
 func (mount *Mount) BeforeResource(resource *data.Resource) error {
 	if mount.Trigger.active(resource) {
 

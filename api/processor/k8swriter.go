@@ -23,6 +23,10 @@ type K8sWriter struct {
 	header            string
 }
 
+func (writer *K8sWriter) ToString() string {
+	return "k8swriter" 
+}
+
 func (writer *K8sWriter) Before(ctx *RenderContext, node *ResourceNode) error {
 	writer.resourceOutputDir = ctx.OutputDir
 	return nil

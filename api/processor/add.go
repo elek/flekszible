@@ -1,10 +1,12 @@
 package processor
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/elek/flekszible/api/data"
 	"github.com/elek/flekszible/api/yaml"
+	"strconv"
 )
 
 type Add struct {
@@ -13,6 +15,11 @@ type Add struct {
 	Trigger Trigger
 	Value   interface{}
 	Yamlize bool
+}
+
+func (add *Add) ToString() string {
+	val, _ := json.Marshal(add.Value)
+	return "add:path=" + add.Path.ToString() + ",value=" + string(val)
 }
 
 func (processor *Add) BeforeResource(resource *data.Resource) error {
@@ -41,7 +48,7 @@ func (processor *Add) BeforeResource(resource *data.Resource) error {
 					typedTarget.Put(key, mapNode.Get(key))
 				}
 			case *data.ListNode:
-				node, err := data.ConvertToNode(typedValue, match.Path)
+				node, err := data.ConvertToNode(typedValue, match.Path.Extend(strconv.Itoa(typedTarget.Len())))
 				if err != nil {
 					panic(err)
 				}
@@ -77,6 +84,7 @@ func (processor *Add) BeforeResource(resource *data.Resource) error {
 	default:
 		return errors.New(fmt.Sprintf("Unsupported value adding %T", processor.Value))
 	}
+	resource.Content.Accept(&data.FixPath{CurrentPath: data.RootPath()})
 	return nil
 }
 

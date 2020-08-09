@@ -342,8 +342,8 @@ func createTransformation(transformationsDefinition string) ([]processor.Process
 		parameterMap := make(map[string]string)
 		if len(parts) > 1 {
 			for _, parameter := range strings.Split(parts[1], ",") {
-				paramParts := strings.Split(parameter, "=")
-				if len(paramParts) != 2 {
+				paramParts := strings.SplitN(parameter, "=", 2)
+				if len(paramParts) < 2 {
 					return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
 				}
 				parameterMap[paramParts[0]] = paramParts[1]

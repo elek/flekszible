@@ -375,7 +375,9 @@ func parseTransformation(trafoDef string) (processor.Processor, error) {
 	name := parts[0]
 	parameterMap := make(map[string]string)
 	if len(parts) > 1 {
-		for _, parameter := range strings.Split(parts[1], ",") {
+		transofmationsString := strings.ReplaceAll(parts[1], "\\,", "__NON_SEPARATOR_COMA__")
+		for _, rawParam := range strings.Split(transofmationsString, ",") {
+			parameter := strings.ReplaceAll(rawParam, "__NON_SEPARATOR_COMA__", ",")
 			paramParts := strings.SplitN(parameter, "=", 2)
 			if len(paramParts) < 2 {
 				return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)

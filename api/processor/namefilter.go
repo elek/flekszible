@@ -55,10 +55,12 @@ func init() {
 					Name:        "include",
 					Description: "List of names to include. If set, all the other resources will be excluded",
 					Default:     "",
+					Type:        "[]string",
 				},
 				{
 					Name:        "exclude",
 					Description: "List of resource names to include",
+					Type:        "[]string",
 				},
 			},
 			Doc: "",

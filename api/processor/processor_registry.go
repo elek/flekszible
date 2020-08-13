@@ -21,8 +21,17 @@ type ProcessorParameter struct {
 	Description string
 	Required    bool
 	Default     string
+	Type        string
 }
 
+func (metadata *ProcessorMetadata) FindParam(name string) *ProcessorParameter {
+	for _, param := range metadata.Parameter {
+		if param.Name == name {
+			return &param
+		}
+	}
+	return nil
+}
 type ProcessorDefinition struct {
 	Metadata ProcessorMetadata //metadata to define the name and available parameters
 	Factory  ProcessorFactory  //the factory the create the struct
@@ -46,7 +55,13 @@ func (pt *ProcessorTypes) Create(name string, parameters map[string]string) (Pro
 	if factory, ok := pt.TypeMap[name]; ok {
 		param := yaml.MapSlice{}
 		for key, value := range parameters {
-			param = param.Put(key, value)
+			paramDef := factory.Metadata.FindParam(key)
+
+			if paramDef != nil && paramDef.Type == "[]string" {
+				param = param.Put(key, []string{value})
+			} else {
+				param = param.Put(key, value)
+			}
 		}
 		return factory.Factory(&param)
 	} else {

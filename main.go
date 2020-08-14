@@ -129,8 +129,22 @@ func main() {
 			Name:      "tree",
 			Usage:     "List managed resources files and registered transformations.",
 			ArgsUsage: "[flekszible_dir]",
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name:  "transformations, t",
+					Usage: "manually defined transformations",
+				},
+			},
 			Action: func(c *cli.Context) error {
 				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir))
+				err := context.Init()
+				if err != nil {
+					return err
+				}
+				err = context.AddAdHocTransformations(c.StringSlice("transformations"))
+				if err != nil {
+					return err
+				}
 				pkg.Tree(context)
 				return nil
 			},

@@ -34,7 +34,6 @@ type ResourceNode struct {
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
-	logrus.Infof("Input dir: %s, output dir: %s", inputDir, outputDir)
 	return &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
@@ -44,6 +43,60 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 
 func (context *RenderContext) ListResourceNodes() []*ResourceNode {
 	return listResourceNodesInt(context.RootResource)
+}
+
+func (context *RenderContext) AddAdHocTransformations(transformations []string) error {
+
+	proc, err := createTransformation(transformations)
+	if err != nil {
+		return err
+	}
+	context.RootResource.ProcessorRepository.AppendAll(proc)
+	return nil
+}
+
+func parseTransformation(trafoDef string) (Processor, error) {
+	parts := strings.SplitN(trafoDef, ":", 2)
+	name := parts[0]
+	parameterMap := make(map[string]string)
+	if len(parts) > 1 {
+		transofmationsString := strings.ReplaceAll(parts[1], "\\,", "__NON_SEPARATOR_COMA__")
+		for _, rawParam := range strings.Split(transofmationsString, ",") {
+			parameter := strings.ReplaceAll(rawParam, "__NON_SEPARATOR_COMA__", ",")
+			paramParts := strings.SplitN(parameter, "=", 2)
+			if len(paramParts) < 2 {
+				return nil, errors.New("Parameters should be defined in the form key=value and not like " + parameter)
+			}
+			parameterMap[paramParts[0]] = paramParts[1]
+		}
+	}
+	proc, err := ProcessorTypeRegistry.Create(name, parameterMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
+	}
+	return proc, nil
+}
+
+//parse one-liner transformation definition
+func createTransformation(transformationsDefinitions []string) ([]Processor, error) {
+	result := make([]Processor, 0)
+	for _, trafoDef := range strings.Split(os.Getenv("FLEKSZIBLE_TRANSFORMATION"), ";") {
+		if len(strings.TrimSpace(trafoDef)) > 0 {
+			transformation, err := parseTransformation(trafoDef)
+			if err != nil {
+				return result, errors.Wrap(err, "Can't parse transformation defined by FLEKSZIBLE_TRANSFORMATION: "+trafoDef)
+			}
+			result = append(result, transformation)
+		}
+	}
+	for _, transformationsDefinition := range transformationsDefinitions {
+		transformation, err := parseTransformation(transformationsDefinition)
+		if err != nil {
+			return result, errors.Wrap(err, "Can't parse transformation defined by cli arg: "+transformationsDefinition)
+		}
+		result = append(result, transformation)
+	}
+	return result, nil
 }
 
 func listResourceNodesInt(node *ResourceNode) []*ResourceNode {

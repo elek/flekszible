@@ -24,16 +24,11 @@ func Import(resourceFile string, transformations []string, outputDir string) err
 
 	context.RootResource = root
 
-	for _, trafoDef := range transformations {
-		proc, err := createTransformation(trafoDef)
-		if err != nil {
-			panic(err)
-		}
-		context.RootResource.ProcessorRepository.AppendAll(proc)
+	err := context.AddAdHocTransformations(transformations)
+	if err != nil {
+		return err
 	}
-
 	var bytesOfResources []byte
-	var err error
 	if resourceFile != "" {
 		bytesOfResources, err = ioutil.ReadFile(resourceFile)
 		if err != nil {

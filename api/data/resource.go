@@ -2,7 +2,6 @@ package data
 
 import (
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path"
@@ -90,7 +89,6 @@ func LoadResourceFromFile(dir string, file string) ([]*Resource, error) {
 
 //read all the resources from a directory
 func ReadResourcesFromDir(dir string) []*Resource {
-	logrus.Infof("Reading resources from %s", dir)
 	resources := make([]*Resource, 0)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return resources

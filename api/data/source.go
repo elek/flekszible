@@ -30,9 +30,20 @@ func cleanUrl(s string) string {
 
 type Source interface {
 	GetPath(manager *SourceCacheManager) (string, error)
-	ToString() (string, string)
+	ToString() string
 }
 
+type EnvSource struct {
+	Dir string
+}
+
+func (source *EnvSource) GetPath(manager *SourceCacheManager) (string, error) {
+	return filepath.Abs(source.Dir)
+
+}
+func (source *EnvSource) ToString() string {
+	return "[local dir] FLEKSZIBLE_PATH=" + source.Dir
+}
 
 type LocalSource struct {
 	Dir string
@@ -42,15 +53,15 @@ func (source *LocalSource) GetPath(manager *SourceCacheManager) (string, error) 
 	return filepath.Abs(source.Dir)
 
 }
-func (source *LocalSource) ToString() (string, string) {
-	return "local dir", source.Dir
+func (source *LocalSource) ToString() string {
+	return "[local dir] dir=" + source.Dir
 }
 
 func LocalSourcesFromEnv() []Source {
 	sources := make([]Source, 0)
 	if os.Getenv("FLEKSZIBLE_PATH") != "" {
 		for _, path := range strings.Split(os.Getenv("FLEKSZIBLE_PATH"), ",") {
-			sources = append(sources, &LocalSource{Dir: path})
+			sources = append(sources, &EnvSource{Dir: path})
 		}
 	}
 	return sources
@@ -61,8 +72,8 @@ type RemoteSource struct {
 	CacheDir string
 }
 
-func (source *RemoteSource) ToString() (string, string) {
-	return "remote dir", source.Url
+func (source *RemoteSource) ToString() string {
+	return "[remote] url=" + source.Url
 }
 
 type Downloader interface {

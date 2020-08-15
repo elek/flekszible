@@ -21,16 +21,24 @@ type RenderContext struct {
 }
 
 type ResourceNode struct {
-	Dir                      string
+	Name   string      //the original import name used in FLekszible files
+	Dir    string      //absolut path of the current dir
+	Origin data.Source //source used to load the resource
+
 	Destination              string
 	Resources                []*data.Resource
 	Children                 []*ResourceNode
 	PreImportTransformations []byte
-	Origin                   data.Source
 	Source                   []data.Source
 	ProcessorRepository      *TransformationRepository
 	ResourcesDir             string
 	Definitions              []string //definitions loaded from this dir
+}
+
+type ResourceLocation struct {
+	Name   string      //the name to import the location (like 'ozone')
+	Source data.Source //the source used to load the resource
+	Dir    string      //absolute path of the location
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
@@ -350,6 +358,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		}
 		sourceDir, _ := source.GetPath(sourceCache)
 		childNode := CreateResourceNode(checkPath(sourceDir, importDefinition.Path), importDefinition.Destination, source)
+		childNode.Name = importDefinition.Path
 		if importDefinition.Destination == "" {
 			childNode.Destination = node.Destination
 		}
@@ -415,8 +424,8 @@ func locate(basedir string, dir string, sources []data.Source, cacheManager *dat
 	for _, source := range allSources {
 		resourcePath, err := source.GetPath(cacheManager)
 		if err != nil {
-			tpe, value := source.ToString()
-			logrus.Error("Can't check dir from the source " + tpe + "/" + value + err.Error())
+			value := source.ToString()
+			logrus.Error("Can't check dir from the source " + value + err.Error())
 		} else if resourcePath != "" {
 			path := checkPath(resourcePath, dir)
 			if path != "" {

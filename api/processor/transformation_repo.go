@@ -81,7 +81,6 @@ func ParseTransformations(inputDir string) ([]Processor, error) {
 		for _, file := range files {
 			if !file.IsDir() && filepath.Ext(file.Name()) == ".yaml" {
 				fullPath := path.Join(mixinDir, file.Name())
-				logrus.Info("Loading processor configuration from " + fullPath)
 				processors, err := ReadProcessorDefinitionFile(fullPath)
 				if err != nil {
 					logrus.Error("Processor configuration can't be loaded from " + fullPath + " " + err.Error())

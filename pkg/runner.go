@@ -39,7 +39,7 @@ func ListResources(context *processor.RenderContext) {
 }
 
 func PrintTree(node *processor.ResourceNode, prefix string) {
-	fmt.Println(prefix + ">>> " + node.Dir)
+	fmt.Println(prefix + ">>> " + node.Name + " <<< ( from: " + node.Origin.ToString() + ")")
 	if len(node.Resources) > 0 {
 		fmt.Println(prefix + "  RESOURCES:")
 		for _, resource := range node.Resources {
@@ -260,14 +260,19 @@ func ListSources(context *processor.RenderContext) {
 	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
 
 	table := termtables.CreateTable()
-	table.AddHeaders("source", "location", "path")
+	table.AddHeaders("location", "path")
 
 	for _, source := range listUniqSources(context) {
-		typ, value := source.ToString()
+		value := source.ToString()
 		path, _ := source.GetPath(&cacheManager)
-		table.AddRow(typ, value, path)
+
+		pathToDisplay, err := filepath.Rel(context.RootResource.Dir, path)
+		if err != nil {
+			pathToDisplay = path
+		}
+		table.AddRow(value, pathToDisplay)
 	}
-	fmt.Println("Detected sources:")
+	fmt.Println("Used source directories:")
 	fmt.Println(table.Render())
 }
 

@@ -72,10 +72,10 @@ func Tree(context *processor.RenderContext) {
 	PrintTree(context.RootResource, "")
 }
 
-func ListProcessor(context *processor.RenderContext) {
+func ListProcessor(context *processor.RenderContext) error {
 	err := context.Init()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	table := termtables.CreateTable()
 	table.AddHeaders("name", "description")
@@ -90,15 +90,14 @@ func ListProcessor(context *processor.RenderContext) {
 		table.AddRow(definitionName, definition.Metadata.Description)
 	}
 	fmt.Println(table.Render())
-
+	return nil
 }
 
-func ShowProcessor(context *processor.RenderContext, command string) {
+func ShowProcessor(context *processor.RenderContext, command string) error {
 	err := context.Init()
 	if err != nil {
-		panic(err)
+		return err
 	}
-
 	if procDefinition, found := processor.ProcessorTypeRegistry.TypeMap[strings.ToLower(command)]; found {
 		fmt.Println("")
 		fmt.Println("### " + command)
@@ -119,7 +118,7 @@ func ShowProcessor(context *processor.RenderContext, command string) {
 	} else {
 		fmt.Println("No such processor definition: " + command)
 	}
-
+	return nil
 }
 
 func listUniqSources(context *processor.RenderContext) []data.Source {

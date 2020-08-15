@@ -272,8 +272,7 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
-					pkg.ListProcessor(context)
-					return nil
+					return pkg.ListProcessor(context)
 				},
 			},
 			{
@@ -282,9 +281,8 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 				Usage:     "Show details information / help about a specific transformation type",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
-					pkg.ShowProcessor(context, c.Args().First())
-					return nil
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, ""), findOutputDir(outputDir))
+					return pkg.ShowProcessor(context, c.Args().First())
 				},
 			},
 		},

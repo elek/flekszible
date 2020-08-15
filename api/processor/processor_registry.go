@@ -15,6 +15,7 @@ type ProcessorMetadata struct {
 	Parameter   []ProcessorParameter
 	Doc         string
 	Resources   string //directory point to additional resources
+
 }
 type ProcessorParameter struct {
 	Name        string

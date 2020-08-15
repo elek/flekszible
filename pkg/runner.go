@@ -400,6 +400,7 @@ func (GoGetterDownloader) Download(url string, destinationDir string, rootPath s
 	if os.Getenv("FLEKSZIBLE_OFFLINE") == "true" {
 		return nil
 	}
+	logrus.Info("Downloading remote resource from " + url)
 	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil }
 	return getter.Get(destinationDir, url, setPwd)
 }

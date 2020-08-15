@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -14,4 +15,18 @@ func TestLocalPath(t *testing.T) {
 	result, err := source.GetPath(&mgr)
 	assert.Nil(t, err)
 	assert.Equal(t, "/tmp", result)
+}
+
+func TestDoOnce(t *testing.T) {
+	mgr := SourceCacheManager{}
+	f1 := func() error {
+		return nil
+	}
+	f2 := func() error {
+		return errors.New("Bad")
+	}
+	assert.Nil(t, mgr.DoOnce("c1", f1))
+	assert.Nil(t, mgr.DoOnce("c2", f1))
+	assert.Nil(t, mgr.DoOnce("c1", f2))
+	assert.NotNil(t, mgr.DoOnce("cx", f2))
 }

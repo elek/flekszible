@@ -10,7 +10,8 @@ import (
 )
 
 type SourceCacheManager struct {
-	RootPath string
+	RootPath    string
+	doOnceCache map[string]bool
 }
 
 func NewSourceCacheManager(root string) SourceCacheManager {
@@ -21,6 +22,17 @@ func NewSourceCacheManager(root string) SourceCacheManager {
 func (manager *SourceCacheManager) GetCacheDir(id string) string {
 	cacheDir := path.Join(manager.RootPath, ".cache", id)
 	return cacheDir
+}
+
+func (manager *SourceCacheManager) DoOnce(cacheKey string, task func() error) error {
+	if manager.doOnceCache == nil {
+		manager.doOnceCache = make(map[string]bool)
+	}
+	if _, exists := manager.doOnceCache[cacheKey]; !exists {
+		manager.doOnceCache[cacheKey] = true
+		return task()
+	}
+	return nil
 }
 
 func cleanUrl(s string) string {
@@ -92,8 +104,10 @@ func (NodeDownloader) Download(url string, destinationDir string, rootPath strin
 
 func (source *RemoteSource) EnsureDownloaded(manager *SourceCacheManager) error {
 	destinationDir := manager.GetCacheDir(cleanUrl(source.Url))
-	logrus.Info("Downloading remote resource " + source.Url)
-	return DownloaderPlugin.Download(source.Url, destinationDir, manager.RootPath)
+	task := func() error {
+		return DownloaderPlugin.Download(source.Url, destinationDir, manager.RootPath)
+	}
+	return manager.DoOnce(destinationDir, task)
 }
 
 func (source *RemoteSource) GetPath(manager *SourceCacheManager) (string, error) {

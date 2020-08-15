@@ -25,9 +25,9 @@ Flekszible directories can contain:
 
 A simple OS dir can work as a source directory for flekszible __without any descriptor__. In this case all the Kubernetes resource files will be imported and used from the dir.
 
-## `Flekszible` descriptor
+## `Flekszible/flekszible.yaml` descriptor
 
-In case of a `Flekszible` file does exist, it will be parsed and all the imports/sources/transformations will be used frpm the Flekszible file and from the directories relative to the Flekszible file (eg `./transformations`, `./configmaps`, ...). In this case __none__ of the other files in the directory will be used as source. Best to use this structure to generate the final k8s resources.
+In case of a `Flekszible` file does exist, it will be parsed and all the imports/sources/transformations will be used from the Flekszible file and from the directories relative to the Flekszible file (eg `./transformations`, `./configmaps`, ...). In this case __none__ of the other files in the directory will be used as source. Best to use this structure to generate the final k8s resources.
 
 The structure of a flekszible directory is the following:
 
@@ -35,12 +35,11 @@ The structure of a flekszible directory is the following:
  * `transformations/*.yaml`: will be applied to all the resources according to the specified rules
  * `definitions/*.yaml`: composite definitions which could be used in `transformations.yaml`. Won't be applied by default.
  * `configmaps/*_*.*`: all the files from here will be imported as configmaps. The first part of the filename (before the first `_`) will be used as the name of the configmap, the remaining part is the key inside the configmap.
- * `resources/*.yaml`: used as k8s resources
+ * `resources/*.yaml`: used as Kubernetes resources
+ * `*.yaml`: used as Kubernetes resources
  
-##  `flekszible.yaml` (DEPRECTATED)
-
-You can also use `flekszible.yaml` instead of `Flekszible` descriptor. The only difference is that in this case the Kubernetes resource files will be imported from the same directory and not from the `./resources`. Usually it's used by reusable apps/components where the current directory is not used as output.
-
+ **Note**: to avoid circular dependencies, destination directories are never read for additional resources. For example if the current directory is the destination directory, `*.yaml` files won't be used from the current directory (use `./resources`)
+  
 # Imports
 
 ## Simple import

@@ -6,7 +6,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	context := CreateRenderContext("k8s", "../../testdata/readconfigs", "../../testdata/readconfigs")
+	context := CreateRenderContext("k8s", "../../testdata/readconfigs", "../../testdata/readconfigs/out")
 	err := context.Init()
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(context.RootResource.Resources))

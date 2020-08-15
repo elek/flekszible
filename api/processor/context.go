@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -310,7 +311,15 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		return errors.Wrap(err, "Can't parse flekszible.yaml/Flekszible descriptor from  "+node.Dir)
 	}
 
-	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, conf.ResourcesDir))
+	//output dir should never be read
+	absNodeDir, _ := filepath.Abs(node.Dir)
+	absDestDir, _ := filepath.Abs(outputDir)
+
+	node.Resources = data.ReadResourcesFromDir(path.Join(node.Dir, "resources"))
+
+	if absNodeDir != absDestDir {
+		node.Resources = append(node.Resources, data.ReadResourcesFromDir(node.Dir)...)
+	}
 
 	for _, generator := range data.Generators {
 		dirs, err := ioutil.ReadDir(node.Dir)
@@ -373,9 +382,18 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		}
 	}
 
+	destinations := make([]string, 0)
+	//ignore, if it's a destination directory
+	for _, oneImport := range conf.Import {
+		absImportDest, err := filepath.Abs(path.Join(node.Dir, oneImport.Destination))
+		if err == nil {
+			destinations = append(destinations, absImportDest)
+		}
+	}
+
 	//read imported directories
 	for _, importDefinition := range conf.Import {
-		source, err := locate(node.Dir, importDefinition.Path, node.Source, sourceCache)
+		source, err := LocateImportedDir(node.Dir, importDefinition.Path, node.Source, sourceCache, destinations)
 		if err != nil {
 			return err
 		}
@@ -383,7 +401,9 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 			return errors.New("Directory dependency `" + importDefinition.Path + "` defined in " + node.Dir + " can't be found")
 		}
 		sourceDir, _ := source.GetPath(sourceCache)
-		childNode := CreateResourceNode(checkPath(sourceDir, importDefinition.Path), importDefinition.Destination, source)
+		resourceDir := checkPath(sourceDir, importDefinition.Path)
+
+		childNode := CreateResourceNode(resourceDir, importDefinition.Destination, source)
 		childNode.Name = importDefinition.Path
 		if importDefinition.Destination == "" {
 			childNode.Destination = node.Destination
@@ -441,12 +461,13 @@ func (node *ResourceNode) LoadDefinitions() {
 }
 
 //try to find the first Source which contains the dir
-func locate(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager) (data.Source, error) {
+func LocateImportedDir(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager, excludedDirs []string) (data.Source, error) {
 	allSources := make([]data.Source, 0)
 	allSources = append(allSources, data.LocalSourcesFromEnv()...)
 	allSources = append(allSources, &data.LocalSource{Dir: basedir})
 	allSources = append(allSources, sources...)
 
+outside:
 	for _, source := range allSources {
 		resourcePath, err := source.GetPath(cacheManager)
 		if err != nil {
@@ -454,7 +475,15 @@ func locate(basedir string, dir string, sources []data.Source, cacheManager *dat
 			logrus.Error("Can't check dir from the source " + value + err.Error())
 		} else if resourcePath != "" {
 			path := checkPath(resourcePath, dir)
+
 			if path != "" {
+				// is it excluded?
+				for _, exclude := range excludedDirs {
+					if path == exclude {
+						continue outside
+					}
+				}
+
 				return source, nil
 			}
 		}

@@ -92,6 +92,7 @@ func (NodeDownloader) Download(url string, destinationDir string, rootPath strin
 
 func (source *RemoteSource) EnsureDownloaded(manager *SourceCacheManager) error {
 	destinationDir := manager.GetCacheDir(cleanUrl(source.Url))
+	logrus.Info("Downloading remote resource " + source.Url)
 	return DownloaderPlugin.Download(source.Url, destinationDir, manager.RootPath)
 }
 

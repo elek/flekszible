@@ -46,7 +46,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	return &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
-		RootResource: CreateResourceNode(inputDir, "", &data.LocalSource{Dir: inputDir}),
+		RootResource: CreateResourceNode("<PROJECT_DIR>", inputDir, "", &data.LocalSource{Dir: inputDir}),
 	}
 }
 
@@ -141,8 +141,9 @@ func (node *ResourceNode) AllResources() []*data.Resource {
 	return result
 }
 
-func CreateResourceNode(dir string, destination string, source data.Source) *ResourceNode {
+func CreateResourceNode(name string, dir string, destination string, source data.Source) *ResourceNode {
 	node := ResourceNode{
+		Name:                name,
 		Dir:                 dir,
 		ProcessorRepository: CreateProcessorRepository(),
 		Children:            make([]*ResourceNode, 0),
@@ -369,8 +370,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		globalDirs := []string{path.Join(sourceDir, "flekszible", "_global"), path.Join(sourceDir, "_global")}
 		for _, globalDir := range globalDirs {
 			if stat, err := os.Stat(globalDir); err == nil && stat.IsDir() {
-				childNode := CreateResourceNode(globalDir, node.Destination, source)
-				childNode.Name = "_global"
+				childNode := CreateResourceNode("_global", globalDir, node.Destination, source)
 				childNode.Origin = source
 				err = childNode.LoadResourceConfig(sourceCache, outputDir)
 				if err != nil {
@@ -403,8 +403,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		sourceDir, _ := source.GetPath(sourceCache)
 		resourceDir := checkPath(sourceDir, importDefinition.Path)
 
-		childNode := CreateResourceNode(resourceDir, importDefinition.Destination, source)
-		childNode.Name = importDefinition.Path
+		childNode := CreateResourceNode(importDefinition.Path, resourceDir, importDefinition.Destination, source)
 		if importDefinition.Destination == "" {
 			childNode.Destination = node.Destination
 		}

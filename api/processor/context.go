@@ -341,6 +341,8 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	for ix, _ := range node.Resources {
 		node.Resources[ix].Destination = node.Destination
 	}
+
+	//read inline transformations
 	if len(conf.Transformations) > 0 {
 		bytes, err := yaml.Marshal(conf.Transformations)
 		if err != nil {
@@ -348,6 +350,30 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		}
 		node.PreImportTransformations = bytes
 	}
+
+	//import _global directories
+	for _, source := range node.Source {
+		sourceDir, err := source.GetPath(sourceCache)
+		if err != nil {
+			errors.Wrap(err, "Source definition defined in "+node.Dir+" couldn't be loaded")
+		}
+		globalDirs := []string{path.Join(sourceDir, "flekszible", "_global"), path.Join(sourceDir, "_global")}
+		for _, globalDir := range globalDirs {
+			if stat, err := os.Stat(globalDir); err == nil && stat.IsDir() {
+				childNode := CreateResourceNode(globalDir, node.Destination, source)
+				childNode.Name = "_global"
+				childNode.Origin = source
+				err = childNode.LoadResourceConfig(sourceCache, outputDir)
+				if err != nil {
+					return errors.Wrap(err, "Couldn't load _global dir from "+globalDir)
+				}
+				node.Children = append(node.Children, childNode)
+				break
+			}
+		}
+	}
+
+	//read imported directories
 	for _, importDefinition := range conf.Import {
 		source, err := locate(node.Dir, importDefinition.Path, node.Source, sourceCache)
 		if err != nil {

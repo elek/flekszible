@@ -9,6 +9,8 @@ import (
 )
 
 type Configuration struct {
+	Name            string                `yaml:",omitempty"`
+	Description     string                `yaml:",omitempty"`
 	Source          []ConfigSource        `yaml:",omitempty"`
 	Import          []ImportConfiguration `yaml:",omitempty"`
 	Transformations []yaml.MapSlice       `yaml:",omitempty"`
@@ -35,7 +37,7 @@ func readFromFile(file string, conf *Configuration) (bool, error) {
 			return false, err
 		}
 
-		err = yaml.Unmarshal(bytes, &conf)
+		err = yaml.UnmarshalStrict(bytes, &conf)
 		if err != nil {
 			return false, err
 		}

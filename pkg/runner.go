@@ -43,7 +43,11 @@ func PrintTree(node *processor.ResourceNode, prefix string) {
 	if len(node.Resources) > 0 {
 		fmt.Println(prefix + "  RESOURCES:")
 		for _, resource := range node.Resources {
-			fmt.Println(prefix + "    " + resource.Name() + "/" + resource.Kind())
+			resourceLine := prefix + "    " + resource.Name() + "/" + resource.Kind()
+			if len(resource.Destination) > 0 {
+				resourceLine += " ( --> " + resource.Destination + ")"
+			}
+			fmt.Println(resourceLine)
 		}
 	}
 	if len(node.ProcessorRepository.Processors) > 0 {

@@ -83,7 +83,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				outputDir := findOutputDir(&outputDir)
+				outputDir := findOutputDir(&outputDir, c.Args().Get(0))
 				if c.Bool("print") {
 					outputDir = "-"
 				}
@@ -120,7 +120,7 @@ func main() {
 			Usage:     "List managed kubernetes resources files.",
 			ArgsUsage: "[flekszible_dir]",
 			Action: func(c *cli.Context) error {
-				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir))
+				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir, c.Args().Get(0)))
 				pkg.ListResources(context)
 				return nil
 			},
@@ -136,7 +136,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir))
+				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir, c.Args().Get(0)))
 				err := context.Init()
 				if err != nil {
 					return err
@@ -159,7 +159,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir))
+				context := processor.CreateRenderContext("k8s", findInputDir(&inputDir, c.Args().Get(0)), findOutputDir(&outputDir, c.Args().Get(0)))
 				return pkg.Cleanup(context, c.Bool("all"))
 			},
 		},
@@ -194,7 +194,7 @@ func appCommands(inputDir *string, outputDir *string) cli.Command {
 				Usage:     "List all the referenced/imported flekszible directory.",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
 					pkg.ListApp(context)
 					return nil
 				},
@@ -204,7 +204,7 @@ func appCommands(inputDir *string, outputDir *string) cli.Command {
 				Usage:     "Search for available importable apps/dirs from the active sources",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
 					pkg.SearchComponent(context)
 					return nil
 				},
@@ -214,7 +214,7 @@ func appCommands(inputDir *string, outputDir *string) cli.Command {
 				Usage:     "Add (import) new app to the flekszible.yaml.",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
 					pkg.AddApp(context, *inputDir, c.Args().First())
 					return nil
 				},
@@ -233,7 +233,7 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 				Usage:     "List registered sources (directories / repositories where other directories are imported from)",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
 					pkg.ListSources(context)
 					return nil
 				},
@@ -251,7 +251,7 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 				Usage:     "Register source to your Flekszible descriptor file",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
 					return pkg.AddSource(context, findInputDir(inputDir, c.Args().Get(0)), c.Args().First())
 				},
 			},
@@ -271,7 +271,7 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 				Usage:     "List available transformation types.",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
 					return pkg.ListProcessor(context)
 				},
 			},
@@ -281,7 +281,7 @@ func transformationCommands(inputDir, outputDir *string) cli.Command {
 				Usage:     "Show details information / help about a specific transformation type",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, ""), findOutputDir(outputDir))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, ""), findOutputDir(outputDir, c.Args().Get(0)))
 					return pkg.ShowProcessor(context, c.Args().First())
 				},
 			},
@@ -316,7 +316,10 @@ func findInputDir(argument *string, inputDirFromArg string) string {
 	return pwd
 }
 
-func findOutputDir(argument *string) string {
+func findOutputDir(argument *string, outputDirFromArg string) string {
+	if len(outputDirFromArg) > 0 {
+		return outputDirFromArg
+	}
 	if *argument != "" {
 		return *argument
 	}

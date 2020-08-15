@@ -23,7 +23,7 @@ Flekszible directories can contain:
 
 ## Simple os dir
 
-A simple OS dir can work as a source directory for flekszible __without any descriptor__. In this case all the kubernetes resource files will be imported and used from the dir.
+A simple OS dir can work as a source directory for flekszible __without any descriptor__. In this case all the Kubernetes resource files will be imported and used from the dir.
 
 ## `Flekszible` descriptor
 
@@ -54,7 +54,7 @@ import:
   - path: ../../hadoop
 ```
 
-All the transformations + definitions + k8s resources will be added and applied (see the previos section about the directories). Note: the transformations from the imported directory will be applied only to the imported resources.
+All the transformations + definitions + k8s resources will be added and applied (see the previous section about the directories). Note: the transformations from the imported directory will be applied only to the imported resources.
 
 
 ## Import to subdirectory
@@ -90,8 +90,8 @@ The hadoop resources are imported here and the image reference is changed during
 Imported path is checked in the following location (in this order):
 
  1. The directory which is defined with the `FLEKSZIBLE_PATH` environment variable
- 2. In the current directory (or more  preciously: relative to the current directory).
- 3. In any remote source
+ 2. In the current directory (or more preciously: relative to the current directory).
+ 3. In any local remote source
 
 Remote sources can be defined with the `source` tag:
 
@@ -104,6 +104,75 @@ import:
 
 The remote repositories are downloaded with [go-getter](https://github.com/hashicorp/go-getter) and the downloaded directory is stored in the `.cache` directory (relative to the input dir). 
 
+
+Local sources can be defined with the `path` tag:
+
+```
+source:
+  - url: git::https://github.com/flokkr/docker-ozone.git
+  - url: git::https://github.com/elek/docker-byteman
+  - url: git::https://github.com/elek/docker-java-async-profiler
+  - path: ../flekszible
+import:
+    - path: ozone
+```
+
+Note: During local and remote imports, the Flekszible files can be defined in a `flekszible` subdirectory of the source repository or directory (to make it easier to organize them).
+
+## Automatic/implicit import
+
+Normally resource dirs are imported based on the `import` tag definitions. But external sources might have defintions which can be usefull to be imported automatically.
+
+For example if a remote `Flekszible` dir defines only `definitions`, it might look like this:
+
+```
+.
+├── Dockerfile
+├── flekszible
+│   └── byteman-helpers
+│       ├── definitions
+│       │   └── byteman.yaml
+│       └── flekszible.yaml
+└── LICENSE
+```
+
+To use this repository, it should be added to the source ** and import:
+
+```
+source:
+  - url: git::https://github.com/elek/docker-byteman
+import:
+    - path: byteman-helpers
+```
+
+To make it easier to share simple definitions, the `_global` directory is always auto imported.
+
+Let's rename the name of flekszible subdir to `_global`:
+
+```
+.
+├── Dockerfile
+├── flekszible
+│   └── _global
+│       ├── definitions
+│       │   └── byteman.yaml
+│       └── flekszible.yaml
+└── LICENSE
+```
+
+Now, the content of the `_global` is auto-imported, therefore the following two definitions are equivalent:
+
+```
+source:
+  - url: git::https://github.com/elek/docker-byteman
+```
+
+```
+source:
+  - url: git::https://github.com/elek/docker-byteman
+import:
+    - path: _global
+```
 
 # Definitions and Transformations
 
@@ -129,6 +198,8 @@ For example:
   - name: KEY2
     value: VALUE2
 ```
+
+## Scope of transformations
 
 It's very important that the transformation is activated only in the subtree where it's used.
 
@@ -158,7 +229,31 @@ To use global transformations you have two options.
   
  Let's check examples for both of these cases:
 
+If you have doubts, check with `flekszible tree` subcommand.
 
+## Cli transformations
+
+Some cli commands (such as `flekszible generate`) accept an additional `-t` arguments which can define additional, ad-hoc transformations. For example this script executes an ad-hoc test:
+
+```
+flekszible generate --print \
+   -t namefilter:include=test-runner \
+   -t run:args="/opt/test.sh -c custom -p parameters " | kubectl apply -f -
+```
+
+(Note: `namefilter` transformation keeps only the matched resource)
+
+The syntax of `-t` is `TRANSFORMATION:PARAM1=VALUE,PARAM2=VALUE`, and this can be used only for simplified transformations (for example `Add` transformation requires complex yaml structure as a parameter, therefor it couldn't be used from CLI.)
+
+## Global transformations
+
+Similar tto the CLI `-t` arguments, transformations can be defined with `FLEKSZIBLE_TRANSFORMATION`:
+
+```
+export FLEKSZIBLE_TRANSFORMATIONS="ozone/onenode"
+```
+
+This example enables `ozone/onenode` transformation until it's defined (`ozone/onenode` is defined to remove the affinity rules, and this approach makes it possible to test a resource set in one-node Kubernetes cluster from the CI).
 
 ## Path
 

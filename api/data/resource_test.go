@@ -14,4 +14,3 @@ func TestGetName(t *testing.T) {
 
 	assert.Equal(t, "ok", r.Name())
 }
-

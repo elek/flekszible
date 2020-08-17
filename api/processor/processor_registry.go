@@ -33,6 +33,7 @@ func (metadata *ProcessorMetadata) FindParam(name string) *ProcessorParameter {
 	}
 	return nil
 }
+
 type ProcessorDefinition struct {
 	Metadata ProcessorMetadata //metadata to define the name and available parameters
 	Factory  ProcessorFactory  //the factory the create the struct

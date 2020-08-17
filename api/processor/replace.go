@@ -14,11 +14,10 @@ type Replace struct {
 	Value   interface{}
 }
 
-
 func (add *Replace) ToString() string {
 	return CreateToString("replace").
 		Add("path", add.Path.ToString()).
-		AddValue("value",add.Value).
+		AddValue("value", add.Value).
 		Build()
 }
 

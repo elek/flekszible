@@ -372,7 +372,6 @@ func Run(context *processor.RenderContext, minikube bool, imports []string, tran
 	return context.Render()
 }
 
-
 func AddInternalTransformations(context *processor.RenderContext, minikube bool) {
 	if len(context.ImageOverride) > 0 {
 		context.RootResource.ProcessorRepository.Append(&processor.Image{

@@ -24,7 +24,7 @@ type K8sWriter struct {
 }
 
 func (writer *K8sWriter) ToString() string {
-	return "k8swriter" 
+	return "k8swriter"
 }
 
 func (writer *K8sWriter) Before(ctx *RenderContext, node *ResourceNode) error {

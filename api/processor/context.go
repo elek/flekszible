@@ -185,17 +185,17 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 	}
 
 	processors, e := ParseTransformations(node.Dir)
-		if e != nil {
-			return errors.Wrap(e, "Can't read transformations from "+node.Dir)
-		} else {
-			for _, processor := range processors {
-				if processor.GetScope() == "global" {
-					context.RootResource.ProcessorRepository.Append(processor)
-				} else {
-					node.ProcessorRepository.InsertToBeginning(processor)
-				}
+	if e != nil {
+		return errors.Wrap(e, "Can't read transformations from "+node.Dir)
+	} else {
+		for _, processor := range processors {
+			if processor.GetScope() == "global" {
+				context.RootResource.ProcessorRepository.Append(processor)
+			} else {
+				node.ProcessorRepository.InsertToBeginning(processor)
 			}
 		}
+	}
 
 	for _, child := range node.Children {
 		err := child.InitializeTransformations(context)
@@ -351,7 +351,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		}
 	}
 	//update destinations of the direct k8s resources
-	for ix, _ := range node.Resources {
+	for ix := range node.Resources {
 		node.Resources[ix].Destination = node.Destination
 	}
 

@@ -36,7 +36,7 @@ func (cleanup *Cleanup) createOutputPath(outputDir, name, kind string, destinati
 
 func (processor *Cleanup) After(ctx *RenderContext, node *ResourceNode) error {
 	if processor.All {
-		for dir, _ := range processor.cleanedDirs {
+		for dir := range processor.cleanedDirs {
 			logrus.Info("Deleting all YAML files from the directory ", dir)
 			files, err := ioutil.ReadDir(dir)
 			if err != nil {

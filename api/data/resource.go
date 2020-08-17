@@ -98,8 +98,7 @@ func ReadResourcesFromDir(dir string) []*Resource {
 		panic(err)
 	}
 	for _, file := range files {
-		if !file.IsDir() && file.Name() != "flekszible.yaml" && (
-			filepath.Ext(file.Name()) == ".yaml" || filepath.Ext(file.Name()) == ".yml") {
+		if !file.IsDir() && file.Name() != "flekszible.yaml" && (filepath.Ext(file.Name()) == ".yaml" || filepath.Ext(file.Name()) == ".yml") {
 			resource, err := LoadResourceFromFileInfo(dir, file)
 			if err != nil {
 				panic(err)
@@ -110,4 +109,3 @@ func ReadResourcesFromDir(dir string) []*Resource {
 
 	return resources
 }
-

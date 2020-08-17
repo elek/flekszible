@@ -64,8 +64,8 @@ func main() {
 				},
 
 				cli.StringSliceFlag{
-					Name:   "transformations, t",
-					Usage:  "manually defined transformations",
+					Name:  "transformations, t",
+					Usage: "manually defined transformations",
 				},
 
 				cli.StringSliceFlag{

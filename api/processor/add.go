@@ -20,7 +20,7 @@ func (add *Add) ToString() string {
 
 	return CreateToString("add").
 		Add("path", add.Path.ToString()).
-		AddValue("value",add.Value).
+		AddValue("value", add.Value).
 		Build()
 }
 

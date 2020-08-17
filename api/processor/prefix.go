@@ -12,7 +12,7 @@ type Prefix struct {
 	HostNames []string
 }
 
-func (p *Prefix) Before(ctx *RenderContext,  node *ResourceNode) error {
+func (p *Prefix) Before(ctx *RenderContext, node *ResourceNode) error {
 	p.HostNames = make([]string, 0)
 	for _, resource := range node.AllResources() {
 		kind := resource.Kind()

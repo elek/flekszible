@@ -62,7 +62,7 @@ func (c *Composite) BeforeResource(resource *data.Resource) error {
 	for _, p := range c.Processors {
 		err := p.BeforeResource(resource)
 		if err != nil {
-			return errors.Wrap(err, "Resource transformation is failed " + p.GetType() +" on " + resource.Name())
+			return errors.Wrap(err, "Resource transformation is failed "+p.GetType()+" on "+resource.Name())
 		}
 	}
 	return nil

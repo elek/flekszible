@@ -51,7 +51,7 @@ func init() {
 			Parameters: []ProcessorParameter{
 				PathParameter,
 				TriggerParameter,
-				ProcessorParameter{
+				{
 					Name:        "pattern",
 					Description: "Regular expression to test the existing value. Value will be changed only if matches.",
 					Default:     ".*",

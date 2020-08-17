@@ -11,7 +11,7 @@ import (
 	"text/template"
 )
 
-type Composit struct {
+type Composite struct {
 	DefaultProcessor
 	ProcessorMetadata
 	AdditionalResourcesDir string
@@ -22,32 +22,32 @@ type Composit struct {
 	Trigger                Trigger
 }
 
-func (processor *Composit) ToString() string {
+func (processor *Composite) ToString() string {
 	return processor.ProcessorMetadata.Name + " (composite)"
 }
 
-func (c *Composit) OnKey(node *data.KeyNode) {
+func (c *Composite) OnKey(node *data.KeyNode) {
 	for _, p := range c.Processors {
 		p.OnKey(node)
 	}
 }
-func (c *Composit) BeforeMap(node *data.MapNode) {
+func (c *Composite) BeforeMap(node *data.MapNode) {
 	for _, p := range c.Processors {
 		p.BeforeMap(node)
 	}
 }
-func (c *Composit) AfterMap(node *data.MapNode)                                   {}
-func (c *Composit) BeforeMapItem(node *data.MapNode, key string, index int)       {}
-func (c *Composit) AfterMapItem(node *data.MapNode, key string, index int)        {}
-func (c *Composit) BeforeList(node *data.ListNode)                                {}
-func (c *Composit) AfterList(node *data.ListNode)                                 {}
-func (c *Composit) BeforeListItem(node *data.ListNode, item data.Node, index int) {}
-func (c *Composit) AfterListItem(node *data.ListNode, item data.Node, index int)  {}
+func (c *Composite) AfterMap(node *data.MapNode)                                   {}
+func (c *Composite) BeforeMapItem(node *data.MapNode, key string, index int)       {}
+func (c *Composite) AfterMapItem(node *data.MapNode, key string, index int)        {}
+func (c *Composite) BeforeList(node *data.ListNode)                                {}
+func (c *Composite) AfterList(node *data.ListNode)                                 {}
+func (c *Composite) BeforeListItem(node *data.ListNode, item data.Node, index int) {}
+func (c *Composite) AfterListItem(node *data.ListNode, item data.Node, index int)  {}
 
-func (c *Composit) Before(ctx *RenderContext, node *ResourceNode) error { return nil }
-func (c *Composit) After(ctx *RenderContext, node *ResourceNode) error  { return nil }
+func (c *Composite) Before(ctx *RenderContext, node *ResourceNode) error { return nil }
+func (c *Composite) After(ctx *RenderContext, node *ResourceNode) error  { return nil }
 
-func (c *Composit) RegisterResources(ctx *RenderContext, node *ResourceNode) error {
+func (c *Composite) RegisterResources(ctx *RenderContext, node *ResourceNode) error {
 	if c.AdditionalResourcesDir != "" {
 		resources := data.ReadResourcesFromDir(c.AdditionalResourcesDir)
 		node.Resources = append(node.Resources, resources...)
@@ -55,7 +55,7 @@ func (c *Composit) RegisterResources(ctx *RenderContext, node *ResourceNode) err
 	return nil
 }
 
-func (c *Composit) BeforeResource(resource *data.Resource) error {
+func (c *Composite) BeforeResource(resource *data.Resource) error {
 	if !c.Trigger.active(resource) {
 		return nil
 	}
@@ -68,7 +68,7 @@ func (c *Composit) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func (c *Composit) AfterResource(resource *data.Resource) error {
+func (c *Composite) AfterResource(resource *data.Resource) error {
 	if !c.Trigger.active(resource) {
 		return nil
 	}
@@ -91,7 +91,7 @@ func parseTransformationParameters(config *yaml.MapSlice) map[string]interface{}
 }
 
 //instantiate composite transformation based on instance config, generic definition metadata and template
-func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composit, error) {
+func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
 	funcmap := template.FuncMap{
 		"Iterate": func(count int) []int {
 			var i int
@@ -122,7 +122,7 @@ func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapS
 	if resourcesDir != "" && !filepath.IsAbs(resourcesDir) {
 		resourcesDir = filepath.Clean(gopath.Join(gopath.Dir(path), resourcesDir))
 	}
-	return &Composit{
+	return &Composite{
 		ProcessorMetadata:      *metadata,
 		Processors:             processors,
 		AdditionalResourcesDir: resourcesDir,

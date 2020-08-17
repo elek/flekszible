@@ -1,8 +1,8 @@
 package processor
 
 import (
-	"errors"
 	"github.com/elek/flekszible/api/yaml"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
@@ -57,7 +57,6 @@ func CreateTransformationWithConfig(processorTypeName string, config *yaml.MapSl
 		for k := range ProcessorTypeRegistry.TypeMap {
 			logrus.Info(k)
 		}
-
 		return nil, errors.New("Unknown processor: " + processorTypeName)
 	}
 
@@ -83,7 +82,7 @@ func ParseTransformations(inputDir string) ([]Processor, error) {
 				fullPath := path.Join(mixinDir, file.Name())
 				processors, err := ReadProcessorDefinitionFile(fullPath)
 				if err != nil {
-					logrus.Error("Processor configuration can't be loaded from " + fullPath + " " + err.Error())
+					return result, errors.Wrap(err, "Processor configuration can't be loaded from "+fullPath)
 				}
 				result = append(result, processors...)
 			}

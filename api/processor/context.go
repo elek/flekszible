@@ -183,7 +183,7 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 
 	processors, e := ParseTransformations(node.Dir)
 		if e != nil {
-			logrus.Error("Can't read transformations from " + node.Dir + " " + e.Error())
+			return errors.Wrap(e, "Can't read transformations from "+node.Dir)
 		} else {
 			for _, processor := range processors {
 				if processor.GetScope() == "global" {

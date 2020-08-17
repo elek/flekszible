@@ -150,6 +150,7 @@ func parseDefintion(path string) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "Can't parse transformation metadata from "+path)
 	}
+
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: metadata,
 		Factory: func(config *yaml.MapSlice) (Processor, error) {

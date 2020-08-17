@@ -62,7 +62,9 @@ func (p *DefaultProcessor) AfterResource(*data.Resource) error {
 }
 
 func configureProcessorFromYamlFragment(processor Processor, config *yaml.MapSlice) (Processor, error) {
+	//remove built-in keys
 	clean := config.Remove("type")
+	clean = clean.Remove("scope")
 	config = &clean
 	processorConfigYaml, err := yaml.Marshal(config)
 	if err != nil {

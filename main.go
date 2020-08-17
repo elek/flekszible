@@ -221,7 +221,7 @@ func appCommands(inputDir *string, outputDir *string) cli.Command {
 				Usage:     "Add (import) new app to the flekszible.yaml.",
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
-					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, ""), findOutputDir(outputDir, c.Args().Get(0)))
 					pkg.AddApp(context, *inputDir, c.Args().First())
 					return nil
 				},
@@ -259,7 +259,7 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
-					return pkg.AddSource(context, findInputDir(inputDir, c.Args().Get(0)), c.Args().First())
+					return pkg.AddSource(context, findInputDir(inputDir, ""), c.Args().First())
 				},
 			},
 		},

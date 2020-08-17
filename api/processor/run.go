@@ -34,7 +34,7 @@ func init() {
 			Name:        "Run",
 			Description: "Replace args wi",
 			Doc:         "Space separated string will be used as array",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 				{
 					Name:        "args",

@@ -10,7 +10,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "PublishStatefulSet",
 			Description: "Creates additional NodeType service for StatefulSet internal services",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 				{
 					Name:        "ports",

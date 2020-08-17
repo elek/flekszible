@@ -62,7 +62,7 @@ func init() {
 			Name:        "Mount",
 			Description: "Mount external directory to the container (hostPath)",
 			Doc:         "",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 				{
 					Name:        "hostPath",

@@ -68,9 +68,8 @@ func PrintTree(node *processor.ResourceNode, prefix string) {
 	for _, child := range node.Children {
 		PrintTree(child, "      ")
 	}
-	node.LoadDefinitions()
-
 }
+
 func Tree(context *processor.RenderContext) {
 
 	PrintTree(context.RootResource, "")
@@ -108,12 +107,12 @@ func ShowProcessor(context *processor.RenderContext, command string) error {
 		fmt.Println()
 		fmt.Println(procDefinition.Metadata.Description)
 		fmt.Println()
-		if len(procDefinition.Metadata.Parameter) > 0 {
+		if len(procDefinition.Metadata.Parameters) > 0 {
 			fmt.Println("#### Parameters")
 			fmt.Println("")
 			table := termtables.CreateTable()
 			table.AddHeaders("name", "default", "description")
-			for _, parameter := range procDefinition.Metadata.Parameter {
+			for _, parameter := range procDefinition.Metadata.Parameters {
 				table.AddRow(parameter.Name, parameter.Default, parameter.Description)
 			}
 			fmt.Println(table.Render())

@@ -12,7 +12,7 @@ var ProcessorTypeRegistry ProcessorTypes
 type ProcessorMetadata struct {
 	Name        string
 	Description string
-	Parameter   []ProcessorParameter
+	Parameters  []ProcessorParameter `yaml:"parameters"`
 	Doc         string
 	Resources   string //directory point to additional resources
 
@@ -26,7 +26,7 @@ type ProcessorParameter struct {
 }
 
 func (metadata *ProcessorMetadata) FindParam(name string) *ProcessorParameter {
-	for _, param := range metadata.Parameter {
+	for _, param := range metadata.Parameters {
 		if param.Name == name {
 			return &param
 		}

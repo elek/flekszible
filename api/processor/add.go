@@ -96,7 +96,7 @@ func init() {
 			Name:        "Add",
 			Description: "Extends yaml fragment to an existing k8s resources",
 			Doc:         addDoc,
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				PathParameter,
 				TriggerParameter,
 				{

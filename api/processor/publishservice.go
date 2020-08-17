@@ -58,7 +58,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "PublishService",
 			Description: "Creates additional service for internal services",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 				{
 					Name:        "serviceType",

@@ -60,7 +60,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "ConfigHash",
 			Description: "Add labels to the k8s resources with the hash of the used configmaps",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 			},
 			Doc: `

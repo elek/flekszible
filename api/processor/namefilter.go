@@ -49,7 +49,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "NameFilter",
 			Description: "Include and exclude certain resources (based on name)",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 
 				{
 					Name:        "include",

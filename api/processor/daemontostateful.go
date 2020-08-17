@@ -71,7 +71,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "DaemonToStatefulSet",
 			Description: "Converts daemonset to statefulset",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 			},
 			Doc: `Useful for minikube based environments where you may not have enough node to run a daemonset based cluster.` + TriggerDoc,

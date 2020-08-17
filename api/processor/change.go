@@ -48,7 +48,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "Change",
 			Description: "Replace existing value literal in the yaml struct",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				PathParameter,
 				TriggerParameter,
 				ProcessorParameter{

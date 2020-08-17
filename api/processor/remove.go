@@ -67,7 +67,7 @@ func init() {
 			Name:        "Remove",
 			Description: "Remove yaml fragment from an existing k8s resources",
 			Doc:         "",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				PathParameter,
 				TriggerParameter,
 			},

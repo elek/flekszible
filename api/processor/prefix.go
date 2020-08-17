@@ -65,7 +65,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "Prefix",
 			Description: "Add same prefix to all the k8s names",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				{
 					Name:        "prefix",
 					Description: "The prefix to use before the name of the resources.",

@@ -29,7 +29,7 @@ func init() {
 			Name:        "Image",
 			Description: "Replaces the docker image definition",
 			Doc:         "Note: This transformations could also added with the `--image` CLI argument.",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				TriggerParameter,
 				{
 					Name:        "image",

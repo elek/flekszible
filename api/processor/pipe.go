@@ -53,7 +53,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "Pipe",
 			Description: "Transform content with external shell command.",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				{
 					Name:        "command",
 					Description: "External program which transforms standard input to output",

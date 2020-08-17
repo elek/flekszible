@@ -163,7 +163,10 @@ func (context *RenderContext) Init() error {
 		return err
 	}
 	//load 'definitions' subdirs
-	context.LoadDefinitions()
+	err = context.LoadDefinitions()
+	if err != nil {
+		return err
+	}
 	//load 'transformations' subdirs
 	return context.InitializeTransformations()
 }
@@ -428,34 +431,37 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 }
 
 //load transformation definitions from ./definitions dir (all dir)
-func (ctx *RenderContext) LoadDefinitions() {
-	ctx.RootResource.LoadDefinitions()
+func (ctx *RenderContext) LoadDefinitions() error {
+	return ctx.RootResource.LoadDefinitions()
 }
 
-func (node *ResourceNode) LoadDefinitions() {
-
+func (node *ResourceNode) LoadDefinitions() error {
 	defDir := path.Join(node.Dir, "definitions")
-		if _, err := os.Stat(defDir); !os.IsNotExist(err) {
-			files, err := ioutil.ReadDir(defDir)
-			if err != nil {
-				logrus.Warningf("Can't load definition directory %s: %s", defDir, err.Error())
-			}
-			for _, file := range files {
-				definitionFile := path.Join(defDir, file.Name())
-				name, err := parseDefintion(definitionFile)
-				if err != nil {
-					logrus.Errorf("Can't parse the definition file %s: %s", definitionFile, err.Error())
-				}
-				if node.Definitions == nil {
-					node.Definitions = make([]string, 0)
-				}
-				node.Definitions = append(node.Definitions, name)
-			}
+	if _, err := os.Stat(defDir); !os.IsNotExist(err) {
+		files, err := ioutil.ReadDir(defDir)
+		if err != nil {
+			logrus.Warningf("Can't load definition directory %s: %s", defDir, err.Error())
 		}
+		for _, file := range files {
+			definitionFile := path.Join(defDir, file.Name())
+			name, err := parseDefintion(definitionFile)
+			if err != nil {
+				return errors.Wrap(err, "Can't parse the definition file "+definitionFile)
+			}
+			if node.Definitions == nil {
+				node.Definitions = make([]string, 0)
+			}
+			node.Definitions = append(node.Definitions, name)
+		}
+	}
 
 	for _, child := range node.Children {
-		child.LoadDefinitions()
+		err := child.LoadDefinitions()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 
 }
 

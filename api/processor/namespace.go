@@ -60,7 +60,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "Namespace",
 			Description: "Use explicit namespace",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 
 				{
 					Name:        "namespace",

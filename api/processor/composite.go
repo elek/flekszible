@@ -81,17 +81,42 @@ func (c *Composite) AfterResource(resource *data.Resource) error {
 	}
 	return nil
 }
-func parseTransformationParameters(config *yaml.MapSlice) map[string]interface{} {
+func parseTransformationParameters(metadata *ProcessorMetadata, config *yaml.MapSlice) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
-	for _, item := range *config {
-		result[item.Key.(string)] = item.Value
+
+	for _, paramDef := range metadata.Parameters {
+		result[paramDef.Name] = paramDef.Default
 	}
-	return result
+
+outer:
+	for _, item := range *config {
+		parameterName := item.Key.(string)
+
+		validParamNames := make([]string, 0)
+		for _, paramDef := range metadata.Parameters {
+			if parameterName == paramDef.Name {
+				result[parameterName] = item.Value
+				continue outer
+			} else {
+				validParamNames = append(validParamNames, paramDef.Name)
+			}
+		}
+		return result, errors.New("Unknown parameter '" + parameterName + "' used for composite transformations " + metadata.Name + ", valid parameters: " + strings.Join(validParamNames, ","))
+
+	}
+	for _, paramDef := range metadata.Parameters {
+		if paramDef.Required {
+			if _, found := result[paramDef.Name]; !found {
+				return result, errors.New("Parameters " + paramDef.Name + " is required for composite transformation " + metadata.Name)
+			}
+		}
+	}
+	return result, nil
 
 }
 
 //instantiate composite transformation based on instance config, generic definition metadata and template
-func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
+func compositeFactory(path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
 	funcmap := template.FuncMap{
 		"Iterate": func(count int) []int {
 			var i int
@@ -108,7 +133,7 @@ func compositFactory(path string, metadata *ProcessorMetadata, config *yaml.MapS
 		return nil, errors.New("The definition template is invalid: " + err.Error())
 	}
 	output := strings.Builder{}
-	parameters := parseTransformationParameters(config)
+	parameters, _ := parseTransformationParameters(metadata, config)
 	addDefaultParameters(parameters)
 	err = tpl.Execute(&output, parameters)
 	if err != nil {
@@ -154,7 +179,7 @@ func parseDefintion(path string) (string, error) {
 	ProcessorTypeRegistry.Add(ProcessorDefinition{
 		Metadata: metadata,
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			comp, err := compositFactory(path, &metadata, config, body)
+			comp, err := compositeFactory(path, &metadata, config, body)
 			if err != nil {
 				return nil, err
 			}

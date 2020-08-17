@@ -39,7 +39,7 @@ func init() {
 		Metadata: ProcessorMetadata{
 			Name:        "Compat",
 			Description: "Kubernetes compatibilty converted",
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 
 				{
 					Name:        "version",

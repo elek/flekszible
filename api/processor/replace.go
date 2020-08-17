@@ -50,7 +50,7 @@ func init() {
 			Name:        "Replace",
 			Description: "Replace a yaml subtree with an other one.",
 			Doc:         addDocReplace,
-			Parameter: []ProcessorParameter{
+			Parameters: []ProcessorParameter{
 				PathParameter,
 				TriggerParameter,
 				{

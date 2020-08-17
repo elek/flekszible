@@ -108,15 +108,17 @@ func ShowProcessor(context *processor.RenderContext, command string) error {
 		fmt.Println()
 		fmt.Println(procDefinition.Metadata.Description)
 		fmt.Println()
-		fmt.Println("#### Parameters")
-		fmt.Println("")
-		table := termtables.CreateTable()
-		table.AddHeaders("name", "default", "description")
-		for _, parameter := range procDefinition.Metadata.Parameter {
-			table.AddRow(parameter.Name, parameter.Default, parameter.Description)
+		if len(procDefinition.Metadata.Parameter) > 0 {
+			fmt.Println("#### Parameters")
+			fmt.Println("")
+			table := termtables.CreateTable()
+			table.AddHeaders("name", "default", "description")
+			for _, parameter := range procDefinition.Metadata.Parameter {
+				table.AddRow(parameter.Name, parameter.Default, parameter.Description)
+			}
+			fmt.Println(table.Render())
+			fmt.Println()
 		}
-		fmt.Println(table.Render())
-		fmt.Println()
 		fmt.Println(procDefinition.Metadata.Doc)
 
 	} else {

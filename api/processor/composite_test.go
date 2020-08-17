@@ -6,19 +6,19 @@ import (
 	"testing"
 )
 
-func TestComposit(t *testing.T) {
+func TestComposite(t *testing.T) {
 	TestFromDir(t, "composite")
 }
 
-func TestCompositInherited(t *testing.T) {
+func TestCompositeInherited(t *testing.T) {
 	TestFromDir(t, "composite-inherited")
 }
 
-func TestCompositWithParam(t *testing.T) {
+func TestCompositeWithParam(t *testing.T) {
 	TestFromDir(t, "composite-param")
 }
 
-func TestCompositWithAdditionalResources(t *testing.T) {
+func TestCompositeWithAdditionalResources(t *testing.T) {
 	TestFromDir(t, "composite-resources")
 }
 

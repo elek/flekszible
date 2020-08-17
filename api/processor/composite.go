@@ -91,7 +91,9 @@ func parseTransformationParameters(metadata *ProcessorMetadata, config *yaml.Map
 outer:
 	for _, item := range *config {
 		parameterName := item.Key.(string)
-
+		if parameterName == "type" || parameterName == "scope" {
+			continue
+		}
 		validParamNames := make([]string, 0)
 		for _, paramDef := range metadata.Parameters {
 			if parameterName == paramDef.Name {
@@ -133,7 +135,10 @@ func compositeFactory(path string, metadata *ProcessorMetadata, config *yaml.Map
 		return nil, errors.New("The definition template is invalid: " + err.Error())
 	}
 	output := strings.Builder{}
-	parameters, _ := parseTransformationParameters(metadata, config)
+	parameters, err := parseTransformationParameters(metadata, config)
+	if err != nil {
+		return nil, errors.Wrap(err, "Couldn't set parameter for composite transformations")
+	}
 	addDefaultParameters(parameters)
 	err = tpl.Execute(&output, parameters)
 	if err != nil {

@@ -61,6 +61,7 @@ func init() {
 				{
 					Name:        "args",
 					Description: "List of the arguments of the command",
+					Type:        "[]string",
 				},
 				TriggerParameter,
 			},

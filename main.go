@@ -95,18 +95,25 @@ func main() {
 		},
 		{
 			Name:      "import",
-			Usage:     "Import multiple kubernetes resource from file or stdin and output to the current dir.",
-			ArgsUsage: "[file]",
+			Usage:     "Import multiple kubernetes resource from file or stdin and generate output to current dir or stdout.",
+			ArgsUsage: "[file or -] [output dir]",
 			Flags: []cli.Flag{
 				cli.StringSliceFlag{
 					Name:  "transformations, t",
 					Usage: "manually defined transformations",
+				},
+				cli.BoolFlag{
+					Name:  "print",
+					Usage: "Print out the result to the standard output (same as to use - as the destination'-d -')",
 				},
 			},
 			Action: func(c *cli.Context) error {
 				dir, err := os.Getwd()
 				if err != nil {
 					return err
+				}
+				if c.Bool("print") {
+					dir = "-"
 				}
 				err = pkg.Import(c.Args().Get(0), c.StringSlice("transformations"), dir)
 				if err != nil {

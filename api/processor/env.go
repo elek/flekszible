@@ -13,7 +13,6 @@ type Env struct {
 
 func (env *Env) BeforeResource(resource *data.Resource) error {
 	if env.Trigger.active(resource) {
-
 		smartGet := data.SmartGetAll{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "env")}
 		resource.Content.Accept(&smartGet)
 		for _, result := range smartGet.Result {
@@ -38,11 +37,15 @@ func init() {
 			envProc := &Env{}
 			envProc.Envs = make(map[string]string)
 			for _, item := range *config {
-				if item.Key.(string) != "type" {
+				if item.Key.(string) != "type" && item.Key.(string) != "trigger" {
 					envProc.Envs[item.Key.(string)] = item.Value.(string)
 				}
 			}
-			proc, err := configureProcessorFromYamlFragment(envProc, config)
+			cleanSettings := yaml.MapSlice{}
+			if triggerConfig, found := config.Get("trigger"); found {
+				cleanSettings.Put("trigger", triggerConfig)
+			}
+			proc, err := configureProcessorFromYamlFragment(envProc, &cleanSettings)
 			return proc, err
 		},
 	})

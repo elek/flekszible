@@ -2,8 +2,8 @@ package processor
 
 import (
 	"bufio"
-	"errors"
 	"github.com/elek/flekszible/api/yaml"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"strings"
 )
@@ -44,7 +44,7 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 		if ok {
 			proc, err := CreateTransformationWithConfig(typeName.(string), &processorConfig)
 			if err != nil {
-				logrus.Error("Transformation can't be instantiated: " + typeName.(string) + " " + err.Error())
+				return processors, errors.Wrap(err, "Transformation can't be instantiated: "+typeName.(string)+" "+err.Error())
 			} else if proc == nil {
 				logrus.Info("Optional transformation depends on an unknown transformation type: " + typeName.(string) + " Additional import may be required to use optional features.")
 			} else {

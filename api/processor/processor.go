@@ -62,11 +62,13 @@ func (p *DefaultProcessor) AfterResource(*data.Resource) error {
 }
 
 func configureProcessorFromYamlFragment(processor Processor, config *yaml.MapSlice) (Processor, error) {
+	clean := config.Remove("type")
+	config = &clean
 	processorConfigYaml, err := yaml.Marshal(config)
 	if err != nil {
 		return nil, err
 	}
-	err = yaml.Unmarshal(processorConfigYaml, processor)
+	err = yaml.UnmarshalStrict(processorConfigYaml, processor)
 	if err != nil {
 		return nil, err
 	}

@@ -3,8 +3,10 @@
 
 
 test(){
+   go clean -testcache
    go test ./...
    cd api
+   go clean -testcache
    go test ./...
 }
 

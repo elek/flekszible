@@ -85,13 +85,15 @@ func parseTransformationParameters(metadata *ProcessorMetadata, config *yaml.Map
 	result := make(map[string]interface{})
 
 	for _, paramDef := range metadata.Parameters {
-		result[paramDef.Name] = paramDef.Default
+		if len(paramDef.Default) > 0 {
+			result[paramDef.Name] = paramDef.Default
+		}
 	}
 
 outer:
 	for _, item := range *config {
 		parameterName := item.Key.(string)
-		if parameterName == "type" || parameterName == "scope" {
+		if parameterName == "type" || parameterName == "scope" || parameterName == "trigger" {
 			continue
 		}
 		validParamNames := make([]string, 0)

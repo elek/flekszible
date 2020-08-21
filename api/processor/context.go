@@ -368,7 +368,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	for _, source := range node.Source {
 		sourceDir, err := source.GetPath(sourceCache)
 		if err != nil {
-			errors.Wrap(err, "Source definition defined in "+node.Dir+" couldn't be loaded")
+			return errors.Wrap(err, "Source definition defined in "+node.Dir+" couldn't be loaded")
 		}
 		globalDirs := []string{path.Join(sourceDir, "flekszible", "_global"), path.Join(sourceDir, "_global")}
 		for _, globalDir := range globalDirs {

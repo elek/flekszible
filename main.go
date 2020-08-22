@@ -103,6 +103,10 @@ func main() {
 					Usage: "manually defined transformations",
 				},
 				cli.BoolFlag{
+					Name:  "helm3",
+					Usage: "Use only parts between MANIFESTS and NOTES. Useful for `helm install --dryrun` output",
+				},
+				cli.BoolFlag{
 					Name:  "print",
 					Usage: "Print out the result to the standard output (same as to use - as the destination'-d -')",
 				},
@@ -115,7 +119,7 @@ func main() {
 				if c.Bool("print") {
 					dir = "-"
 				}
-				err = pkg.Import(c.Args().Get(0), c.StringSlice("transformations"), dir)
+				err = pkg.Import(c.Args().Get(0), c.StringSlice("transformations"), dir, c.Bool("helm3"))
 				if err != nil {
 					return err
 				}

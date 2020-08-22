@@ -6,9 +6,10 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
-func Import(resourceFile string, transformations []string, outputDir string) error {
+func Import(resourceFile string, transformations []string, outputDir string, helm3 bool) error {
 	context := &processor.RenderContext{
 		OutputDir: outputDir,
 		Mode:      "k8s",
@@ -40,7 +41,12 @@ func Import(resourceFile string, transformations []string, outputDir string) err
 			return errors.Wrap(err, "Stdin can't be read")
 		}
 	}
+	if helm3 {
+		parts := strings.SplitN(string(bytesOfResources), "MANIFEST:\n", 2)
+		parts = strings.SplitN(parts[1], "NOTES:\n", 2)
+		bytesOfResources = []byte(parts[0])
 
+	}
 	resources, err := data.LoadResourceFromByte(bytesOfResources)
 	if err != nil {
 		return err

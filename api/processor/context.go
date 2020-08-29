@@ -347,7 +347,13 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		if definedSource.Url != "" {
 			node.Source = append(node.Source, &data.RemoteSource{Url: definedSource.Url})
 		} else if definedSource.Path != "" {
-			node.Source = append(node.Source, &data.LocalSource{Dir: path.Join(node.Dir, definedSource.Path)})
+			var sourceDir string
+			if path.IsAbs(definedSource.Path) {
+				sourceDir = definedSource.Path
+			} else {
+				sourceDir = path.Join(node.Dir, definedSource.Path)
+			}
+			node.Source = append(node.Source, &data.LocalSource{Dir: sourceDir})
 		}
 	}
 	//update destinations of the direct k8s resources

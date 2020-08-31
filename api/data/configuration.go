@@ -16,6 +16,7 @@ type Configuration struct {
 	Transformations []yaml.MapSlice       `yaml:",omitempty"`
 	ResourcesDir    string                `yaml:"resources,omitempty"`
 	Standalone      bool                  `yaml:"-"`
+	Header          string                `yaml:"header"`
 }
 
 type ConfigSource struct {

@@ -3,6 +3,10 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       - -X main.commit={{.Commit}} -X main.version={{.Version}} -X main.date={{.Date}}
+    ignore:
+      - goos: darwin
+        goarch: 386
+
 archive:
   replacements:
     darwin: Darwin

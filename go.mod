@@ -4,6 +4,7 @@ require (
 	github.com/appscode/jsonpatch v1.0.1
 	github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020
 	github.com/elek/flekszible/api v0.0.0-20190928090338-d1d34ef1bc1f
+	github.com/fatih/color v1.9.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/hashicorp/go-getter v1.1.0
 	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a // indirect

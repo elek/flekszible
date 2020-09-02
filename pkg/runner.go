@@ -3,6 +3,7 @@ package pkg
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -39,9 +40,9 @@ func ListResources(context *processor.RenderContext) {
 }
 
 func PrintTree(node *processor.ResourceNode, prefix string) {
-	fmt.Println(prefix + ">>> " + node.Name + " <<< ( from: " + node.Origin.ToString() + ")")
+	fmt.Println(prefix + ">>> " + color.GreenString(node.Name) + " <<< ( from: " + node.Origin.ToString() + ")")
 	if len(node.Resources) > 0 {
-		fmt.Println(prefix + "  RESOURCES:")
+		fmt.Println(prefix + color.RedString("  RESOURCES:"))
 		for _, resource := range node.Resources {
 			resourceLine := prefix + "    " + resource.Name() + "/" + resource.Kind()
 			if len(resource.Destination) > 0 {
@@ -52,14 +53,14 @@ func PrintTree(node *processor.ResourceNode, prefix string) {
 	}
 	if len(node.ProcessorRepository.Processors) > 0 {
 
-		fmt.Println(prefix + "  TRANSFORMATIONS:")
+		fmt.Println(prefix + color.RedString("  TRANSFORMATIONS:"))
 		for _, trafo := range node.ProcessorRepository.Processors {
 			fmt.Println(prefix + "    " + trafo.ToString())
 		}
 	}
 
 	if len(node.Definitions) > 0 {
-		fmt.Println(prefix + "  DEFINITIONS:")
+		fmt.Println(prefix + color.RedString("  DEFINITIONS:"))
 		for _, def := range node.Definitions {
 			fmt.Println(prefix + "    " + def)
 		}

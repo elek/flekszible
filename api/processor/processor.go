@@ -14,8 +14,8 @@ type Processor interface {
 	Before(ctx *RenderContext, node *ResourceNode) error
 	After(ctx *RenderContext, node *ResourceNode) error
 	GetType() string
-	BeforeResource(*data.Resource) error
-	AfterResource(*data.Resource) error
+	BeforeResource(resource *data.Resource, location *ResourceNode) error
+	AfterResource(resource *data.Resource, location *ResourceNode) error
 	GetScope() string
 	SetScope(scope string)
 	ToString() string
@@ -51,12 +51,12 @@ func (processor *DefaultProcessor) GetScope() string {
 func (processor *DefaultProcessor) SetScope(scope string) {
 	processor.Scope = scope
 }
-func (p *DefaultProcessor) BeforeResource(resource *data.Resource) error {
+func (p *DefaultProcessor) BeforeResource(resource *data.Resource, location *ResourceNode) error {
 	p.CurrentResource = resource
 	return nil
 }
 
-func (p *DefaultProcessor) AfterResource(*data.Resource) error {
+func (p *DefaultProcessor) AfterResource(resource *data.Resource, location *ResourceNode) error {
 	p.CurrentResource = nil
 	return nil
 }

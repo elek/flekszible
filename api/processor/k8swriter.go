@@ -43,7 +43,7 @@ func (writer *K8sWriter) createOutputPath(outputDir, name, kind string, destinat
 	}
 }
 
-func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
+func (writer *K8sWriter) BeforeResource(resource *data.Resource, location *ResourceNode) error {
 	if exclude, ok := resource.Metadata["exclude"]; ok {
 		if exclude == "true" {
 			return nil

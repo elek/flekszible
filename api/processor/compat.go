@@ -10,7 +10,7 @@ type Compat struct {
 	Version string
 }
 
-func (processor *Compat) BeforeResource(resource *data.Resource) error {
+func (processor *Compat) BeforeResource(resource *data.Resource, location *ResourceNode) error {
 	if processor.Version == "1.17" {
 		if resource.Kind() == "Deployment" && resource.Get(data.NewPath("apiVersion")) == "extensions/v1beta1" {
 			set := data.Set{Path: data.NewPath("apiVersion"), NewValue: "apps/v1"}

@@ -14,9 +14,9 @@ import (
 	"strings"
 
 	"github.com/brettski/go-termtables"
-	"github.com/elek/flekszible/api/data"
-	"github.com/elek/flekszible/api/processor"
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/processor"
+	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/hashicorp/go-getter"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

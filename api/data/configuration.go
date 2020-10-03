@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/yaml"
 )
 
 type Configuration struct {

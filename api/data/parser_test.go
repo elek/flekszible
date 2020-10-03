@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"

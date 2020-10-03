@@ -3,8 +3,8 @@ package processor
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/elek/flekszible/api/data"
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/yaml"
 	"strconv"
 )
 

@@ -3,7 +3,7 @@ package processor
 import (
 	"testing"
 
-	"github.com/elek/flekszible/api/data"
+	"github.com/elek/flekszible/api/v2/data"
 	"github.com/stretchr/testify/assert"
 )
 

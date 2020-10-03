@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/yaml"
 	"io/ioutil"
 	"strconv"
 )

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/go-getter"
 	"github.com/sirupsen/logrus"
 
-	"github.com/elek/flekszible/api/processor"
+	"github.com/elek/flekszible/api/v2/processor"
 	"github.com/elek/flekszible/pkg"
 	"github.com/elek/flekszible/pkg/operator"
 	"github.com/urfave/cli"

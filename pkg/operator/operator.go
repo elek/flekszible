@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 
 	"github.com/appscode/jsonpatch"
-	"github.com/elek/flekszible/api/data"
-	"github.com/elek/flekszible/api/processor"
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/processor"
+	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

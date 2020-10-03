@@ -2,7 +2,7 @@ package processor
 
 import (
 	"bufio"
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"strings"

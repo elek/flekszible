@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/elek/flekszible/api/yaml"
+	"github.com/elek/flekszible/api/v2/yaml"
 )
 
 var ProcessorTypeRegistry ProcessorTypes

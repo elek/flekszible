@@ -16,6 +16,6 @@ require (
 	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 // indirect
 )
 
-replace github.com/elek/flekszible/api/v2 => ./api
+replace github.com/elek/flekszible/api/v2 => ./api/v2
 
 go 1.13

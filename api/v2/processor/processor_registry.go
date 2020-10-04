@@ -18,11 +18,11 @@ type ProcessorMetadata struct {
 
 }
 type ProcessorParameter struct {
-	Name        string
-	Description string
-	Required    bool
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	Required    bool   `yaml:"required"`
 	Default     string
-	Type        string
+	Type        string `yaml:"type"`
 }
 
 func (metadata *ProcessorMetadata) FindParam(name string) *ProcessorParameter {

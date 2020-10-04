@@ -53,8 +53,8 @@ func (processor *PublishService) Before(ctx *RenderContext, node *ResourceNode) 
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivatePublishService(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "PublishService",
 			Description: "Creates additional service for internal services",

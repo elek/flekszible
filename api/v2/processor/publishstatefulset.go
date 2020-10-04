@@ -5,8 +5,8 @@ import (
 	"github.com/elek/flekszible/api/v2/yaml"
 )
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivatePublishStatefulset(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "PublishStatefulSet",
 			Description: "Creates additional NodeType service for StatefulSet internal services",

@@ -29,20 +29,20 @@ func (repository *TransformationRepository) AppendAll(processors []Processor) {
 }
 
 //read processor definitions from a file (./definitions/xxx)
-func ReadProcessorDefinitionFile(filename string) ([]Processor, error) {
+func (registry *ProcessorTypes) ReadProcessorDefinitionFile(filename string) ([]Processor, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return ReadProcessorDefinition(data)
+	return registry.ReadProcessorDefinition(data)
 }
 
-func CreateTransformation(processorTypeName string) (Processor, error) {
-	return CreateTransformationWithConfig(processorTypeName, &yaml.MapSlice{})
+func (registry *ProcessorTypes) CreateTransformation(processorTypeName string) (Processor, error) {
+	return registry.CreateTransformationWithConfig(processorTypeName, &yaml.MapSlice{})
 }
 
-func CreateTransformationWithConfig(processorTypeName string, config *yaml.MapSlice) (Processor, error) {
-	if definition, ok := ProcessorTypeRegistry.TypeMap[strings.ToLower(processorTypeName)]; ok {
+func (registry *ProcessorTypes) CreateTransformationWithConfig(processorTypeName string, config *yaml.MapSlice) (Processor, error) {
+	if definition, ok := registry.TypeMap[strings.ToLower(processorTypeName)]; ok {
 		processor, err := definition.Factory(config)
 		if err != nil {
 			return nil, err
@@ -54,7 +54,7 @@ func CreateTransformationWithConfig(processorTypeName string, config *yaml.MapSl
 		}
 		logrus.Error("Unknown processor type: " + processorTypeName)
 		logrus.Info("Available processor types:")
-		for k := range ProcessorTypeRegistry.TypeMap {
+		for k := range registry.TypeMap {
 			logrus.Info(k)
 		}
 		return nil, errors.New("Unknown processor: " + processorTypeName)
@@ -69,7 +69,7 @@ func CreateProcessorRepository() *TransformationRepository {
 }
 
 //read transformations from ./transformations/... files
-func ParseTransformations(inputDir string) ([]Processor, error) {
+func (registry *ProcessorTypes) ParseTransformations(inputDir string) ([]Processor, error) {
 	result := make([]Processor, 0)
 	mixinDir := path.Join(inputDir, "transformations")
 	if _, err := os.Stat(mixinDir); !os.IsNotExist(err) {
@@ -80,7 +80,7 @@ func ParseTransformations(inputDir string) ([]Processor, error) {
 		for _, file := range files {
 			if !file.IsDir() && filepath.Ext(file.Name()) == ".yaml" {
 				fullPath := path.Join(mixinDir, file.Name())
-				processors, err := ReadProcessorDefinitionFile(fullPath)
+				processors, err := registry.ReadProcessorDefinitionFile(fullPath)
 				if err != nil {
 					return result, errors.Wrap(err, "Processor configuration can't be loaded from "+fullPath)
 				}

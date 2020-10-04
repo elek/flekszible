@@ -84,13 +84,13 @@ func ListProcessor(context *processor.RenderContext) error {
 	table := termtables.CreateTable()
 	table.AddHeaders("name", "description")
 	definitionNames := make([]string, 0)
-	for definition := range processor.ProcessorTypeRegistry.TypeMap {
+	for definition := range context.Registry.TypeMap {
 		definitionNames = append(definitionNames, definition)
 	}
 	sort.Strings(definitionNames)
 
 	for _, definitionName := range definitionNames {
-		definition := processor.ProcessorTypeRegistry.TypeMap[definitionName]
+		definition := context.Registry.TypeMap[definitionName]
 		table.AddRow(definitionName, definition.Metadata.Description)
 	}
 	fmt.Println(table.Render())
@@ -102,7 +102,7 @@ func ShowProcessor(context *processor.RenderContext, command string) error {
 	if err != nil {
 		return err
 	}
-	if procDefinition, found := processor.ProcessorTypeRegistry.TypeMap[strings.ToLower(command)]; found {
+	if procDefinition, found := context.Registry.TypeMap[strings.ToLower(command)]; found {
 		fmt.Println("")
 		fmt.Println("### " + command)
 		fmt.Println()

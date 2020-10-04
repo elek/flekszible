@@ -15,8 +15,8 @@ func TestInit(t *testing.T) {
 }
 
 func TestCreateTransformation(t *testing.T) {
-
-	proc, err := parseTransformation("image:image=asd")
+	registry := NewRegistry()
+	proc, err := parseTransformation("image:image=asd", registry)
 	assert.Nil(t, err)
 
 	image := proc.(*Image)
@@ -25,8 +25,9 @@ func TestCreateTransformation(t *testing.T) {
 }
 
 func TestCreateTransformationImageWithColon(t *testing.T) {
+	registry := NewRegistry()
 
-	proc, err := parseTransformation("image:image=localhost:5000/image/name:tag")
+	proc, err := parseTransformation("image:image=localhost:5000/image/name:tag", registry)
 	assert.Nil(t, err)
 
 	image := proc.(*Image)
@@ -35,8 +36,9 @@ func TestCreateTransformationImageWithColon(t *testing.T) {
 }
 
 func TestCreateTransformationImageWithQuotedComa(t *testing.T) {
+	registry := NewRegistry()
 
-	proc, err := parseTransformation("image:image=test\\,sg")
+	proc, err := parseTransformation("image:image=test\\,sg", registry)
 	assert.Nil(t, err)
 
 	image := proc.(*Image)

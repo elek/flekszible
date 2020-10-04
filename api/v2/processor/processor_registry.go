@@ -7,8 +7,6 @@ import (
 	"github.com/elek/flekszible/api/v2/yaml"
 )
 
-var ProcessorTypeRegistry ProcessorTypes
-
 type ProcessorMetadata struct {
 	Name        string
 	Description string
@@ -46,6 +44,11 @@ type ProcessorTypes struct {
 	TypeMap map[string]ProcessorDefinition
 }
 
+func NewRegistry() *ProcessorTypes {
+	return &ProcessorTypes{
+		TypeMap: make(map[string]ProcessorDefinition),
+	}
+}
 func (pt *ProcessorTypes) Add(definition ProcessorDefinition) {
 	if pt.TypeMap == nil {
 		pt.TypeMap = make(map[string]ProcessorDefinition)

@@ -5,7 +5,7 @@
 test(){
    go clean -testcache
    go test ./...
-   cd api
+   cd api/v2
    go clean -testcache
    go test ./...
 }

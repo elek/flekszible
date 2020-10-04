@@ -8,8 +8,10 @@ import (
 )
 
 func TestLoadFromFile(t *testing.T) {
+	registry := NewRegistry()
+
 	testfile := "../../testdata/processors/prometheus.yaml"
-	processors, err := ReadProcessorDefinitionFile(testfile)
+	processors, err := registry.ReadProcessorDefinitionFile(testfile)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(processors))
@@ -21,8 +23,10 @@ func TestLoadFromFile(t *testing.T) {
 }
 
 func TestSimpleCreate(t *testing.T) {
+	registry := NewRegistry()
+
 	parameters := map[string]string{"image": "test"}
-	proc, err := ProcessorTypeRegistry.Create("image", parameters)
+	proc, err := registry.Create("image", parameters)
 	assert.Nil(t, err)
 	assert.NotNil(t, proc)
 	image := proc.(*Image)

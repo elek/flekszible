@@ -32,7 +32,7 @@ func ParseDefinition(date []byte) (ProcessorMetadata, string, error) {
 }
 
 //read processor definitions from raw yaml file
-func ReadProcessorDefinition(data []byte) ([]Processor, error) {
+func (registry *ProcessorTypes) ReadProcessorDefinition(data []byte) ([]Processor, error) {
 	processors := make([]Processor, 0)
 	processorsConfigs := make([]yaml.MapSlice, 0)
 	err := yaml.Unmarshal(data, &processorsConfigs)
@@ -42,7 +42,7 @@ func ReadProcessorDefinition(data []byte) ([]Processor, error) {
 	for _, processorConfig := range processorsConfigs {
 		typeName, ok := processorConfig.Get("type")
 		if ok {
-			proc, err := CreateTransformationWithConfig(typeName.(string), &processorConfig)
+			proc, err := registry.CreateTransformationWithConfig(typeName.(string), &processorConfig)
 			if err != nil {
 				return processors, errors.Wrap(err, "Transformation can't be instantiated: "+typeName.(string)+" "+err.Error())
 			} else if proc == nil {

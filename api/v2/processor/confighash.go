@@ -32,7 +32,7 @@ func (processor *ConfigHash) Before(ctx *RenderContext, node *ResourceNode) erro
 
 }
 
-func (p *ConfigHash) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (p *ConfigHash) BeforeResource(resource *data.Resource) error {
 
 	content := resource.Content
 	getAll := data.GetAll{

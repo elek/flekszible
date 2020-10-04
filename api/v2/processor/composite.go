@@ -55,12 +55,12 @@ func (c *Composite) RegisterResources(ctx *RenderContext, node *ResourceNode) er
 	return nil
 }
 
-func (c *Composite) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (c *Composite) BeforeResource(resource *data.Resource) error {
 	if !c.Trigger.active(resource) {
 		return nil
 	}
 	for _, p := range c.Processors {
-		err := p.BeforeResource(resource, location)
+		err := p.BeforeResource(resource)
 		if err != nil {
 			return errors.Wrap(err, "Resource transformation is failed "+p.ToString()+" on "+resource.Name())
 		}
@@ -68,12 +68,12 @@ func (c *Composite) BeforeResource(resource *data.Resource, location *ResourceNo
 	return nil
 }
 
-func (c *Composite) AfterResource(resource *data.Resource, location *ResourceNode) error {
+func (c *Composite) AfterResource(resource *data.Resource) error {
 	if !c.Trigger.active(resource) {
 		return nil
 	}
 	for _, p := range c.Processors {
-		err := p.AfterResource(resource, location)
+		err := p.AfterResource(resource)
 		if err != nil {
 			return errors.Wrap(err, "One of the child processors of the composite resource is failed")
 		}

@@ -17,7 +17,7 @@ type Pipe struct {
 	Args    []string
 }
 
-func (p *Pipe) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (p *Pipe) BeforeResource(resource *data.Resource) error {
 	if !p.Trigger.active(resource) {
 		return nil
 	}

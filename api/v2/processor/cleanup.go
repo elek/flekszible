@@ -55,7 +55,7 @@ func (processor *Cleanup) After(ctx *RenderContext, node *ResourceNode) error {
 	return nil
 }
 
-func (cleanup *Cleanup) AfterResource(resource *data.Resource, location *ResourceNode) error {
+func (cleanup *Cleanup) AfterResource(resource *data.Resource) error {
 	outputDir := cleanup.ResourceOutputDir
 	outputFile := cleanup.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination, resource.DestinationFileName)
 	if !cleanup.All {

@@ -263,6 +263,35 @@ func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) 
 //execute all the transformations in the rendercontext.
 func (ctx *RenderContext) Render() error {
 
+	before := func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		err := processor.Before(context, node)
+		if err != nil {
+			return errors.Wrap(err, "Before execution phase is failed")
+		}
+		return nil
+	}
+	after := func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		err := processor.After(context, node)
+		if err != nil {
+			return errors.Wrap(err, "After execution phase is failed")
+		}
+		return nil
+	}
+	process := func(processor Processor, context *RenderContext, node *ResourceNode) error {
+		for _, resource := range node.AllResources() {
+			err := processor.BeforeResource(resource)
+			if err != nil {
+				return errors.Wrap(err, "Applying transformation BeforeResource "+resource.Filename+" is failed")
+			}
+			resource.Content.Accept(processor)
+			err = processor.AfterResource(resource)
+			if err != nil {
+				return errors.Wrap(err, "Applying transformation AfterResource "+resource.Filename+" is failed")
+			}
+
+		}
+		return nil
+	}
 	err := ctx.RootResource.Execute(ctx, func(processor Processor, context *RenderContext, node *ResourceNode) error {
 		err := processor.RegisterResources(context, node)
 		if err != nil {
@@ -273,45 +302,15 @@ func (ctx *RenderContext) Render() error {
 	if err != nil {
 		return err
 	}
-
-	err = ctx.RootResource.Execute(ctx, func(processor Processor, context *RenderContext, node *ResourceNode) error {
-		err := processor.Before(context, node)
-		if err != nil {
-			return errors.Wrap(err, "Before execution phase is failed")
-		}
-		return nil
-	})
-
+	err = ctx.RootResource.Execute(ctx, before)
 	if err != nil {
 		return err
 	}
-
-	err = ctx.RootResource.Execute(ctx, func(processor Processor, context *RenderContext, node *ResourceNode) error {
-		for _, resource := range node.AllResources() {
-			err := processor.BeforeResource(resource, node)
-			if err != nil {
-				return errors.Wrap(err, "Applying transformation BeforeResource "+resource.Filename+" is failed")
-			}
-			resource.Content.Accept(processor)
-			err = processor.AfterResource(resource, node)
-			if err != nil {
-				return errors.Wrap(err, "Applying transformation AfterResource "+resource.Filename+" is failed")
-			}
-
-		}
-		return nil
-	})
+	err = ctx.RootResource.Execute(ctx, process)
 	if err != nil {
 		return err
 	}
-
-	err = ctx.RootResource.Execute(ctx, func(processor Processor, context *RenderContext, node *ResourceNode) error {
-		err := processor.After(context, node)
-		if err != nil {
-			return errors.Wrap(err, "After execution phase is failed")
-		}
-		return nil
-	})
+	err = ctx.RootResource.Execute(ctx, after)
 	if err != nil {
 		return err
 	}

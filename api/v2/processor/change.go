@@ -16,7 +16,7 @@ type Change struct {
 	Replacement string
 }
 
-func (processor *Change) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (processor *Change) BeforeResource(resource *data.Resource) error {
 	var re = regexp.MustCompile(processor.Pattern)
 	if !processor.Trigger.active(resource) {
 		return nil

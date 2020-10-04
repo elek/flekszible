@@ -19,7 +19,7 @@ func (nf *NameFilter) ToString() string {
 		Build()
 }
 
-func (nf *NameFilter) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (nf *NameFilter) BeforeResource(resource *data.Resource) error {
 	exclude := true
 	if len(nf.Include) > 0 {
 		for _, include := range nf.Include {

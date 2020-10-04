@@ -11,7 +11,7 @@ type Env struct {
 	Trigger Trigger
 }
 
-func (env *Env) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (env *Env) BeforeResource(resource *data.Resource) error {
 	if env.Trigger.active(resource) {
 		smartGet := data.SmartGetAll{Path: data.NewPath("spec", "template", "spec", ".*ontainers", ".*", "env")}
 		resource.Content.Accept(&smartGet)

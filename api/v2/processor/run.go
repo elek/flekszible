@@ -12,7 +12,7 @@ type Run struct {
 	Trigger Trigger
 }
 
-func (run *Run) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (run *Run) BeforeResource(resource *data.Resource) error {
 	if run.Trigger.active(resource) {
 
 		args := strings.Split(run.Args, " ")

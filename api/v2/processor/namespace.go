@@ -20,7 +20,7 @@ func (processor *Namespace) ToString() string {
 		Build()
 }
 
-func (processor *Namespace) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (processor *Namespace) BeforeResource(resource *data.Resource) error {
 	pathList := []data.Path{data.NewPath("metadata", "namespace"), data.NewPath("subjects", ".*", "namespace")}
 	for _, path := range pathList {
 		if processor.Force {

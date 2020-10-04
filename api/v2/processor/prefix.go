@@ -30,7 +30,7 @@ func (p *Prefix) Before(ctx *RenderContext, node *ResourceNode) error {
 	return nil
 }
 
-func (p *Prefix) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (p *Prefix) BeforeResource(resource *data.Resource) error {
 
 	content := resource.Content
 

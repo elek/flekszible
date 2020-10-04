@@ -17,7 +17,7 @@ func (processor *Image) ToString() string {
 		Build()
 }
 
-func (imageSet *Image) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (imageSet *Image) BeforeResource(resource *data.Resource) error {
 	if imageSet.Trigger.active(resource) {
 		resource.Content.Accept(&data.Set{Path: data.NewPath("spec", "template", "spec", "(initC|c)ontainers", ".*", "image"), NewValue: imageSet.Image})
 	}

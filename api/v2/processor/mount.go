@@ -21,7 +21,7 @@ func (mount *Mount) ToString() string {
 		Build()
 }
 
-func (mount *Mount) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (mount *Mount) BeforeResource(resource *data.Resource) error {
 	if mount.Trigger.active(resource) {
 
 		volume := data.NewMapNode(data.RootPath())
@@ -43,12 +43,12 @@ func (mount *Mount) BeforeResource(resource *data.Resource, location *ResourceNo
 			Value: data.ConvertToYaml(&volumeMount),
 		}
 
-		err := addVolume.BeforeResource(resource, location)
+		err := addVolume.BeforeResource(resource)
 		if err != nil {
 			return err
 		}
 
-		err = addVolumeMount.BeforeResource(resource, location)
+		err = addVolumeMount.BeforeResource(resource)
 		if err != nil {
 			return err
 		}

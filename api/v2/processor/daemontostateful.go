@@ -52,7 +52,7 @@ func createService(resource *data.Resource) *data.MapNode {
 	return &root
 }
 
-func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) error {
 
 	if resource.Kind() == "DaemonSet" && processor.Trigger.active(resource) {
 		resource.Content.Get("kind").(*data.KeyNode).Value = "StatefulSet"

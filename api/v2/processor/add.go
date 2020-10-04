@@ -24,7 +24,7 @@ func (add *Add) ToString() string {
 		Build()
 }
 
-func (processor *Add) BeforeResource(resource *data.Resource, location *ResourceNode) error {
+func (processor *Add) BeforeResource(resource *data.Resource) error {
 	if !processor.Trigger.active(resource) {
 		return nil
 	}

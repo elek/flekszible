@@ -36,6 +36,15 @@ type ResourceNode struct {
 	Definitions              []string //definitions loaded from this dir
 }
 
+func (context *ResourceNode) FindChildResource(path string) (*ResourceNode, error) {
+	for _, node := range context.Children {
+		if node.Name == path {
+			return node, nil
+		}
+	}
+	return nil, errors.New("No such node with import path " + path)
+}
+
 type ResourceLocation struct {
 	Name   string      //the name to import the location (like 'ozone')
 	Source data.Source //the source used to load the resource

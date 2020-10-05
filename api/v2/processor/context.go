@@ -52,8 +52,12 @@ type ResourceLocation struct {
 	Dir    string      //absolute path of the location
 }
 
+func CreateRenderContextFromDir(inputDir string) *RenderContext {
+	return CreateRenderContext("k8s", inputDir, "-")
+}
+
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
-	res :=  &RenderContext{
+	res := &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
 		Registry:     NewRegistry(),

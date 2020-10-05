@@ -90,8 +90,8 @@ func (processor *Add) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateAdd(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Add",
 			Description: "Extends yaml fragment to an existing k8s resources",

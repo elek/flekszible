@@ -120,7 +120,7 @@ outer:
 }
 
 //instantiate composite transformation based on instance config, generic definition metadata and template
-func compositeFactory(path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
+func compositeFactory(registry *ProcessorTypes, path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
 	funcmap := template.FuncMap{
 		"Iterate": func(count int) []int {
 			var i int
@@ -146,7 +146,7 @@ func compositeFactory(path string, metadata *ProcessorMetadata, config *yaml.Map
 	if err != nil {
 		return nil, errors.New("The render was failed: " + err.Error())
 	}
-	processors, err := ReadProcessorDefinition([]byte(output.String()))
+	processors, err := registry.ReadProcessorDefinition([]byte(output.String()))
 	if err != nil {
 		panic("The definition can't be parsed" + err.Error())
 	}
@@ -171,7 +171,7 @@ func addDefaultParameters(parameters map[string]interface{}) {
 }
 
 //pase definition yaml file and register definitions to the global registry.
-func parseDefintion(path string) (string, error) {
+func (registry *ProcessorTypes) parseDefintion(path string) (string, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
 		return "", errors.Wrap(err, "Can't load transformation definition from "+path)
@@ -183,10 +183,10 @@ func parseDefintion(path string) (string, error) {
 		return "", errors.Wrap(err, "Can't parse transformation metadata from "+path)
 	}
 	metadata.Doc = metadata.Doc + "\n### Definition: \n" + string(content)
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+	registry.Add(ProcessorDefinition{
 		Metadata: metadata,
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			comp, err := compositeFactory(path, &metadata, config, body)
+			comp, err := compositeFactory(registry, path, &metadata, config, body)
 			if err != nil {
 				return nil, err
 			}

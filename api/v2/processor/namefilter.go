@@ -44,8 +44,8 @@ func (nf *NameFilter) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateNameFilter(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "NameFilter",
 			Description: "Include and exclude certain resources (based on name)",

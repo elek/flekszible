@@ -60,8 +60,8 @@ func (p *Prefix) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivatePrefix(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Prefix",
 			Description: "Add same prefix to all the k8s names",

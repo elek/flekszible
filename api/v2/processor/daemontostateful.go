@@ -66,8 +66,8 @@ func (processor *DaemonToStatefulSet) BeforeResource(resource *data.Resource) er
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateDaemonToStateful(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "DaemonToStatefulSet",
 			Description: "Converts daemonset to statefulset",

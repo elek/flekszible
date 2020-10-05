@@ -61,8 +61,8 @@ func (processor *Remove) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateRemove(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Remove",
 			Description: "Remove yaml fragment from an existing k8s resources",

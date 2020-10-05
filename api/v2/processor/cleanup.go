@@ -76,8 +76,8 @@ func CreateCleanup(outputDir string, All bool) Processor {
 	return cl
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateCleanup(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "cleanup",
 			Description: "Internal transformation to delete generated yaml files",

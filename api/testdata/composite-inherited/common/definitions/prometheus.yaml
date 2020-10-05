@@ -1,5 +1,5 @@
-type: flokkr.github.io/prometheus
-transformations:
+name: flokkr.github.io/prometheus
+---
   - type: Add
     path:
       - spec

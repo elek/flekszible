@@ -54,9 +54,8 @@ func (processor *Namespace) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func init() {
-
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateNamespace(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Namespace",
 			Description: "Use explicit namespace",

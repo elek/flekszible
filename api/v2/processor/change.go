@@ -43,8 +43,8 @@ func (processor *Change) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateInit(registry *ProcessorTypes) () {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Change",
 			Description: "Replace existing value literal in the yaml struct",

@@ -9,6 +9,7 @@ import (
 
 func TestLoadFromFile(t *testing.T) {
 	registry := NewRegistry()
+	ActivateAdd(registry)
 
 	testfile := "../../testdata/processors/prometheus.yaml"
 	processors, err := registry.ReadProcessorDefinitionFile(testfile)
@@ -24,7 +25,7 @@ func TestLoadFromFile(t *testing.T) {
 
 func TestSimpleCreate(t *testing.T) {
 	registry := NewRegistry()
-
+	ActivateImageSet(registry)
 	parameters := map[string]string{"image": "test"}
 	proc, err := registry.Create("image", parameters)
 	assert.Nil(t, err)

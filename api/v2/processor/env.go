@@ -26,8 +26,8 @@ func (env *Env) BeforeResource(resource *data.Resource) error {
 	}
 	return nil
 }
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateEnv(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Env",
 			Description: "Add environment variables to Statefulset/Deployment/...",

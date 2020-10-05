@@ -91,8 +91,8 @@ func CreateStdK8sWriter() *K8sWriter {
 	return &writer
 }
 
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateK8sWriter(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "K8sWriter",
 			Description: "Internal transformation to print out k8s resources as yaml",

@@ -24,7 +24,7 @@ func TestFromDir(t *testing.T, dir string) *RenderContext {
 func TestExample(t *testing.T, name string) *RenderContext {
 	outputDir := path.Join("../../target/examples", name)
 	inputDir := path.Join("../../examples", name)
-	expectedDir := path.Join("../../testdata/examplesresults", name)
+	expectedDir := path.Join("../../api/testdata/examplesresults", name)
 	return TestDirAndCompare(t, inputDir, outputDir, expectedDir)
 }
 

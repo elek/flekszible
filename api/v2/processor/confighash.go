@@ -55,8 +55,8 @@ func (p *ConfigHash) BeforeResource(resource *data.Resource) error {
 	return nil
 
 }
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+func ActivateConfigHash(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "ConfigHash",
 			Description: "Add labels to the k8s resources with the hash of the used configmaps",

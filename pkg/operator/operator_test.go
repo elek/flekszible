@@ -9,9 +9,9 @@ import (
 )
 
 func TestJsonProcess(t *testing.T) {
-	content, err := ioutil.ReadFile("../../testdata/operator/example.json")
+	content, err := ioutil.ReadFile("../../api/testdata/operator/example.json")
 	assert.Nil(t, err)
-	response, err := handleRequest("../../testdata/operator", content)
+	response, err := handleRequest("../../api/testdata/operator", content)
 	assert.Nil(t, err)
 	assert.Equal(t, "05fecf43-63f5-43cd-8294-c823cd932947", response.Response.Uid)
 	decoded, err := base64.StdEncoding.DecodeString(response.Response.Patch)

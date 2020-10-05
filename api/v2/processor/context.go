@@ -18,6 +18,7 @@ type RenderContext struct {
 	Mode          string
 	ImageOverride string
 	Namespace     string
+	Registry      *ProcessorTypes
 	RootResource  *ResourceNode
 }
 
@@ -52,11 +53,33 @@ type ResourceLocation struct {
 }
 
 func CreateRenderContext(mode string, inputDir string, outputDir string) *RenderContext {
-	return &RenderContext{
+	res :=  &RenderContext{
 		OutputDir:    outputDir,
 		Mode:         mode,
+		Registry:     NewRegistry(),
 		RootResource: CreateResourceNode("<PROJECT_DIR>", inputDir, "", &data.LocalSource{Dir: inputDir}),
 	}
+	ActivateRun(res.Registry)
+	ActivateK8sWriter(res.Registry)
+	ActivateEnv(res.Registry)
+	ActivateReplace(res.Registry)
+	ActivateInit(res.Registry)
+	ActivateNamespace(res.Registry)
+	ActivatePrefix(res.Registry)
+	ActivatePipe(res.Registry)
+	Activate(res.Registry)
+	ActivateImageSet(res.Registry)
+	ActivatePublishStatefulset(res.Registry)
+	ActivateDaemonToStateful(res.Registry)
+	ActivateMount(res.Registry)
+	ActivateCleanup(res.Registry)
+	ActivateConfigHash(res.Registry)
+	ActivateRemove(res.Registry)
+	ActivatePublishService(res.Registry)
+	ActivateNameFilter(res.Registry)
+	ActivateAdd(res.Registry)
+	return res
+
 }
 
 func (context *RenderContext) ListResourceNodes() []*ResourceNode {
@@ -65,7 +88,7 @@ func (context *RenderContext) ListResourceNodes() []*ResourceNode {
 
 func (context *RenderContext) AddAdHocTransformations(transformations []string) error {
 
-	proc, err := createTransformation(transformations)
+	proc, err := context.Registry.createTransformation(transformations)
 	if err != nil {
 		return err
 	}
@@ -73,7 +96,7 @@ func (context *RenderContext) AddAdHocTransformations(transformations []string) 
 	return nil
 }
 
-func parseTransformation(trafoDef string) (Processor, error) {
+func (registry *ProcessorTypes) parseTransformation(trafoDef string) (Processor, error) {
 	parts := strings.SplitN(trafoDef, ":", 2)
 	name := parts[0]
 	parameterMap := make(map[string]string)
@@ -88,7 +111,7 @@ func parseTransformation(trafoDef string) (Processor, error) {
 			parameterMap[paramParts[0]] = paramParts[1]
 		}
 	}
-	proc, err := ProcessorTypeRegistry.Create(name, parameterMap)
+	proc, err := registry.Create(name, parameterMap)
 	if err != nil {
 		return nil, errors.Wrap(err, "Can't create transformation based on the string "+trafoDef)
 	}
@@ -96,11 +119,11 @@ func parseTransformation(trafoDef string) (Processor, error) {
 }
 
 //parse one-liner transformation definition
-func createTransformation(transformationsDefinitions []string) ([]Processor, error) {
+func (registry *ProcessorTypes) createTransformation(transformationsDefinitions []string) ([]Processor, error) {
 	result := make([]Processor, 0)
 	for _, trafoDef := range strings.Split(os.Getenv("FLEKSZIBLE_TRANSFORMATION"), ";") {
 		if len(strings.TrimSpace(trafoDef)) > 0 {
-			transformation, err := parseTransformation(trafoDef)
+			transformation, err := registry.parseTransformation(trafoDef)
 			if err != nil {
 				return result, errors.Wrap(err, "Can't parse transformation defined by FLEKSZIBLE_TRANSFORMATION: "+trafoDef)
 			}
@@ -108,7 +131,7 @@ func createTransformation(transformationsDefinitions []string) ([]Processor, err
 		}
 	}
 	for _, transformationsDefinition := range transformationsDefinitions {
-		transformation, err := parseTransformation(transformationsDefinition)
+		transformation, err := registry.parseTransformation(transformationsDefinition)
 		if err != nil {
 			return result, errors.Wrap(err, "Can't parse transformation defined by cli arg: "+transformationsDefinition)
 		}
@@ -186,14 +209,14 @@ func (context *RenderContext) InitializeTransformations() error {
 
 func (node *ResourceNode) InitializeTransformations(context *RenderContext) error {
 	if node.PreImportTransformations != nil {
-		processors, err := ReadProcessorDefinition(node.PreImportTransformations)
+		processors, err := context.Registry.ReadProcessorDefinition(node.PreImportTransformations)
 		if err != nil {
 			return errors.Wrap(err, "Couldn't parse transformations from the dir "+node.Dir)
 		}
 		node.ProcessorRepository.AppendAll(processors)
 	}
 
-	processors, e := ParseTransformations(node.Dir)
+	processors, e := context.Registry.ParseTransformations(node.Dir)
 	if e != nil {
 		return errors.Wrap(e, "Can't read transformations from "+node.Dir)
 	} else {
@@ -216,7 +239,7 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 }
 
 func (context *RenderContext) AppendCustomProcessor(name string, parameters map[string]string) error {
-	if definition, ok := ProcessorTypeRegistry.TypeMap[strings.ToLower(name)]; ok {
+	if definition, ok := context.Registry.TypeMap[strings.ToLower(name)]; ok {
 		config := yaml.MapSlice{}
 		for k, v := range parameters {
 			config.Put(k, v)
@@ -447,10 +470,10 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 
 //load transformation definitions from ./definitions dir (all dir)
 func (ctx *RenderContext) LoadDefinitions() error {
-	return ctx.RootResource.LoadDefinitions()
+	return ctx.RootResource.LoadDefinitions(ctx.Registry)
 }
 
-func (node *ResourceNode) LoadDefinitions() error {
+func (node *ResourceNode) LoadDefinitions(registry *ProcessorTypes) error {
 	defDir := path.Join(node.Dir, "definitions")
 	if _, err := os.Stat(defDir); !os.IsNotExist(err) {
 		files, err := ioutil.ReadDir(defDir)
@@ -459,7 +482,7 @@ func (node *ResourceNode) LoadDefinitions() error {
 		}
 		for _, file := range files {
 			definitionFile := path.Join(defDir, file.Name())
-			name, err := parseDefintion(definitionFile)
+			name, err := registry.parseDefintion(definitionFile)
 			if err != nil {
 				return errors.Wrap(err, "Can't parse the definition file "+definitionFile)
 			}
@@ -471,7 +494,7 @@ func (node *ResourceNode) LoadDefinitions() error {
 	}
 
 	for _, child := range node.Children {
-		err := child.LoadDefinitions()
+		err := child.LoadDefinitions(registry)
 		if err != nil {
 			return err
 		}

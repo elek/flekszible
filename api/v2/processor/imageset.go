@@ -23,8 +23,9 @@ func (imageSet *Image) BeforeResource(resource *data.Resource) error {
 	}
 	return nil
 }
-func init() {
-	ProcessorTypeRegistry.Add(ProcessorDefinition{
+
+func ActivateImageSet(registry *ProcessorTypes) {
+	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Image",
 			Description: "Replaces the docker image definition",

@@ -9,15 +9,31 @@ import (
 	"strings"
 )
 
+type UpdateMode string
+
+const (
+	Always UpdateMode = "always"
+	Never  UpdateMode = "never"
+	Init   UpdateMode = "init"
+)
+
 type SourceCacheManager struct {
 	RootPath    string
 	doOnceCache map[string]bool
+	UpdateMode  UpdateMode
 }
 
 func NewSourceCacheManager(root string) SourceCacheManager {
-	return SourceCacheManager{
-		RootPath: root,
+	res := SourceCacheManager{
+		RootPath:   root,
+		UpdateMode: Init,
 	}
+	if os.Getenv("FLEKSZIBLE_OFFLINE") == "true" {
+		res.UpdateMode = Never
+	} else if os.Getenv("FLEKSZIBLE_UPDATE") != "" {
+		res.UpdateMode = UpdateMode(os.Getenv("FLEKSZIBLE_UPDATE"))
+	}
+	return res
 }
 func (manager *SourceCacheManager) GetCacheDir(id string) string {
 	cacheDir := path.Join(manager.RootPath, ".cache", id)
@@ -104,6 +120,9 @@ func (NodeDownloader) Download(url string, destinationDir string, rootPath strin
 
 func (source *RemoteSource) EnsureDownloaded(manager *SourceCacheManager) error {
 	destinationDir := manager.GetCacheDir(cleanUrl(source.Url))
+	if _, err := os.Stat(destinationDir); !os.IsNotExist(err) && manager.UpdateMode == Init {
+		return nil
+	}
 	task := func() error {
 		return DownloaderPlugin.Download(source.Url, destinationDir, manager.RootPath)
 	}

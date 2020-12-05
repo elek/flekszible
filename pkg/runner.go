@@ -221,6 +221,29 @@ func AddSource(context *processor.RenderContext, inputDir string, source string)
 	return nil
 }
 
+func UpdateSource(context *processor.RenderContext, inputDir string, source string) error {
+	err := context.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+	cacheManager.UpdateMode = data.Always
+	for _, src := range listUniqSources(context) {
+		switch k := src.(type) {
+		case *data.RemoteSource:
+			fmt.Println("Updating " + k.Url)
+			err = k.EnsureDownloaded(&cacheManager)
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
+
+}
+
 func AddApp(context *processor.RenderContext, inputDir string, app string) {
 	var conf data.Configuration
 	conf, configFile, err := data.ReadConfiguration(inputDir)
@@ -402,9 +425,7 @@ type GoGetterDownloader struct {
 }
 
 func (GoGetterDownloader) Download(url string, destinationDir string, rootPath string) error {
-	if os.Getenv("FLEKSZIBLE_OFFLINE") == "true" {
-		return nil
-	}
+
 	logrus.Info("Downloading remote resource from " + url)
 	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil }
 	return getter.Get(destinationDir, url, setPwd)

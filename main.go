@@ -266,6 +266,15 @@ func sourceCommands(inputDir, outputDir *string) cli.Command {
 					return pkg.AddSource(context, findInputDir(inputDir, ""), c.Args().First())
 				},
 			},
+			{
+				Name:      "update",
+				Usage:     "Force update to remote repositories",
+				ArgsUsage: "[flekszible_dir]",
+				Action: func(c *cli.Context) error {
+					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
+					return pkg.UpdateSource(context, findInputDir(inputDir, ""), c.Args().First())
+				},
+			},
 		},
 	}
 }

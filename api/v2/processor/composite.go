@@ -93,7 +93,7 @@ func parseTransformationParameters(metadata *ProcessorMetadata, config *yaml.Map
 outer:
 	for _, item := range *config {
 		parameterName := item.Key.(string)
-		if parameterName == "type" || parameterName == "scope" || parameterName == "trigger" {
+		if parameterName == "type" || parameterName == "scope" || parameterName == "trigger" || parameterName == "optional" {
 			continue
 		}
 		validParamNames := make([]string, 0)
@@ -122,10 +122,14 @@ outer:
 //instantiate composite transformation based on instance config, generic definition metadata and template
 func compositeFactory(registry *ProcessorTypes, path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
 	funcmap := template.FuncMap{
-		"Iterate": func(count int) []int {
+		"Iterate": func(from int, to int) []int {
 			var i int
+			if to == 0 {
+				to = from
+				from = 0
+			}
 			var Items []int
-			for i = 0; i < count; i++ {
+			for i = from; i < to; i++ {
 				Items = append(Items, i)
 			}
 			return Items

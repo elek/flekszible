@@ -8,8 +8,8 @@ import (
 type PublishService struct {
 	DefaultProcessor
 	Trigger     Trigger
-	ServiceType string         `json:"serviceType"`
-	NodePorts   map[string]int `json:"nodePorts"`
+	ServiceType string         `yaml:"serviceType"`
+	NodePorts   map[string]int `yaml:"nodePorts"`
 }
 
 func (processor *PublishService) ToString() string {

@@ -1,12 +1,16 @@
 package processor
 
 import (
+	"bytes"
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/pkg/errors"
 	"io/ioutil"
+	"os"
+	"os/exec"
 	gopath "path"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 )
@@ -133,6 +137,22 @@ func compositeFactory(registry *ProcessorTypes, path string, metadata *Processor
 				Items = append(Items, i)
 			}
 			return Items
+		},
+		"Nodes": func() ([]string, error) {
+			buf := new(bytes.Buffer)
+			kubectlCommand := exec.Cmd{
+				Path:   "/usr/bin/kubectl",
+				Args:   []string{"kubect", "get", "node", "--no-headers", "-o=custom-columns=name:metadata.name"},
+				Stdout: buf,
+				Stderr: os.Stdout,
+			}
+			err := kubectlCommand.Run()
+			if err != nil {
+				return []string{}, err
+			}
+			nodes := strings.Split(buf.String(), "\n")
+			sort.Strings(nodes)
+			return nodes, nil
 		},
 	}
 

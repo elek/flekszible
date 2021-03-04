@@ -127,10 +127,9 @@ func ShowProcessor(context *processor.RenderContext, command string) error {
 	return nil
 }
 
-func listUniqSources(context *processor.RenderContext) []data.Source {
+func listUniqSources(context *processor.RenderContext, cacheManager *data.SourceCacheManager) []data.Source {
 
 	sources := make([]data.Source, 0)
-	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
 
 	sources = append(sources, data.LocalSourcesFromEnv()...)
 	sources = append(sources, &data.LocalSource{Dir: context.RootResource.Dir})
@@ -138,12 +137,12 @@ func listUniqSources(context *processor.RenderContext) []data.Source {
 	nodes := context.ListResourceNodes()
 
 	sourceSet := make(map[string]bool)
-	id, _ := context.RootResource.Origin.GetPath(&cacheManager)
+	id, _ := context.RootResource.Origin.GetPath(cacheManager)
 	sourceSet[id] = true
 
 	for _, node := range nodes {
 		for _, source := range node.Source {
-			id, _ := source.GetPath(&cacheManager)
+			id, _ := source.GetPath(cacheManager)
 			if _, hasKey := sourceSet[id]; !hasKey {
 				sources = append(sources, source)
 				sourceSet[id] = true
@@ -226,10 +225,9 @@ func UpdateSource(context *processor.RenderContext, inputDir string, source stri
 	if err != nil {
 		panic(err)
 	}
-
 	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
 	cacheManager.UpdateMode = data.Always
-	for _, src := range listUniqSources(context) {
+	for _, src := range listUniqSources(context, &cacheManager) {
 		switch k := src.(type) {
 		case *data.RemoteSource:
 			fmt.Println("Updating " + k.Url)
@@ -291,7 +289,7 @@ func ListSources(context *processor.RenderContext) {
 	table := termtables.CreateTable()
 	table.AddHeaders("location", "path")
 
-	for _, source := range listUniqSources(context) {
+	for _, source := range listUniqSources(context, &cacheManager) {
 		value := source.ToString()
 		path, _ := source.GetPath(&cacheManager)
 
@@ -314,7 +312,7 @@ func SearchComponent(context *processor.RenderContext) {
 	table := termtables.CreateTable()
 	table.AddHeaders("path", "description")
 	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
-	for _, source := range listUniqSources(context) {
+	for _, source := range listUniqSources(context, &cacheManager) {
 		findApps(source, &cacheManager, table)
 
 	}

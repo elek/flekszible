@@ -230,7 +230,7 @@ func UpdateSource(context *processor.RenderContext, inputDir string, source stri
 	for _, src := range listUniqSources(context, &cacheManager) {
 		switch k := src.(type) {
 		case *data.RemoteSource:
-			fmt.Println("Updating " + k.Url)
+			logrus.Info("Updating " + k.Url)
 			err = k.EnsureDownloaded(&cacheManager)
 			if err != nil {
 				return err

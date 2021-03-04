@@ -355,6 +355,9 @@ func findApps(source data.Source, manager *data.SourceCacheManager, table *termt
 			if err != nil {
 				logrus.Error("Can't parse flekszible.yaml from " + filePath + " " + err.Error())
 			}
+			if strings.HasPrefix(relpath, "flekszible/") {
+				relpath = relpath[len("flekszible/"):]
+			}
 			if declaredName, found := fleksz["description"]; found {
 				name = declaredName.(string)
 				table.AddRow(relpath, name)

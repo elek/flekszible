@@ -225,7 +225,7 @@ func UpdateSource(context *processor.RenderContext, inputDir string, source stri
 	if err != nil {
 		panic(err)
 	}
-	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	cacheManager.UpdateMode = data.Always
 	for _, src := range listUniqSources(context, &cacheManager) {
 		switch k := src.(type) {
@@ -284,7 +284,7 @@ func ListSources(context *processor.RenderContext) {
 		panic(err)
 	}
 
-	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 
 	table := termtables.CreateTable()
 	table.AddHeaders("location", "path")
@@ -311,7 +311,7 @@ func SearchComponent(context *processor.RenderContext) {
 
 	table := termtables.CreateTable()
 	table.AddHeaders("path", "description")
-	cacheManager := data.SourceCacheManager{RootPath: context.RootResource.Dir}
+	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	for _, source := range listUniqSources(context, &cacheManager) {
 		findApps(source, &cacheManager, table)
 
@@ -426,7 +426,6 @@ type GoGetterDownloader struct {
 }
 
 func (GoGetterDownloader) Download(url string, destinationDir string, rootPath string) error {
-
 	logrus.Info("Downloading remote resource from " + url)
 	setPwd := func(client *getter.Client) error { client.Pwd = rootPath; return nil }
 	return getter.Get(destinationDir, url, setPwd)

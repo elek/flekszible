@@ -216,8 +216,8 @@ func appCommands(inputDir *string, outputDir *string) cli.Command {
 				ArgsUsage: "[flekszible_dir]",
 				Action: func(c *cli.Context) error {
 					context := processor.CreateRenderContext("k8s", findInputDir(inputDir, c.Args().Get(0)), findOutputDir(outputDir, c.Args().Get(0)))
-					pkg.SearchComponent(context)
-					return nil
+					return pkg.SearchComponent(context)
+
 				},
 			},
 			{
@@ -330,7 +330,6 @@ func findInputDir(argument *string, inputDirFromArg string) string {
 			}
 			return workDir
 		}
-		return *argument
 	}
 
 	return pwd

@@ -303,32 +303,36 @@ func ListSources(context *processor.RenderContext) {
 	fmt.Println(table.Render())
 }
 
-func SearchComponent(context *processor.RenderContext) {
+func SearchComponent(context *processor.RenderContext) error {
 	err := context.Init()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	table := termtables.CreateTable()
 	table.AddHeaders("path", "description")
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	for _, source := range listUniqSources(context, &cacheManager) {
-		findApps(source, &cacheManager, table)
+		err = findApps(source, &cacheManager, table)
+		if err != nil {
+			return err
+		}
 
 	}
 	fmt.Println(table.Render())
+	return nil
 }
 
-func findApps(source data.Source, manager *data.SourceCacheManager, table *termtables.Table) {
+func findApps(source data.Source, manager *data.SourceCacheManager, table *termtables.Table) error {
 
 	dir, err := source.GetPath(manager)
 	if dir == "" {
-		return
+		return nil
 	}
 	if err != nil {
 		logrus.Error("Can't find real path of the source")
 	}
-	err = filepath.Walk(dir, func(filePath string, info os.FileInfo, err error) error {
+	return filepath.Walk(dir, func(filePath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -353,12 +357,9 @@ func findApps(source data.Source, manager *data.SourceCacheManager, table *termt
 			if err != nil {
 				logrus.Error("Can't parse flekszible.yaml from " + filePath + " " + err.Error())
 			}
-			if strings.HasPrefix(relpath, "flekszible/") {
-				relpath = relpath[len("flekszible/"):]
-			}
 			if declaredName, found := fleksz["description"]; found {
 				name = declaredName.(string)
-				table.AddRow(relpath, name)
+				table.AddRow(strings.TrimPrefix(relpath, "flekszible/"), name)
 			}
 		}
 

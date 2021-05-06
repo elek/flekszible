@@ -23,7 +23,6 @@ func (writer *Kustomize) Before(ctx *RenderContext, node *ResourceNode) error {
 	resources := make([]string, 0)
 
 	for _, resource := range ctx.RootResource.AllResources() {
-		println(resource.Destination)
 		if resource.Destination == "" {
 			if resource.DestinationFileName != "" {
 				resources = append(resources, resource.DestinationFileName)
@@ -38,7 +37,15 @@ func (writer *Kustomize) Before(ctx *RenderContext, node *ResourceNode) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(destFile, data, 0644)
+
+	licenceHeader := ""
+	licenceHeaderFile := path.Join(ctx.OutputDir, "LICENSE.header")
+	if _, err := os.Stat(licenceHeader); os.IsNotExist(err) {
+		content, _ := ioutil.ReadFile(licenceHeaderFile)
+		licenceHeader = string(content) + "\n"
+	}
+
+	err = ioutil.WriteFile(destFile, append([]byte(licenceHeader), data...), 0644)
 	if err != nil {
 		return err
 	}

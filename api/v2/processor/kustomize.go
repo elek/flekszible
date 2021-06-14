@@ -1,10 +1,11 @@
 package processor
 
 import (
-	"github.com/elek/flekszible/api/v2/yaml"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/elek/flekszible/api/v2/yaml"
 )
 
 type Kustomize struct {

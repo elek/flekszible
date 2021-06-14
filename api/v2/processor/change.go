@@ -1,11 +1,12 @@
 package processor
 
 import (
+	"regexp"
+	"strconv"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/pkg/errors"
-	"regexp"
-	"strconv"
 )
 
 type Change struct {
@@ -43,7 +44,7 @@ func (processor *Change) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func ActivateInit(registry *ProcessorTypes) () {
+func ActivateInit(registry *ProcessorTypes) {
 	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Change",

@@ -1,10 +1,11 @@
 package examples
 
 import (
+	"testing"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/processor"
 	"github.com/elek/flekszible/pkg"
-	"testing"
 )
 
 func TestSource(t *testing.T) {

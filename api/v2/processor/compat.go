@@ -33,7 +33,7 @@ func (processor *Compat) BeforeResource(resource *data.Resource) error {
 	return nil
 }
 
-func Activate(registry *ProcessorTypes) () {
+func Activate(registry *ProcessorTypes) {
 	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Compat",

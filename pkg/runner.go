@@ -3,7 +3,6 @@ package pkg
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -12,6 +11,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
 
 	"github.com/brettski/go-termtables"
 	"github.com/elek/flekszible/api/v2/data"

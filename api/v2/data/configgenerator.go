@@ -1,10 +1,11 @@
 package data
 
 import (
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"path"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type ConfigGenerator struct {

@@ -5,5 +5,5 @@ import (
 )
 
 func TestKustomize(t *testing.T) {
-	 TestFromDir(t, "kustomize")
+	TestFromDir(t, "kustomize")
 }

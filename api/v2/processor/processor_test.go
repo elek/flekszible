@@ -1,9 +1,10 @@
 package processor
 
 import (
+	"testing"
+
 	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestConfigureProcessorFromYamlFragment(t *testing.T) {

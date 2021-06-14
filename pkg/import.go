@@ -1,12 +1,13 @@
 package pkg
 
 import (
-	"github.com/elek/flekszible/api/v2/data"
-	"github.com/elek/flekszible/api/v2/processor"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/processor"
+	"github.com/pkg/errors"
 )
 
 func Import(resourceFile string, transformations []string, outputDir string, helm3 bool) error {

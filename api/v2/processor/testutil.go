@@ -2,9 +2,6 @@ package processor
 
 import (
 	"fmt"
-	"github.com/elek/flekszible/api/v2/data"
-	"github.com/elek/flekszible/api/v2/yaml"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +9,10 @@ import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/yaml"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFromDir(t *testing.T, dir string) *RenderContext {

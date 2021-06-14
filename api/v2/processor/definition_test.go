@@ -1,9 +1,10 @@
 package processor
 
 import (
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSplit(t *testing.T) {

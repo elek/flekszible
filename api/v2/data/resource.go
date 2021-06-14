@@ -1,13 +1,14 @@
 package data
 
 import (
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type Resource struct {

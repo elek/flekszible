@@ -2,9 +2,10 @@ package data
 
 import (
 	"fmt"
-	"github.com/elek/flekszible/api/v2/yaml"
 	"io/ioutil"
 	"strconv"
+
+	"github.com/elek/flekszible/api/v2/yaml"
 )
 
 func ReadManifestString(content []byte) (*MapNode, error) {

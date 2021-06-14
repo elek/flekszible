@@ -3,6 +3,7 @@ package processor
 import (
 	"errors"
 	"fmt"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
 )

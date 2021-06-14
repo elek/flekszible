@@ -2,10 +2,11 @@ package processor
 
 import (
 	"bufio"
+	"strings"
+
 	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"strings"
 )
 
 //split file to header(optional) and tranformation definition

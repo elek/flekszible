@@ -2,9 +2,6 @@ package processor
 
 import (
 	"bytes"
-	"github.com/elek/flekszible/api/v2/data"
-	"github.com/elek/flekszible/api/v2/yaml"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -13,6 +10,10 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/yaml"
+	"github.com/pkg/errors"
 )
 
 type Composite struct {

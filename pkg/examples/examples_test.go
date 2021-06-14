@@ -1,8 +1,9 @@
 package examples
 
 import (
-	"github.com/elek/flekszible/api/v2/processor"
 	"testing"
+
+	"github.com/elek/flekszible/api/v2/processor"
 )
 
 func TestGettingStarted(t *testing.T) {

@@ -1,13 +1,14 @@
 package processor
 
 import (
+	"os"
+	"os/exec"
+	"strings"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"os"
-	"os/exec"
-	"strings"
 )
 
 type Pipe struct {

@@ -3,9 +3,10 @@ package processor
 import (
 	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
-	"strconv"
 )
 
 type Add struct {

@@ -1,14 +1,17 @@
 package data
 
-import "github.com/stretchr/testify/assert"
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestReadConfigMaps(t *testing.T) {
 	generator := &ConfigGenerator{}
 	resources, err := generator.Generate("../../testdata/configmaps", "/tmp")
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(resources))
-	
+
 	otherConfig, err := ReadManifestFile("../../testdata/configmaps/expected/config2.yaml")
 	assert.Nil(t, err)
 

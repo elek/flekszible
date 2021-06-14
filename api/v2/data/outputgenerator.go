@@ -2,11 +2,12 @@ package data
 
 import (
 	"bytes"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type OutputGenerator struct {

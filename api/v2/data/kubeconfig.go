@@ -1,11 +1,12 @@
 package data
 
 import (
-	"github.com/elek/flekszible/api/v2/yaml"
 	"io/ioutil"
 	"os"
 	"os/user"
 	"path"
+
+	"github.com/elek/flekszible/api/v2/yaml"
 )
 
 type Kubeconfig struct {

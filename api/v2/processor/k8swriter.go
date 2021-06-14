@@ -2,14 +2,15 @@ package processor
 
 import (
 	"fmt"
-	"github.com/elek/flekszible/api/v2/data"
-	"github.com/elek/flekszible/api/v2/yaml"
-	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/yaml"
+	"github.com/pkg/errors"
 )
 
 type K8sWriter struct {

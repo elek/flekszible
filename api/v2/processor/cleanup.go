@@ -1,14 +1,15 @@
 package processor
 
 import (
-	"github.com/elek/flekszible/api/v2/data"
-	"github.com/elek/flekszible/api/v2/yaml"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/elek/flekszible/api/v2/data"
+	"github.com/elek/flekszible/api/v2/yaml"
+	"github.com/sirupsen/logrus"
 )
 
 type Cleanup struct {

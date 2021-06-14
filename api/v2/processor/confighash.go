@@ -1,13 +1,13 @@
 package processor
 
 import (
+	"crypto/md5"
 	"encoding/hex"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
 	"github.com/pkg/errors"
 )
-
-import "crypto/md5"
 
 type ConfigHash struct {
 	DefaultProcessor

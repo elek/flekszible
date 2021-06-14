@@ -2,14 +2,15 @@ package data
 
 import (
 	"bytes"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"strings"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 )
 
 type SecretGetConfig struct {

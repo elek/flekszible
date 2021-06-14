@@ -1,9 +1,10 @@
 package processor
 
 import (
+	"strings"
+
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
-	"strings"
 )
 
 type Prefix struct {

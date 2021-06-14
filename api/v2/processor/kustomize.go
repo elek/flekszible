@@ -17,7 +17,7 @@ func (writer *Kustomize) ToString() string {
 }
 
 func (writer *Kustomize) Before(ctx *RenderContext, node *ResourceNode) error {
-	_ = os.MkdirAll(ctx.OutputDir, 755)
+	_ = os.MkdirAll(ctx.OutputDir, 0755)
 	destFile := path.Join(ctx.OutputDir, "kustomization.yaml")
 	output := make(map[string]interface{})
 

@@ -13,13 +13,10 @@ require (
 	github.com/go-playground/validator/v10 v10.8.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/hashicorp/go-getter v1.5.6
+	github.com/hashicorp/go-getter v1.5.11
 	github.com/hashicorp/go-version v1.3.0 // indirect
-	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/klauspost/compress v1.13.1 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
-	github.com/magefile/mage v1.11.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect

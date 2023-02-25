@@ -327,7 +327,9 @@ func (visitor *Yamlize) BeforeMapItem(node *MapNode, key string, index int) {
 		if visitor.parsed {
 			return
 		}
-		if match, _ := visitor.Path.MatchLimited(node.Path.Extend(key)); match {
+		matchLimited, _ := visitor.Path.MatchLimited(node.Path.Extend(key))
+		matchFull := visitor.Path.Match(node.Path.Extend(key))
+		if matchLimited || matchFull {
 			switch value := node.Get(key).(type) {
 			case *KeyNode:
 				yamlDoc := yaml.MapSlice{}

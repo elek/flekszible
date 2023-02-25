@@ -3,12 +3,14 @@ module github.com/elek/flekszible
 require (
 	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/iam v0.12.0 // indirect
+	cloud.google.com/go/longrunning v0.4.1 // indirect
 	cloud.google.com/go/storage v1.29.0 // indirect
 	github.com/appscode/jsonpatch v1.0.1
 	github.com/aws/aws-sdk-go v1.44.209 // indirect
 	github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020
 	github.com/bytedance/sonic v1.8.2 // indirect
-	github.com/elek/flekszible/api/v2 v2.0.0-20220807084015-f7f20ca3139d
+	github.com/elek/flekszible/api/v2 v2.0.0-20230225074944-c88d4de6bfb9
+	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/fatih/color v1.14.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang/snappy v0.0.4 // indirect
@@ -26,7 +28,6 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/urfave/cli v1.22.12
 	golang.org/x/arch v0.2.0 // indirect
-	golang.org/x/crypto v0.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20230223222841-637eb2293923 // indirect
 )
 

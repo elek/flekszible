@@ -349,7 +349,7 @@ func findApps(source data.Source, manager *data.SourceCacheManager, table *termt
 				logrus.Error("Can't find relative path of" + filePath + " " + err.Error())
 			}
 			fleksz := make(map[string]interface{})
-			bytes, err := ioutil.ReadFile(filePath)
+			bytes, err := os.ReadFile(filePath)
 			if err != nil {
 				logrus.Error("Can't read flekszible.yaml from " + filePath + " " + err.Error())
 			}

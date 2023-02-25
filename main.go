@@ -1,8 +1,9 @@
 package main
 
-// import "github.com/elek/flekszible/cmd"
 import (
 	"fmt"
+	"github.com/andrew-d/go-termutil"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -28,7 +29,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Flekszible"
 	app.Usage = "Generate kubernetes sources files"
-	app.Description = "Kubernetes resource file generator"
+	app.Description = "Kubernetes resource file manager"
 	app.Version = fmt.Sprintf("%s (%s, %s)", version, commit, date)
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -43,6 +44,17 @@ func main() {
 			Usage:       "Destination directory to generate the k8s resource (default: current dir)",
 			Destination: &outputDir,
 		},
+	}
+	app.Action = func(c *cli.Context) error {
+		if !termutil.Isatty(os.Stdin.Fd()) {
+			raw, err := io.ReadAll(os.Stdin)
+			if err != nil {
+				return err
+			}
+			return pkg.Kustomize(raw)
+		}
+		cli.ShowAppHelpAndExit(c, 1)
+		return nil
 	}
 	app.Commands = []cli.Command{
 		{

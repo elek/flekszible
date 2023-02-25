@@ -124,7 +124,7 @@ func (registry *ProcessorTypes) parseTransformation(trafoDef string) (Processor,
 	return proc, nil
 }
 
-//parse one-liner transformation definition
+// parse one-liner transformation definition
 func (registry *ProcessorTypes) createTransformation(transformationsDefinitions []string) ([]Processor, error) {
 	result := make([]Processor, 0)
 	for _, trafoDef := range strings.Split(os.Getenv("FLEKSZIBLE_TRANSFORMATION"), ";") {
@@ -160,10 +160,10 @@ func (context *RenderContext) LoadResourceTree() error {
 	data.Generators = append(data.Generators, &data.ConfigGenerator{})
 	data.Generators = append(data.Generators, &data.SecretGenerator{})
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
-	return context.RootResource.LoadResourceConfig(&cacheManager, context.OutputDir)
+	return context.RootResource.InitFromDir(&cacheManager, context.OutputDir)
 }
 
-//List all the resources from the resource tree.
+// List all the resources from the resource tree.
 func (context *RenderContext) Resources() []*data.Resource {
 	result := make([]*data.Resource, 0)
 	result = append(result, context.RootResource.AllResources()...)
@@ -289,7 +289,7 @@ func (node *ResourceNode) Execute(context *RenderContext, functionCall execute) 
 
 }
 
-//execute all the transformations in the rendercontext.
+// execute all the transformations in the rendercontext.
 func (ctx *RenderContext) Render() error {
 
 	before := func(processor Processor, context *RenderContext, node *ResourceNode) error {
@@ -346,13 +346,17 @@ func (ctx *RenderContext) Render() error {
 	return nil
 }
 
-//parse the directory structure and the flekszible configs from the dirs
-func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManager, outputDir string) error {
+// InitFromDir parses the directory structure and the flekszible configs from the dirs.
+func (node *ResourceNode) InitFromDir(sourceCache *data.SourceCacheManager, outputDir string) error {
 	conf, _, err := data.ReadConfiguration(node.Dir)
 	if err != nil {
 		return errors.Wrap(err, "Can't parse flekszible.yaml/Flekszible descriptor from  "+node.Dir)
 	}
+	return node.InitFromConfig(conf, sourceCache, outputDir)
+}
 
+// InitFromConfig initializes and reads all dependencies based on parsed config.
+func (node *ResourceNode) InitFromConfig(conf data.Configuration, sourceCache *data.SourceCacheManager, outputDir string) error {
 	//output dir should never be read
 	absNodeDir, _ := filepath.Abs(node.Dir)
 	absDestDir, _ := filepath.Abs(outputDir)
@@ -364,7 +368,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	}
 
 	for _, generator := range data.Generators {
-		dirs, err := ioutil.ReadDir(node.Dir)
+		dirs, err := os.ReadDir(node.Dir)
 		if err == nil {
 			for _, dir := range dirs {
 				managedDir := path.Join(node.Dir, dir.Name())
@@ -419,7 +423,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 			if stat, err := os.Stat(globalDir); err == nil && stat.IsDir() {
 				childNode := CreateResourceNode("_global", globalDir, node.Destination, source)
 				childNode.Origin = source
-				err = childNode.LoadResourceConfig(sourceCache, outputDir)
+				err = childNode.InitFromDir(sourceCache, outputDir)
 				if err != nil {
 					return errors.Wrap(err, "Couldn't load _global dir from "+globalDir)
 				}
@@ -458,7 +462,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 		if node.Dir == childNode.Dir {
 			panic("Recursive directory parser " + node.Dir + " loads" + childNode.Dir)
 		}
-		err = childNode.LoadResourceConfig(sourceCache, outputDir)
+		err = childNode.InitFromDir(sourceCache, outputDir)
 		if err != nil {
 			return err
 		}
@@ -474,7 +478,7 @@ func (node *ResourceNode) LoadResourceConfig(sourceCache *data.SourceCacheManage
 	return nil
 }
 
-//load transformation definitions from ./definitions dir (all dir)
+// LoadDefinitions load. transformation definitions from ./definitions dir (all dir).
 func (ctx *RenderContext) LoadDefinitions() error {
 	return ctx.RootResource.LoadDefinitions(ctx.Registry)
 }
@@ -509,7 +513,7 @@ func (node *ResourceNode) LoadDefinitions(registry *ProcessorTypes) error {
 
 }
 
-//try to find the first Source which contains the dir
+// try to find the first Source which contains the dir
 func LocateImportedDir(basedir string, dir string, sources []data.Source, cacheManager *data.SourceCacheManager, excludedDirs []string) (data.Source, error) {
 	allSources := make([]data.Source, 0)
 	allSources = append(allSources, data.LocalSourcesFromEnv()...)

@@ -5,6 +5,7 @@ require (
 	cloud.google.com/go/iam v0.12.0 // indirect
 	cloud.google.com/go/longrunning v0.4.1 // indirect
 	cloud.google.com/go/storage v1.29.0 // indirect
+	github.com/andrew-d/go-termutil v0.0.0-20150726205930-009166a695a2 // indirect
 	github.com/appscode/jsonpatch v1.0.1
 	github.com/aws/aws-sdk-go v1.44.209 // indirect
 	github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020

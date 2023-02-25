@@ -602,3 +602,39 @@ example FLEKSZIBLE_PATH=/home/elek/prog/istio-1.0.5/samples/bookinfo/platform/
 ```
 
 Please note, that istio injection could be slow as it requires a live connection to the existing istio services.
+
+# Kustomize integration
+
+`Flekszible` definitions can be defined in k8s resource file which is compatible with Kustomize: 
+
+```yaml
+apiVersion: flekszible.github.io/v1
+kind: Flekszible
+metadata:
+  name: cluster1
+  annotations:
+    config.kubernetes.io/function: |
+      exec: 
+        path: flekszible
+
+spec:
+  transformations:
+    - type: image
+      image: xxx
+```
+
+If you use this file as a transformer plugin, flekszible can modify the resources managed by kustomize (as long as you have the latest binary on your path):
+
+```
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - simple.yaml
+  - simple2.yaml
+metadata:
+  name: kustomize-integration
+transformers:
+  - flekszible.yaml
+```
+
+Please note that `kustomize` plugin can receive all the resources on standard output, but you couldn't easily use external directories. Therefor it's better to use only inline transformation in the `Flekszible` file itself.

@@ -14,7 +14,7 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
 ## Features:
 
   1. Zero-config: it can work without any external descriptor file
-  2. Mixins: you can define additional transformations to change 8s resources
+  2. Mixins: you can define additional transformations to change k8s resources
   3. Imports: You can compose resources from multiple sources (github repositories)
   4. Multi-tenancy: With imports you can manage multiple environments (dev,prod,...)
   5. Multi-instance: You can import the same template (eg. zookeeper resources) with different flavour. With this approach you can create two different zookeeper ring from a template to your cluster.
@@ -34,11 +34,11 @@ Flekszible is a Kubernetes configuration/manifest manager. It helps to manage yo
    * You don't need to add a lot of golang template conditions to customize all the parts of k8s resources
    * The package management is simplified (No other repository formats just plain git repositories. Registry is based on github tags and stars)
  * **Flekszible vs Kustomize**:
-   * It has less limitations. Flekszible is designed to be as flexible as possible with keeping the complexity on minimal.
+   * It has fewer limitations. Flekszible is designed to be as flexible as possible with keeping the complexity on minimal.
    * It's more generic design (generic Yaml tree + transformations instead of k8s resource merging)
    * It has one generic patching style, which can be used to define high level transformations.
    * High level transformation can be shared and reused (eg. these transformations make my Hadoop cluster secure...)
-   * It tries to be more user friendly (easier syntax, flexible composition, it can work without registering any resource file)
+   * It tries to be more user-friendly (easier syntax, flexible composition, it can work without registering any resource file)
    * It has a simple but powerful package management (based on git repos)
    * Service-mesh friendly, any external command can be invoked.
    * Secret / resource generator support with the help of bash scripts

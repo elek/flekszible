@@ -13,6 +13,7 @@ require (
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/fatih/color v1.14.1
 	github.com/gin-gonic/gin v1.9.0
+	github.com/go-playground/validator/v10 v10.11.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/go-getter v1.7.0
 	github.com/klauspost/compress v1.15.15 // indirect

@@ -694,10 +694,11 @@ var unmarshalTests = []struct {
 	// YAML Float regex shouldn't match this
 	{
 		"a: 123456e1\n",
-		M{"a": "123456e1"},
-	}, {
+		M{"a": 1.23456e+06},
+	},
+	{
 		"a: 123456E1\n",
-		M{"a": "123456E1"},
+		M{"a": 1.23456e+06},
 	},
 	// yaml-test-suite 3GZX: Spec Example 7.1. Alias Nodes
 	{

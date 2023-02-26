@@ -23,7 +23,7 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-  - github:
+  - tap:
       owner: elek
       name: homebrew-brew
     description: "Composition based kubernetes resource file manager"

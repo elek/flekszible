@@ -14,7 +14,7 @@ jobs:
           ./build test
   build-osx:
     name: Go Test OSX
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@master
     - name: build

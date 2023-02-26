@@ -108,3 +108,7 @@ docs/public
 
 #go build
 flekszible
+
+dist/
+
+dist/

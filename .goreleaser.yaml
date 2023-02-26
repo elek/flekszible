@@ -19,15 +19,4 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - '^docs:'
-      - '^test:'
-brews:
-  - tap:
-      owner: elek
-      name: homebrew-brew
-    description: "Composition based kubernetes resource file manager"
 

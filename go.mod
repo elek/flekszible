@@ -11,7 +11,7 @@ require (
 	github.com/brettski/go-termtables v0.0.0-20190907034855-12ddd59af020
 	github.com/bytedance/sonic v1.8.2 // indirect
 	github.com/elek/flekszible/api/v2 v2.0.0-20230225074944-c88d4de6bfb9
-	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
+	github.com/evanphx/json-patch v4.11.0+incompatible // indirect
 	github.com/fatih/color v1.14.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang/snappy v0.0.4 // indirect

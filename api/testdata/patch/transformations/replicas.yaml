@@ -1,0 +1,5 @@
+- type: patch
+  op: replace
+  path: /spec/replicas
+  value: 11
+

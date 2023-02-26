@@ -85,6 +85,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	ActivateAdd(res.Registry)
 	ActivateKustomize(res.Registry)
 	ActivateMerge(res.Registry)
+	ActivatePatch(res.Registry)
 	return res
 
 }

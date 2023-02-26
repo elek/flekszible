@@ -76,20 +76,3 @@ func ActivateMerge(registry *ProcessorTypes) {
 		},
 	})
 }
-
-//func a() {
-//	rf := resource.NewFactory(&hasher.Hasher{})
-//	var m resmap.ResMap
-//	loadedPatches := []*resource.Resource{}
-//	for _, patch := range loadedPatches {
-//		target, err := m.GetById(patch.OrgId())
-//		if err != nil {
-//			return err
-//		}
-//		if err = m.ApplySmPatch(
-//			resource.MakeIdSet([]*resource.Resource{target}), patch); err != nil {
-//			return err
-//		}
-//	}
-//	return nil
-//}

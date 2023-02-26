@@ -58,8 +58,8 @@ func ActivateMerge(registry *ProcessorTypes) {
 			Doc:         addDoc,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
-			config.Remove("type")
-			raw, err := yaml.Marshal(config)
+			get, _ := config.Get("merge")
+			raw, err := yaml.Marshal(get)
 			if err != nil {
 				return nil, err
 			}

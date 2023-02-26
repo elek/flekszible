@@ -1,7 +1,8 @@
 - type: merge
-  apiVersion: apps/v1beta1
-  kind: StatefulSet
-  metadata:
-    name: datanode
-  spec:
-    replicas: 11
+  merge:
+    apiVersion: apps/v1beta1
+    kind: StatefulSet
+    metadata:
+      name: datanode
+    spec:
+      replicas: 11

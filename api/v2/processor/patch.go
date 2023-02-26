@@ -10,13 +10,16 @@ import (
 
 type Patch struct {
 	DefaultProcessor
-	Op    string
-	Value interface{}
-	Path  string
+	Op      string
+	Value   interface{}
+	Path    string
+	Trigger Trigger
 }
 
 func (processor *Patch) BeforeResource(res *data.Resource) error {
-
+	if !processor.Trigger.active(res) {
+		return nil
+	}
 	p := struct {
 		Op    string      `json:"op"`
 		Path  string      `json:"path"`

@@ -3,6 +3,7 @@ package processor
 import (
 	"github.com/elek/flekszible/api/v2/data"
 	"github.com/elek/flekszible/api/v2/yaml"
+	"github.com/pkg/errors"
 	"sigs.k8s.io/kustomize/api/hasher"
 	"sigs.k8s.io/kustomize/api/resmap"
 	"sigs.k8s.io/kustomize/api/resource"
@@ -10,10 +11,14 @@ import (
 
 type Merge struct {
 	DefaultProcessor
-	merge *resource.Resource
+	merge   *resource.Resource
+	Trigger Trigger
 }
 
 func (processor *Merge) BeforeResource(res *data.Resource) error {
+	if !processor.Trigger.active(res) {
+		return nil
+	}
 	str, err := res.Content.ToString()
 	if err != nil {
 		return err
@@ -58,7 +63,22 @@ func ActivateMerge(registry *ProcessorTypes) {
 			Doc:         addDoc,
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
+			m := Merge{}
+
+			tr, _ := config.Get("trigger")
+			trRaw, err := yaml.Marshal(tr)
+			if err != nil {
+				return nil, err
+			}
+			err = yaml.UnmarshalStrict(trRaw, &m.Trigger)
+			if err != nil {
+				return nil, err
+			}
+
 			get, _ := config.Get("merge")
+			if get == nil || get == "" {
+				return nil, errors.Errorf("'merge' key is missing from the configuration")
+			}
 			raw, err := yaml.Marshal(get)
 			if err != nil {
 				return nil, err
@@ -69,10 +89,8 @@ func ActivateMerge(registry *ProcessorTypes) {
 			if err != nil {
 				return nil, err
 			}
-
-			return &Merge{
-				merge: mergeDef,
-			}, nil
+			m.merge = mergeDef
+			return &m, nil
 		},
 	})
 }

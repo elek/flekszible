@@ -7,7 +7,7 @@ import (
 )
 
 func TestReadConfigMaps(t *testing.T) {
-	generator := &ConfigGenerator{}
+	generator := &ConfigImporter{}
 	resources, err := generator.Generate("../../testdata/configmaps", "/tmp")
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(resources))

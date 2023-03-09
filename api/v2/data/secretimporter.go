@@ -8,14 +8,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-type ConfigImporter struct {
+type SecretImporter struct {
 }
 
-func (*ConfigImporter) IsManagedDir(dir string) bool {
-	return path.Base(dir) == "configmaps"
+func (*SecretImporter) IsManagedDir(dir string) bool {
+	return path.Base(dir) == "secrets"
 }
 
-func (*ConfigImporter) Generate(sourceDir string, destinationDir string) ([]*Resource, error) {
+func (*SecretImporter) Generate(sourceDir string, destinationDir string) ([]*Resource, error) {
 	resources := make([]*Resource, 0)
 	files, err := ioutil.ReadDir(sourceDir)
 	if err != nil {
@@ -27,7 +27,7 @@ func (*ConfigImporter) Generate(sourceDir string, destinationDir string) ([]*Res
 			filename := file.Name()
 			pieces := strings.SplitN(filename, "_", 2)
 			if len(pieces) != 2 {
-				return resources, errors.New("Filename should be in the format: configmap_key.ext. " + filename)
+				return resources, errors.New("Filename should be in the format: secret_key.ext. " + filename)
 			}
 			data, err := ioutil.ReadFile(path.Join(sourceDir, filename))
 			if err != nil {
@@ -42,7 +42,7 @@ func (*ConfigImporter) Generate(sourceDir string, destinationDir string) ([]*Res
 	for name, dataMap := range configMapWithData {
 		rootNode := NewMapNode(NewPath())
 		rootNode.PutValue("apiVersion", "v1")
-		rootNode.PutValue("kind", "ConfigMap")
+		rootNode.PutValue("kind", "Secret")
 		metadata := rootNode.CreateMap("metadata")
 		metadata.PutValue("name", name)
 		data := rootNode.CreateMap("data")

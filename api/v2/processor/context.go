@@ -159,8 +159,9 @@ func listResourceNodesInt(node *ResourceNode) []*ResourceNode {
 
 func (context *RenderContext) LoadResourceTree() error {
 	data.Generators = append(data.Generators, &data.OutputGenerator{})
-	data.Generators = append(data.Generators, &data.ConfigGenerator{})
+	data.Generators = append(data.Generators, &data.ConfigImporter{})
 	data.Generators = append(data.Generators, &data.SecretGenerator{})
+	data.Generators = append(data.Generators, &data.SecretImporter{})
 	cacheManager := data.NewSourceCacheManager(context.RootResource.Dir)
 	return context.RootResource.InitFromDir(&cacheManager, context.OutputDir)
 }
@@ -219,7 +220,7 @@ func (node *ResourceNode) InitializeTransformations(context *RenderContext) erro
 	if node.PreImportTransformations != nil {
 		processors, err := context.Registry.ReadProcessorDefinition(node.PreImportTransformations)
 		if err != nil {
-			return errors.Wrap(err, "Couldn't parse transformations from the dir "+node.Dir)
+			return errors.Wrapf(err, "error in %s", node.Dir)
 		}
 		node.ProcessorRepository.AppendAll(processors)
 	}

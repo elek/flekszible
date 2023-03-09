@@ -2,7 +2,6 @@ package processor
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	gopath "path"
@@ -124,7 +123,7 @@ outer:
 
 }
 
-//instantiate composite transformation based on instance config, generic definition metadata and template
+// instantiate composite transformation based on instance config, generic definition metadata and template
 func compositeFactory(registry *ProcessorTypes, path string, metadata *ProcessorMetadata, config *yaml.MapSlice, templateBytes []byte) (*Composite, error) {
 	funcmap := template.FuncMap{
 		"Iterate": func(from int, to int) []int {
@@ -173,7 +172,7 @@ func compositeFactory(registry *ProcessorTypes, path string, metadata *Processor
 	}
 	processors, err := registry.ReadProcessorDefinition([]byte(output.String()))
 	if err != nil {
-		panic("The definition can't be parsed" + err.Error())
+		return nil, err
 	}
 	resourcesDir := metadata.Resources
 	if resourcesDir != "" && !filepath.IsAbs(resourcesDir) {
@@ -195,9 +194,9 @@ func addDefaultParameters(parameters map[string]interface{}) {
 	parameters["namespace"] = ns
 }
 
-//pase definition yaml file and register definitions to the global registry.
+// pase definition yaml file and register definitions to the global registry.
 func (registry *ProcessorTypes) parseDefintion(path string) (string, error) {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return "", errors.Wrap(err, "Can't load transformation definition from "+path)
 	}
@@ -213,7 +212,7 @@ func (registry *ProcessorTypes) parseDefintion(path string) (string, error) {
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			comp, err := compositeFactory(registry, path, &metadata, config, body)
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrapf(err, "Error in %s", path)
 			}
 			trigger, found := config.Get("trigger")
 			if found {

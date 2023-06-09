@@ -1,7 +1,7 @@
 package data
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/elek/flekszible/api/v2/yaml"
@@ -15,7 +15,7 @@ func TestReadFile(t *testing.T) {
 }
 
 func TestConvertToYaml(t *testing.T) {
-	yamlBytes, err := ioutil.ReadFile("../../testdata/yaml/ss.yaml")
+	yamlBytes, err := os.ReadFile("../../testdata/yaml/ss.yaml")
 	assert.Nil(t, err)
 	yamlDoc := yaml.MapSlice{}
 	err = yaml.Unmarshal(yamlBytes, &yamlDoc)
@@ -27,7 +27,7 @@ func TestConvertToYaml(t *testing.T) {
 }
 
 func TestConvertToYamlWithNull(t *testing.T) {
-	yamlBytes, err := ioutil.ReadFile("../../testdata/yaml/ss-with-null.yaml")
+	yamlBytes, err := os.ReadFile("../../testdata/yaml/ss-with-null.yaml")
 	assert.Nil(t, err)
 	yamlDoc := yaml.MapSlice{}
 	err = yaml.Unmarshal(yamlBytes, &yamlDoc)

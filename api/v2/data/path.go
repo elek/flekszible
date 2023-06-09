@@ -59,7 +59,7 @@ func (this Path) Match(that Path) bool {
 	return true
 }
 
-//match if that is a shorter path, but all the elements are matched
+// MatchLimited if that is a shorter path, but all the elements are matched
 func (this Path) MatchLimited(that Path) (bool, string) {
 	if len(this.segments) <= len(that.segments) {
 		return false, ""
@@ -75,8 +75,8 @@ func (this Path) MatchLimited(that Path) (bool, string) {
 	}
 	return true, this.Segment(that.Length())
 }
-func (this Path) MatchSegments(segments ...string) bool {
-	return this.Match(NewPath(segments...))
+func (path Path) MatchSegments(segments ...string) bool {
+	return path.Match(NewPath(segments...))
 }
 
 func (path Path) Length() int {

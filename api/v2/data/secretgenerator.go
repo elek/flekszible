@@ -2,7 +2,6 @@ package data
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -21,7 +20,7 @@ type SecretGenerator struct {
 }
 
 func ReadConfig(file string) (SecretGetConfig, error) {
-	content, err := ioutil.ReadFile(file)
+	content, err := os.ReadFile(file)
 	if err != nil {
 		errors.Wrap(err, "Couldn't load secret generator file "+file)
 	}
@@ -46,7 +45,7 @@ func (kt *SecretGenerator) Generate(sourceDir string, destinationDir string) ([]
 	if err != nil {
 		return resources, err
 	}
-	files, err := ioutil.ReadDir(sourceDir)
+	files, err := os.ReadDir(sourceDir)
 	if err != nil {
 		return resources, err
 	}

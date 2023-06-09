@@ -32,7 +32,7 @@ func ReadManifestFile(file string) (*MapNode, error) {
 	return ReadManifestString(data)
 }
 
-//Converts internal node tree to Yaml
+// ConvertToYaml converts internal node tree to YAML.
 func ConvertToYaml(root Node) interface{} {
 	switch object := root.(type) {
 	case *MapNode:
@@ -54,7 +54,7 @@ func ConvertToYaml(root Node) interface{} {
 	return nil
 }
 
-//Converts raw Yaml structure to file to internal node tree
+// Converts raw Yaml structure to file to internal node tree
 func ConvertToNode(object interface{}, path Path) (Node, error) {
 	switch object := object.(type) {
 	case yaml.MapSlice:

@@ -1,7 +1,9 @@
 package data
 
 import (
+	"encoding/base64"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 
@@ -17,7 +19,7 @@ func (*SecretImporter) IsManagedDir(dir string) bool {
 
 func (*SecretImporter) Generate(sourceDir string, destinationDir string) ([]*Resource, error) {
 	resources := make([]*Resource, 0)
-	files, err := ioutil.ReadDir(sourceDir)
+	files, err := os.ReadDir(sourceDir)
 	if err != nil {
 		return resources, err
 	}
@@ -47,7 +49,7 @@ func (*SecretImporter) Generate(sourceDir string, destinationDir string) ([]*Res
 		metadata.PutValue("name", name)
 		data := rootNode.CreateMap("data")
 		for keyName, rawData := range dataMap {
-			data.PutValue(keyName, rawData)
+			data.PutValue(keyName, base64.StdEncoding.EncodeToString([]byte(rawData)))
 		}
 		r := NewResource()
 		r.Content = &rootNode

@@ -3,7 +3,6 @@ package processor
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -50,6 +49,9 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
 			return nil
 		}
 	}
+	if resource.Kind() == "Kustomization" {
+		return nil
+	}
 	writer.started = false
 	outputDir := writer.resourceOutputDir
 	if outputDir == "-" {
@@ -63,7 +65,7 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
 		licenceHeader := ""
 		licenceHeaderFile := path.Join(outputDir, "LICENSE.header")
 		if _, err := os.Stat(licenceHeader); os.IsNotExist(err) {
-			content, _ := ioutil.ReadFile(licenceHeaderFile)
+			content, _ := os.ReadFile(licenceHeaderFile)
 			licenceHeader = string(content) + "\n"
 		}
 		outputFile := writer.createOutputPath(outputDir, resource.Name(), resource.Kind(), resource.Destination, resource.DestinationFileName)
@@ -77,7 +79,7 @@ func (writer *K8sWriter) BeforeResource(resource *data.Resource) error {
 			return errors.Wrap(err, "Can't render the content of a transformed resource file")
 		}
 
-		err = ioutil.WriteFile(outputFile, []byte(licenceHeader+content), 0655)
+		err = os.WriteFile(outputFile, []byte(licenceHeader+content), 0655)
 		if err != nil {
 			return errors.Wrap(err, "Can't write the k8s file out "+outputFile)
 		}

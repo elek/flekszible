@@ -66,13 +66,17 @@ func ActivateMerge(registry *ProcessorTypes) {
 			m := Merge{}
 
 			tr, _ := config.Get("trigger")
-			trRaw, err := yaml.Marshal(tr)
-			if err != nil {
-				return nil, err
-			}
-			err = yaml.UnmarshalStrict(trRaw, &m.Trigger)
-			if err != nil {
-				return nil, err
+
+			if tr != "" {
+				trRaw, err := yaml.Marshal(tr)
+				if err != nil {
+					return nil, err
+				}
+
+				err = yaml.UnmarshalStrict(trRaw, &m.Trigger)
+				if err != nil {
+					return nil, err
+				}
 			}
 
 			get, _ := config.Get("merge")

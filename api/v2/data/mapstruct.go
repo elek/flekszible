@@ -239,36 +239,6 @@ func (visitor *Apply) OnKey(node *KeyNode) {
 	}
 }
 
-type Get struct {
-	DefaultVisitor
-	Path        Path
-	ReturnValue Node
-	Found       bool
-}
-
-func (visitor *Get) ValueAsString() string {
-	return visitor.ReturnValue.(*KeyNode).Value.(string)
-}
-func (visitor *Get) OnKey(node *KeyNode) {
-	if visitor.Path.Match(node.Path) && !visitor.Found {
-		visitor.ReturnValue = node
-		visitor.Found = true
-	}
-}
-
-func (visitor *Get) BeforeList(node *ListNode) {
-	if visitor.Path.Match(node.Path) && !visitor.Found {
-		visitor.ReturnValue = node
-		visitor.Found = true
-	}
-}
-func (visitor *Get) BeforeMap(node *MapNode) {
-	if visitor.Path.Match(node.Path) && !visitor.Found {
-		visitor.ReturnValue = node
-		visitor.Found = true
-	}
-}
-
 type GetKeys struct {
 	DefaultVisitor
 	Result []GetAllResult
@@ -281,36 +251,6 @@ type GetKeysResult struct {
 
 func (visitor *GetKeys) OnKey(node *KeyNode) {
 	visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-}
-
-type GetAll struct {
-	DefaultVisitor
-	Path   Path
-	Result []GetAllResult
-}
-
-type GetAllResult struct {
-	Path  Path
-	Value Node
-}
-
-func (visitor *GetAll) OnKey(node *KeyNode) {
-	if visitor.Path.Match(node.Path) {
-		visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-	}
-}
-
-func (visitor *GetAll) BeforeList(node *ListNode) {
-	if visitor.Path.Match(node.Path) {
-		visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-
-	}
-}
-
-func (visitor *GetAll) BeforeMap(node *MapNode) {
-	if visitor.Path.Match(node.Path) {
-		visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-	}
 }
 
 type Yamlize struct {
@@ -361,117 +301,6 @@ func (visitor *Yamlize) BeforeMapItem(node *MapNode, key string, index int) {
 		}
 	}
 
-}
-
-type SmartGetAll struct {
-	DefaultVisitor
-	Path   Path
-	Result []GetAllResult
-}
-
-func (visitor *SmartGetAll) OnKey(node *KeyNode) {
-	if visitor.Path.Match(node.Path) {
-		visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-	}
-}
-
-func (visitor *SmartGetAll) BeforeList(node *ListNode) {
-	if visitor.Path.Match(node.Path) {
-		visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-
-	}
-}
-
-var mapChildren = []Path{
-	NewPath("metadata"),
-	NewPath("metadata", "annotations"),
-	NewPath("metadata", "labels"),
-	NewPath("spec", "template", "metadata", "labels"),
-	NewPath("spec", "template", "metadata"),
-	NewPath("spec", "template", "metadata", "annotations"),
-}
-
-var listChildren = []Path{
-	NewPath("spec", "template", "spec", "containers"),
-	NewPath("spec", "template", "spec", "initContainers"),
-	NewPath("spec", "template", "spec", "volumes"),
-	NewPath("spec", "template", "spec", ".*ontainers", ".*", "env"),
-	NewPath("spec", "template", "spec", ".*ontainers", ".*", "envFrom"),
-	NewPath("spec", "template", "spec", ".*ontainers", ".*", "volumeMounts"),
-	NewPath("spec", "containers"),
-	NewPath("spec", "initContainers"),
-	NewPath("spec", "volumes"),
-	NewPath("spec", ".*ontainers", ".*", "env"),
-	NewPath("spec", ".*ontainers", ".*", "envFrom"),
-	NewPath("spec", ".*ontainers", ".*", "volumeMounts"),
-}
-
-func (visitor *SmartGetAll) BeforeMap(node *MapNode) {
-	if visitor.Path.Match(node.Path) {
-		visitor.Result = append(visitor.Result, GetAllResult{Path: node.Path, Value: node})
-		return
-	}
-	if match, nextSegment := visitor.Path.MatchLimited(node.Path); match {
-		if !node.HasKey(nextSegment) {
-			for _, path := range mapChildren {
-				if path.Match(node.Path.Extend(nextSegment)) {
-					node.CreateMap(nextSegment)
-					return
-				}
-			}
-			for _, path := range listChildren {
-				if path.Match(node.Path.Extend(nextSegment)) {
-					node.CreateList(nextSegment)
-					return
-				}
-			}
-		}
-	}
-
-}
-
-type Set struct {
-	DefaultVisitor
-	Path     Path
-	NewValue interface{}
-}
-
-func (visitor *Set) OnKey(node *KeyNode) {
-	if visitor.Path.Match(node.Path) {
-		node.Value = visitor.NewValue
-	}
-}
-
-func (visitor *Set) BeforeMap(node *MapNode) {
-	if visitor.Path.Parent().Equal(node.Path) {
-		if node.Get(visitor.Path.Last()) == nil {
-			node.PutValue(visitor.Path.Last(), visitor.NewValue)
-		}
-	}
-}
-
-type ReSet struct {
-	DefaultVisitor
-	Path     Path
-	NewValue interface{}
-}
-
-func (visitor *ReSet) OnKey(node *KeyNode) {
-	if visitor.Path.Match(node.Path) {
-		if fmt.Sprintf("%s", node.Value) != "" {
-			node.Value = visitor.NewValue
-		}
-	}
-}
-
-func (visitor *ReSet) BeforeMap(node *MapNode) {
-	if visitor.Path.Parent().Equal(node.Path) {
-		if node.Get(visitor.Path.Last()) == nil {
-			if node.HasKey(visitor.Path.Last()) {
-				node.PutValue(visitor.Path.Last(), visitor.NewValue)
-			}
-		}
-	}
 }
 
 type FixPath struct {

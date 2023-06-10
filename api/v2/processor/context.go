@@ -68,6 +68,7 @@ func CreateRenderContext(mode string, inputDir string, outputDir string) *Render
 	ActivateK8sWriter(res.Registry)
 	ActivateEnv(res.Registry)
 	ActivateReplace(res.Registry)
+	ActivateSubstitute(res.Registry)
 	ActivateInit(res.Registry)
 	ActivateNamespace(res.Registry)
 	ActivatePrefix(res.Registry)

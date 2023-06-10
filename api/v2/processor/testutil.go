@@ -52,7 +52,9 @@ func compareDir(t *testing.T, expected string, result string) {
 
 	assert.Equal(t, keysFromMap(exp), keysFromMap(res))
 	for key := range res {
-		assert.Equal(t, exp[key], res[key], "File "+key+" is different")
+		a, _ := exp[key].ToString()
+		b, _ := res[key].ToString()
+		assert.Equal(t, a, b, "File "+key+" is different")
 	}
 }
 

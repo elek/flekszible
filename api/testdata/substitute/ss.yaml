@@ -1,0 +1,106 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: storagenode
+    intance: "02"
+  name: storagenode02
+spec:
+  selector:
+    matchLabels:
+      app: storagenode
+      instance: "02"
+  serviceName: storagenode02
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "5999"
+        prometheus.io/scrape: "true"
+      labels:
+        app: storagenode
+        instance: "02"
+    spec:
+      containers:
+        - args:
+            - storagenode
+            - run
+            - --defaults=dev
+            - --identity-dir=/var/lib/storj/.local/share/storj/identity/storagenode/
+          env:
+            - name: STORJ_CONTACT_EXTERNAL_ADDRESS
+              value: 000.000.000.000:30001
+            - name: STORJ_DEFAULTS
+              value: dev
+            - name: STORJ_IDENTITY_DIR
+              value: /var/lib/storj/identity
+          image: img.dev.storj.io/dev/storj:c559df6a1
+          name: storagenode
+          ports:
+            - containerPort: 28967
+              name: drpc-tcp
+              protocol: TCP
+            - containerPort: 28967
+              name: drpc-udp
+              protocol: UDP
+            - containerPort: 5999
+              name: debug
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "0.2"
+              memory: "500"
+          volumeMounts:
+            - mountPath: /var/lib/storj/.local/share/storj/storagenode/config.yaml
+              name: config
+              readOnly: true
+              subPath: config.yaml
+            - mountPath: /var/lib/storj/.local/share/storj/identity/storagenode/
+              name: storagenode-certs
+              readOnly: true
+            - mountPath: /var/lib/storj/.local/share/storj/storagenode
+              name: storagenode02
+      initContainers:
+        - args:
+            - bash
+            - -c
+            - ls /var/lib/storj/.local/share/storj/storagenode/storage/storage-dir-verification
+              || storagenode setup
+          image: img.dev.storj.io/dev/storj:c559df6a1
+          name: storagenode-setup
+          volumeMounts:
+            - mountPath: /var/lib/storj/.local/share/storj/identity/storagenode/
+              name: storagenode-certs
+              readOnly: true
+            - mountPath: /var/lib/storj/.local/share/storj/storagenode
+              name: storagenode02
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: storagenode-certs
+          secret:
+            items:
+              - key: ca.cert
+                path: ca.cert
+              - key: identity.cert
+                path: identity.cert
+              - key: identity.key
+                path: identity.key
+            secretName: storagenode02-certs
+        - configMap:
+            defaultMode: 444
+            name: storagenode02
+          name: config
+  volumeClaimTemplates:
+    - metadata:
+        name: storagenode02
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi

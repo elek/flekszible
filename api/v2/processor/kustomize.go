@@ -57,7 +57,7 @@ func ActivateKustomize(registry *ProcessorTypes) {
 	registry.Add(ProcessorDefinition{
 		Metadata: ProcessorMetadata{
 			Name:        "Kustomize",
-			Description: "Generate Kustomize desciptor in the destination directory",
+			Description: "Generate Kustomize descriptor in the destination directory",
 		},
 		Factory: func(config *yaml.MapSlice) (Processor, error) {
 			return configureProcessorFromYamlFragment(&Kustomize{}, config)
